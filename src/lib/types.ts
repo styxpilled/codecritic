@@ -1,3 +1,7 @@
+export type User = {
+	username: string;
+};
+
 export type Package = {
 	// public: boolean,
 	name: string;
@@ -8,11 +12,6 @@ export type Package = {
 	// repository: string,
 	// homepage: string,
 	author: string; // User
-};
-
-export type Review = {
-	author: string;
-	rating: number;
 };
 
 export function isReviewPackage(pkg: Package | ReviewedPackage): pkg is ReviewedPackage {

@@ -1,5 +1,8 @@
 <script lang="ts">
+	import { session, supabase } from '$lib/client/stores';
 	import Avatar from './Avatar.svelte';
+
+	let search: string | null = null;
 </script>
 
 <header>
@@ -13,16 +16,38 @@
 		<nav>
 			<ul>
 				<li>
-					<a href="/user/username">
-						<Avatar />
-						<p>username</p>
-					</a>
+					{#if session !== null}
+						<a href="/profile/{$session?.user.id}">
+							<Avatar />
+							<p>{$session?.user.id}</p>
+						</a>
+					{:else}
+						<button
+							on:click={async () => {
+								const { data, error } = await $supabase.auth.signInWithOAuth({
+									provider: 'github'
+								});
+							}}
+						>
+							signin
+						</button>
+					{/if}
 				</li>
 				<li>packages</li>
 				<li>cli</li>
 				<li>members</li>
-				<li>search</li>
-				<li>log</li>
+				<li>
+					<button on:click={() => (search = search === null ? '' : null)}>search</button>
+				</li>
+				<li>
+					{#if search === null}
+						log
+					{:else}
+						<form action="/packages/{search}">
+							<input type="text" bind:value={search} />
+						</form>
+					{/if}
+				</li>
 			</ul>
 		</nav>
 	</section>
@@ -53,7 +78,7 @@
 		gap: 1rem;
 
 		& > li,
-		& > li > a {
+		& > li > * {
 			text-transform: uppercase;
 			font-weight: 500;
 			display: flex;

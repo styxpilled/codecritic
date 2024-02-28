@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { examplePackage, examples } from '$lib/types.js';
-	import Card from '$ui/Card.svelte';
 	import List from '$ui/List.svelte';
 
 	export let data;

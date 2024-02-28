@@ -8,7 +8,7 @@
 
 <div class="package">
 	<div class="package-info">
-		<h3>{pkg.name}</h3>
+		<h3><a href="/packages/{pkg.name}">{pkg.name}</a></h3>
 		<p class="description">{pkg.description}</p>
 		<ul>
 			{#each pkg.tags as tag}
