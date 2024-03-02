@@ -21,7 +21,8 @@ export async function GET({ cookies, url, fetch }): Promise<Response> {
 		const tokens = await github.validateAuthorizationCode(code);
 		const githubUserResponse = await fetch('https://api.github.com/user', {
 			headers: {
-				Authorization: `Bearer ${tokens.accessToken}`
+				Authorization: `Bearer ${tokens.accessToken}`,
+				'User-Agent': 'codecritic'
 			}
 		});
 
