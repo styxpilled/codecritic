@@ -25,10 +25,6 @@ export async function GET({ cookies, url, fetch }): Promise<Response> {
 				'User-Agent': 'codecritic'
 			}
 		});
-
-		const test = await githubUserResponse.text();
-		console.log(test);
-
 		const githubUser: GitHubUser = await githubUserResponse.json();
 
 		const [existingUser]: [User?] = await sql`
