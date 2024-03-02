@@ -1,1 +1,4 @@
+name = "codecritic"
+compatibility_date = "2024-02-23"
+
 compatibility_flags = ["nodejs_compat"]
