@@ -3,7 +3,7 @@ import { OAuth2RequestError } from 'arctic';
 import { generateId } from 'lucia';
 import { github, lucia } from '$lib/server/lucia';
 
-import { sql } from '$lib/server/database';
+import { $s, sql } from '$lib/server/database';
 import type { User } from '$lib/types';
 
 export async function GET({ cookies, url, fetch }): Promise<Response> {
@@ -27,7 +27,7 @@ export async function GET({ cookies, url, fetch }): Promise<Response> {
 		});
 		const githubUser: GitHubUser = await githubUserResponse.json();
 
-		const [existingUser]: [User?] = await sql`
+		const [existingUser]: [User?] = await sql()`
       SELECT * FROM users
         WHERE github_id = ${githubUser.id}
     `;
@@ -42,9 +42,9 @@ export async function GET({ cookies, url, fetch }): Promise<Response> {
 		} else {
 			const userId = generateId(15);
 
-			await sql`
+			await sql()`
         INSERT INTO users
-          ${sql({
+          ${$s({
 						id: userId,
 						github_id: githubUser.id,
 						username: githubUser.login,

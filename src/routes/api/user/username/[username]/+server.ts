@@ -3,8 +3,7 @@ import { sql } from '$lib/server/database';
 import type { User } from 'lucia';
 
 export const GET = async ({ params }) => {
-	const [user]: [User?] = await sql`
-    SELECT * FROM users
+	const [user]: [User?] = await sql()`SELECT * FROM users
       WHERE username = ${params.username}
   `;
 	if (!user) throw notFound();

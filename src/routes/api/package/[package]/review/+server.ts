@@ -1,10 +1,10 @@
 import { ok, serverError, unauthorized } from '$lib/server';
-import { sql } from '$lib/server/database';
+import { $s, sql } from '$lib/server/database';
 import type { Review } from '$lib/types';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ params }) => {
-	const review: Review[] = await sql`
+	const review: Review[] = await sql()`
     SELECT * FROM reviews
       WHERE package = ${params.package}
   `;
@@ -20,9 +20,9 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		body.author = locals.user.id;
 		body.package = params.package;
 		body.created_at = new Date().toLocaleString('en-US');
-		const [review]: [Review] = await sql`
+		const [review]: [Review] = await sql()`
       INSERT INTO reviews
-        ${sql(body)}
+        ${$s(body)}
       RETURNING *
     `;
 		return ok(review);
