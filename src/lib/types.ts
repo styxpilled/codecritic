@@ -1,5 +1,25 @@
 export type User = {
+	id: string;
+	githubId: number;
 	username: string;
+	nickname: string;
+};
+
+export type DBUser = {
+	id: string;
+	github_id: number;
+	username: string;
+	nickname: string;
+};
+
+export type Review = {
+	id: string;
+	author: string;
+	package: string;
+	review: string;
+	rating: number;
+	version: string;
+	created_at: string;
 };
 
 export type Package = {

@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { examplePackage, examples } from '$lib/types.js';
+	import { examplePackage, examples } from '$lib/types.ts';
 	import List from '$ui/List.svelte';
+	import Swear from '$ui/Swear.svelte';
 
 	export let data;
 </script>
@@ -8,7 +9,7 @@
 <div class="greeting">
 	<h1>Welcome back, beautiful!</h1>
 	<p>Here's what your friends have been {data.greetMessage}:</p>
-
+	<Swear />
 	<List packages={examples}>
 		<span>New from friends</span>
 		<span>All activity</span>

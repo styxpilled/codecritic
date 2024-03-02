@@ -1,6 +1,7 @@
 <script lang="ts">
-	import { session, supabase } from '$lib/client/stores';
+	import type { Session, User } from 'lucia';
 	import Avatar from './Avatar.svelte';
+	export let auth: { user: User | null; session: Session | null };
 
 	let search: string | null = null;
 </script>
@@ -16,21 +17,13 @@
 		<nav>
 			<ul>
 				<li>
-					{#if session !== null}
-						<a href="/profile/{$session?.user.id}">
+					{#if auth.user}
+						<a href="/user/{auth.user.username}">
 							<Avatar />
-							<p>{$session?.user.id}</p>
+							<p>{auth.user.username}</p>
 						</a>
 					{:else}
-						<button
-							on:click={async () => {
-								const { data, error } = await $supabase.auth.signInWithOAuth({
-									provider: 'github'
-								});
-							}}
-						>
-							signin
-						</button>
+						<a href="/login/github">Sign in with GitHub</a>
 					{/if}
 				</li>
 				<li>packages</li>

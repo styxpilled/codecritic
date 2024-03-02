@@ -1,27 +1,33 @@
 import { ok, serverError, unauthorized } from '$lib/server';
+import { sql } from '$lib/server/database';
+import type { Review } from '$lib/types';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ locals: { supabase }, params }) => {
-	const res = await supabase.from('reviews').select('*').eq('package', params.package);
-	if (res.error) throw serverError();
+export const GET: RequestHandler = async ({ params }) => {
+	const review: Review[] = await sql`
+    SELECT * FROM reviews
+      WHERE package = ${params.package}
+  `;
 
-	return ok(res.data);
+	return ok(review);
 };
 
-export const POST: RequestHandler = async ({ request, locals: { supabase, getUser }, params }) => {
-	const body = await request.json();
-	const user = await getUser();
-	if (user === null) throw unauthorized();
-
-	const res = await supabase.from('reviews').insert({
-		package: params.package,
-		review: body.review,
-		author: user.id,
-		version: body.version,
-		created_at: new Date().toLocaleString('en-US')
-	});
-
-	console.log(res);
-
-	return ok(res.data);
+export const POST: RequestHandler = async ({ request, locals, params }) => {
+	if (!locals.user) throw unauthorized();
+	try {
+		const body: Review = await request.json();
+		body.id = crypto.randomUUID();
+		body.author = locals.user.id;
+		body.package = params.package;
+		body.created_at = new Date().toLocaleString('en-US');
+		const [review]: [Review] = await sql`
+      INSERT INTO reviews
+        ${sql(body)}
+      RETURNING *
+    `;
+		return ok(review);
+	} catch (e) {
+		console.log(e);
+		throw serverError();
+	}
 };

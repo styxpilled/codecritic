@@ -1,13 +1,12 @@
 import { notFound, ok } from '$lib/server';
-import { sql } from '$lib/server/database.ts';
-import type { User } from '$lib/types.ts';
+import { sql } from '$lib/server/database';
+import type { User } from 'lucia';
 
 export const GET = async ({ params }) => {
 	const [user]: [User?] = await sql`
     SELECT * FROM users
-      WHERE username = ${params.id}
+      WHERE username = ${params.username}
   `;
-
 	if (!user) throw notFound();
 
 	return ok(user);

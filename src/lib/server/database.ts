@@ -1,5 +1,4 @@
-import { PUBLIC_SUPABASE_ANON_KEY, PUBLIC_SUPABASE_URL } from '$env/static/public';
-import { createClient } from '@supabase/supabase-js';
-import type { Database } from './database.types';
+import { DATABASE_URL } from '$env/static/private';
+import postgres from 'postgres';
 
-export const db = createClient<Database>(PUBLIC_SUPABASE_URL, PUBLIC_SUPABASE_ANON_KEY);
+export const sql = postgres(DATABASE_URL);

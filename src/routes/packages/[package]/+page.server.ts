@@ -7,6 +7,7 @@ export const actions: Actions = {
 			method: 'POST',
 			body: JSON.stringify({
 				review: data.get('review'),
+				rating: data.get('rating'),
 				version: data.get('version')
 			})
 		});
