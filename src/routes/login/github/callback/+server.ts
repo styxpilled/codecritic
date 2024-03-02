@@ -24,6 +24,10 @@ export async function GET({ cookies, url, fetch }): Promise<Response> {
 				Authorization: `Bearer ${tokens.accessToken}`
 			}
 		});
+
+		const test = await githubUserResponse.text();
+		console.log(test);
+
 		const githubUser: GitHubUser = await githubUserResponse.json();
 
 		const [existingUser]: [User?] = await sql`

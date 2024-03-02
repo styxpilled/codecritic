@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { Session, User } from 'lucia';
 	import Avatar from './Avatar.svelte';
+	import { enhance } from '$app/forms';
 	export let auth: { user: User | null; session: Session | null };
 
 	let search: string | null = null;
@@ -26,6 +27,13 @@
 						<a href="/login/github">Sign in with GitHub</a>
 					{/if}
 				</li>
+				{#if auth.user}
+					<li>
+						<form method="post" action="/logout" use:enhance>
+							<button>Sign out</button>
+						</form>
+					</li>
+				{/if}
 				<li>packages</li>
 				<li>cli</li>
 				<li>members</li>
@@ -71,7 +79,7 @@
 		gap: 1rem;
 
 		& > li,
-		& > li > * {
+		& > li * {
 			text-transform: uppercase;
 			font-weight: 500;
 			display: flex;

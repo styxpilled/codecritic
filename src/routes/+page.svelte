@@ -1,20 +1,22 @@
 <script lang="ts">
-	import { examplePackage, examples } from '$lib/types.ts';
+	import { examples } from '$lib/types';
 	import List from '$ui/List.svelte';
-	import Swear from '$ui/Swear.svelte';
 
 	export let data;
 </script>
 
 <div class="greeting">
-	<h1>Welcome back, beautiful!</h1>
+	{#if data.auth.user}
+		<h1>Welcome back, {data.auth.user.nickname || data.auth.user.username}!</h1>
+	{:else}
+		<h1>Welcome to codecritic!</h1>
+	{/if}
 	<p>Here's what your friends have been {data.greetMessage}:</p>
-	<Swear />
+	<!-- <Swear /> -->
 	<List packages={examples}>
 		<span>New from friends</span>
 		<span>All activity</span>
 	</List>
-
 	<List
 		packages={structuredClone(examples).map((pkg) => {
 			pkg.review = undefined;
