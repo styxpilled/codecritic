@@ -16,14 +16,14 @@
 			{/each}
 		</ul>
 		<span class="details row">
-			<Avatar size="sm" />
+			<Avatar username={pkg.author} size="sm" />
 			{pkg.author}
 			published {pkg.version}
 		</span>
 	</div>
 	{#if isReviewPackage(pkg)}
 		<div class="review-info">
-			<span class="row"><Avatar size="sm" /> {pkg.review.author}</span>
+			<span class="row"><Avatar size="sm" username={pkg.review.author} /> {pkg.review.author}</span>
 			<span><Rating rating={pkg.review.rating} /></span>
 		</div>
 	{/if}

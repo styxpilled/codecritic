@@ -1,7 +1,9 @@
 <script lang="ts">
 	import type { Session, User } from 'lucia';
-	import Avatar from './Avatar.svelte';
 	import { enhance } from '$app/forms';
+	import Avatar from './Avatar.svelte';
+	import Icon from '@iconify/svelte';
+
 	export let auth: { user: User | null; session: Session | null };
 
 	let search: string | null = null;
@@ -20,7 +22,7 @@
 				<li>
 					{#if auth.user}
 						<a href="/user/{auth.user.username}">
-							<Avatar />
+							<Avatar username={auth.user.username} />
 							<p>{auth.user.username}</p>
 						</a>
 					{:else}
@@ -34,11 +36,12 @@
 						</form>
 					</li>
 				{/if}
-				<li>packages</li>
-				<li>cli</li>
+				<li><a href="/packages">packages</a></li>
 				<li>members</li>
 				<li>
-					<button on:click={() => (search = search === null ? '' : null)}>search</button>
+					<button on:click={() => (search = search === null ? '' : null)}>
+						<Icon icon="octicon:search-16" />
+					</button>
 				</li>
 				<li>
 					{#if search === null}

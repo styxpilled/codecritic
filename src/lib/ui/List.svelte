@@ -10,9 +10,11 @@
 		<slot />
 	</div>
 	<div class="list-content">
-		{#each packages as pkg}
-			<Card {pkg} />
-		{/each}
+		{#if packages.length > 0}
+			{#each packages as pkg}
+				<Card {pkg} />
+			{/each}
+		{/if}
 	</div>
 </div>
 
