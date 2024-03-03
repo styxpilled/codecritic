@@ -17,17 +17,19 @@
 	<div class="package-body">
 		{#if data.package}
 			<div>
-				<h2>{$page.params.package}</h2>
+				<h2>{data.packageName}</h2>
 			</div>
 			{#if data.package.author}
 				<p class="author">By {data.package.author.name}</p>
 			{/if}
 			<p class="description">{data.package.description}</p>
-			<ul class="keywords">
-				{#each data.package.keywords as keyword}
-					<li>{keyword}</li>
-				{/each}
-			</ul>
+			{#if data.package.keywords}
+				<ul class="keywords">
+					{#each data.package.keywords as keyword}
+						<li>{keyword}</li>
+					{/each}
+				</ul>
+			{/if}
 			<div class="readme">
 				{#if data.readme}
 					{#await marked.parse(data.readme, { gfm: true }) then readme}
@@ -40,9 +42,8 @@
 	<div class="package-sidebar">
 		<div>
 			<p>Install</p>
-			<p class="command">pnpm add {data.package.name}</p>
+			<p class="command">pnpm add {data.packageName}</p>
 		</div>
-		{data.package.repository.url}
 		{#if data.package.repository && data.package.repository.type === 'git'}
 			{@const url = data.package.repository.url}
 			{@const repository =
@@ -59,7 +60,10 @@
 			</div>
 		{/if}
 		<form method="post" use:enhance>
-			<RatingInput />
+			<div>
+				<RatingInput />
+				<input type="datetime-local" />
+			</div>
 			<textarea placeholder="Add a review..." name="review" />
 			<label>
 				<span>Version</span>
@@ -84,6 +88,7 @@
 		display: grid;
 		grid-template-columns: 3fr 2fr;
 		grid-template-rows: 1fr;
+		max-width: 1200px;
 		gap: 0px 0px;
 		grid-template-areas: 'body sidebar';
 	}
@@ -91,6 +96,7 @@
 	.package-body {
 		grid-area: body;
 		padding: 0.5rem;
+		max-width: 720px;
 	}
 
 	.package-sidebar {
@@ -105,6 +111,12 @@
 		gap: 1rem;
 	}
 
+	form > div {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
 	textarea {
 		resize: none;
 		height: 6rem;
@@ -112,6 +124,7 @@
 
 	.keywords {
 		display: flex;
+		flex-wrap: wrap;
 		gap: 0.5rem;
 	}
 

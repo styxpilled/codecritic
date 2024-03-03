@@ -1,11 +1,12 @@
-import { fetchOr } from '$lib';
-import type { Review } from '$lib/types';
 import type { Actions, PageServerLoad } from './$types';
+import type { Review } from '$lib/types';
+import { fetchOr } from '$lib';
 
 export const actions: Actions = {
 	default: async ({ request, fetch, params }) => {
+		const packageName = params.scope ? `${params.scope}/${params.package}` : params.package;
 		const data = await request.formData();
-		await fetch(`/api/packages/${params.package}/review`, {
+		await fetch(`/api/packages/${packageName}/reviews`, {
 			method: 'POST',
 			body: JSON.stringify({
 				review: data.get('review'),
@@ -17,11 +18,13 @@ export const actions: Actions = {
 };
 
 export const load: PageServerLoad = async ({ fetch, params, cookies }) => {
+	const packageName = params.scope ? `${params.scope}/${params.package}` : params.package;
+
 	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const pkg: any = await fetchOr(`https://registry.npmjs.org/${params.package}`, undefined, fetch);
+	const pkg: any = await fetchOr(`https://registry.npmjs.org/${packageName}`, undefined, fetch);
 	let readme = null;
 
-	if (pkg.repository) {
+	if (pkg?.repository) {
 		const ghAuth = cookies.get('github_access_token');
 		const auth = ghAuth ? { Authorization: `Bearer ${ghAuth}` } : {};
 		const repo: string = pkg.repository.url;
@@ -47,7 +50,6 @@ export const load: PageServerLoad = async ({ fetch, params, cookies }) => {
 
 	// TODO: age & cache-control headers
 
-	// const repo = pkg.repository;
-	const reviews = fetchOr<Review[]>(`/api/packages/${params.package}/review`, [], fetch);
-	return { package: pkg, readme, reviews: await reviews };
+	const reviews = await fetchOr<Review[]>(`/api/packages/${packageName}/reviews`, [], fetch);
+	return { packageName, package: pkg, readme, reviews: reviews };
 };

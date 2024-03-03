@@ -7,18 +7,24 @@
 	export let user: User | undefined;
 </script>
 
-<Avatar size="lg" username={user?.username} />
+<a href="/user/{user?.username || ''}">
+	<Avatar size="lg" username={user?.username} />
+</a>
 <p>
-	Version
-	<span>{review.version}</span>
-	Used by
-	<a href="/user/{user?.nickname || ''}">{user?.nickname || user?.username || 'Loading...'}</a>
-	on
-	<span>{new Date(review.created_at).toLocaleDateString('en-US')}</span>
+	<a href="/packages/{review.package}/reviews/{review.id}">
+		Version
+		<span>{review.version}</span>
+		Used by
+		<a class="link" href="/user/{user?.username || ''}"
+			>{user?.nickname || user?.username || 'Loading...'}</a
+		>
+		on
+		<span>{new Date(review.created_at).toLocaleDateString('en-US')}</span>
+	</a>
 </p>
 
 <style>
-	a {
+	a.link {
 		color: red;
 	}
 </style>
