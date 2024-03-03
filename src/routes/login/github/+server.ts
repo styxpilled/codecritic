@@ -3,6 +3,7 @@ import { generateState } from 'arctic';
 import { github } from '$lib/server/lucia';
 
 import type { RequestEvent } from '@sveltejs/kit';
+import { dev } from '$app/environment';
 
 export async function GET(event: RequestEvent): Promise<Response> {
 	const state = generateState();
@@ -10,7 +11,7 @@ export async function GET(event: RequestEvent): Promise<Response> {
 
 	event.cookies.set('github_oauth_state', state, {
 		path: '/',
-		secure: import.meta.env.PROD,
+		secure: !dev,
 		httpOnly: true,
 		maxAge: 60 * 10,
 		sameSite: 'lax'

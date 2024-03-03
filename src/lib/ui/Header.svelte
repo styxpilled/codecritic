@@ -3,8 +3,7 @@
 	import { enhance } from '$app/forms';
 	import Avatar from './Avatar.svelte';
 	import Icon from '@iconify/svelte';
-
-	export let auth: { user: User | null; session: Session | null };
+	import { user } from '$lib/client/stores';
 
 	let search: string | null = null;
 </script>
@@ -20,16 +19,16 @@
 		<nav>
 			<ul>
 				<li>
-					{#if auth.user}
-						<a href="/user/{auth.user.username}">
-							<Avatar username={auth.user.username} />
-							<p>{auth.user.username}</p>
+					{#if $user}
+						<a href="/user/{$user.username}">
+							<Avatar username={$user.username} />
+							<p>{$user.username}</p>
 						</a>
 					{:else}
 						<a href="/login/github">Sign in with GitHub</a>
 					{/if}
 				</li>
-				{#if auth.user}
+				{#if $user}
 					<li>
 						<form method="post" action="/logout" use:enhance>
 							<button>Sign out</button>
