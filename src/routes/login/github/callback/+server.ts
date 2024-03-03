@@ -5,6 +5,7 @@ import { github, lucia } from '$lib/server/lucia';
 
 import { sql } from '$lib/server/database';
 import type { User } from '$lib/types';
+import { dev } from '$app/environment';
 
 export async function GET({ cookies, url, fetch }): Promise<Response> {
 	const code = url.searchParams.get('code');
@@ -41,7 +42,6 @@ export async function GET({ cookies, url, fetch }): Promise<Response> {
 			});
 		} else {
 			const userId = generateId(15);
-
 			await sql`
         INSERT INTO users
           (id, github_id, username, nickname)
@@ -55,6 +55,15 @@ export async function GET({ cookies, url, fetch }): Promise<Response> {
 				...sessionCookie.attributes
 			});
 		}
+
+		cookies.set('github_access_token', tokens.accessToken, {
+			path: '/',
+			secure: !dev,
+			httpOnly: true,
+			maxAge: 60 * 10000,
+			sameSite: 'lax'
+		});
+
 		return new Response(null, {
 			status: 302,
 			headers: {
