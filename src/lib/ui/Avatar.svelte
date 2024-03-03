@@ -1,13 +1,15 @@
 <script lang="ts">
 	export let size: 'sm' | 'md' | 'lg' = 'md';
-	export let username: string;
+	export let username: string | undefined;
 </script>
 
 <div class="avatar {size}">
-	<img
-		src="https://github.com/{username}.png?size={size === 'sm' ? 32 : size === 'md' ? 64 : 128}"
-		alt="avatar"
-	/>
+	{#if username}
+		<img
+			src="https://github.com/{username}.png?size={size === 'sm' ? 32 : size === 'md' ? 64 : 128}"
+			alt="avatar"
+		/>
+	{/if}
 </div>
 
 <style>
@@ -15,7 +17,7 @@
 		display: inline-block;
 		height: 1.75rem;
 		width: 1.75rem;
-		background-color: lightseagreen;
+		background-color: whitesmoke;
 		border-radius: 1.25rem;
 	}
 

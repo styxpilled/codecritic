@@ -2,8 +2,9 @@
 	import { enhance } from '$app/forms';
 	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
-	import Icon from '@iconify/svelte';
+	import { marked } from 'marked';
 	import RatingInput from '$ui/RatingInput.svelte';
+	import Review from '$ui/Review.svelte';
 	export let data;
 
 	onMount(() => {
@@ -11,26 +12,52 @@
 	});
 </script>
 
-<div>
-	{#if data.package}
-		<div>
-			<h1>{$page.params.package}</h1>
-			<a href={data.package.homepage}>Homepage</a>
-		</div>
-		{#if data.package.author}
-			<p class="author">By {data.package.author.name}</p>
+<div class="package">
+	<div class="package-body">
+		{#if data.package}
+			<div>
+				<h2>{$page.params.package}</h2>
+			</div>
+			{#if data.package.author}
+				<p class="author">By {data.package.author.name}</p>
+			{/if}
+			<p class="description">{data.package.description}</p>
+			<ul class="keywords">
+				{#each data.package.keywords as keyword}
+					<li>{keyword}</li>
+				{/each}
+			</ul>
+			{#if data.package.readme}
+				{#await marked.parse(data.package.readme, { gfm: true }) then readme}
+					{@html readme}
+				{/await}
+			{/if}
 		{/if}
-		<p class="description">{data.package.description}</p>
-		<ul>
-			{#each data.package.keywords as keyword}
-				<li>{keyword}</li>
-			{/each}
-		</ul>
+	</div>
+	<div class="package-sidebar">
+		<div>
+			<p>Install</p>
+			<p class="command">pnpm add {data.package.name}</p>
+		</div>
+		{#if data.package.repository && data.package.repository.type === 'git'}
+			{@const repository = data.package.repository.url.substring(
+				4,
+				data.package.repository.url.length - 4
+			)}
+			<div>
+				<p>Repository</p>
+				<a href={repository}>{repository}</a>
+			</div>
+		{/if}
+		{#if data.package.homepage}
+			<div>
+				<p>Homepage</p>
+				<a href={data.package.homepage}>{data.package.homepage}</a>
+			</div>
+		{/if}
 		<form method="post" use:enhance>
-			<label>
-				<span>Review</span>
-				<textarea name="review" />
-			</label>
+			<RatingInput />
+			<textarea placeholder="Add a review..." name="review" />
 			<label>
 				<span>Version</span>
 				<select name="version">
@@ -39,20 +66,44 @@
 					{/each}
 				</select>
 			</label>
-			<RatingInput />
-			<button type="submit">submit</button>
+			<button type="submit">Save</button>
 		</form>
-		{#each data.reviews as review}
-			{review.author}
-			{review.rating}
-			{review.review}
-		{/each}
-	{/if}
+	</div>
+</div>
+<div class="reviews">
+	{#each data.reviews as review}
+		<Review {review} />
+	{/each}
 </div>
 
 <style>
+	.package {
+		display: flex;
+	}
+
 	form {
 		display: flex;
 		flex-direction: column;
+		background-color: #383d45;
+		padding: 1rem;
+		gap: 1rem;
 	}
+
+	.keywords {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.keywords > li {
+		background-color: #383d45;
+		padding: 0 0.5rem;
+		border-radius: 0.25rem;
+	}
+
+	:global(.package img) {
+		display: inline-block;
+	}
+	/* :global(.package p) {
+		display: flex;
+	} */
 </style>
