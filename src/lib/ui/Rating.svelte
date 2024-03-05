@@ -2,7 +2,7 @@
 	export let rating: number;
 </script>
 
-<span>
+<span class="accent-text">
 	{#each { length: Math.floor(rating / 2) } as _, i}
 		<span class="char">★</span>
 	{/each}

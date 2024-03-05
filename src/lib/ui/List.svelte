@@ -1,20 +1,13 @@
 <script lang="ts">
 	import type { Package, ReviewedPackage } from '$lib/types';
-	import Card from './Card.svelte';
-
-	export let packages: Package[] | ReviewedPackage[];
 </script>
 
 <div class="list">
 	<div class="list-info">
-		<slot />
+		<slot name="head" />
 	</div>
 	<div class="list-content">
-		{#if packages.length > 0}
-			{#each packages as pkg}
-				<Card {pkg} />
-			{/each}
-		{/if}
+		<slot name="body" />
 	</div>
 </div>
 

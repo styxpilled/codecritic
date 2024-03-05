@@ -4,6 +4,7 @@
 	import Avatar from './Avatar.svelte';
 	import Icon from '@iconify/svelte';
 	import { user } from '$lib/client/stores';
+	import { dev } from '$app/environment';
 
 	let search: string | null = null;
 </script>
@@ -14,27 +15,30 @@
 			<a href="/">
 				<span class="logo">★☆_</span>
 				<span>codecritic</span>
+				{#if dev}
+					<span style="color: red;">dev</span>
+				{/if}
 			</a>
 		</h3>
 		<nav>
 			<ul>
-				<li>
+				<li class="user-dropdown">
 					{#if $user}
-						<a href="/user/{$user.username}">
+						<a class="user-link" href="/user/{$user.username}">
 							<Avatar username={$user.username} />
 							<p>{$user.username}</p>
 						</a>
 					{:else}
 						<a href="/login/github">Sign in with GitHub</a>
 					{/if}
+					<div class="user-dropdown-content">
+						{#if $user}
+							<form method="post" action="/logout" use:enhance>
+								<button>Sign out</button>
+							</form>
+						{/if}
+					</div>
 				</li>
-				{#if $user}
-					<li>
-						<form method="post" action="/logout" use:enhance>
-							<button>Sign out</button>
-						</form>
-					</li>
-				{/if}
 				<li><a href="/packages">packages</a></li>
 				<li>members</li>
 				<li>
@@ -80,14 +84,37 @@
 		justify-content: space-around;
 		gap: 1rem;
 
-		& > li,
-		& > li * {
+		& > li {
 			text-transform: uppercase;
+			height: 3rem;
 			font-weight: 500;
 			display: flex;
 			align-items: center;
 			gap: 0.25rem;
 		}
+	}
+
+	.user-dropdown {
+		position: relative;
+	}
+
+	.user-dropdown:hover > .user-dropdown-content {
+		display: block;
+	}
+
+	.user-dropdown-content {
+		display: none;
+		position: absolute;
+		top: 3rem;
+		background-color: #383d45;
+		padding: 0.5rem;
+		width: 9rem;
+	}
+
+	.user-link {
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
 	}
 
 	.site-logo {

@@ -3,27 +3,38 @@
 	import Avatar from './Avatar.svelte';
 	import Rating from './Rating.svelte';
 
-	export let pkg: Package | ReviewedPackage;
+	export let pkg: Package;
 </script>
 
 <div class="package">
 	<div class="package-info">
 		<h3><a href="/packages/{pkg.name}">{pkg.name}</a></h3>
-		<p class="description">{pkg.description}</p>
-		<ul>
-			{#each pkg.tags as tag}
-				<li class="tag">{tag}</li>
-			{/each}
-		</ul>
-		<span class="details row">
-			<Avatar username={pkg.author} size="sm" />
-			{pkg.author}
-			published {pkg.version}
-		</span>
+		<div class="details">
+			<p class="description">
+				<a href="/packages/{pkg.name}">{pkg.description}</a>
+			</p>
+			{#if pkg.keywords}
+				<ul>
+					{#each pkg.keywords as keyword}
+						<li class="keyword">{keyword}</li>
+					{/each}
+				</ul>
+			{/if}
+		</div>
+		<p>
+			<!-- <Avatar username={pkg.author} size="sm" />
+			{pkg.author} -->
+			<span>Latest {pkg.latest}</span>
+			{#if pkg.license}
+				<span class="hoverable">License: <span class="hoverable-content">{pkg.license}</span></span>
+			{/if}
+		</p>
 	</div>
 	{#if isReviewPackage(pkg)}
 		<div class="review-info">
-			<span class="row"><Avatar size="sm" username={pkg.review.author} /> {pkg.review.author}</span>
+			<span class="row"
+				><Avatar size="sm" username={pkg.review.author.username} /> {pkg.review.author}</span
+			>
 			<span><Rating rating={pkg.review.rating} /></span>
 		</div>
 	{/if}
@@ -48,18 +59,35 @@
 		font-weight: 600;
 	}
 
+	.details {
+		max-height: 4.75rem;
+		overflow: hidden;
+	}
+
 	.description {
-		height: 3rem;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		text-overflow: '…';
+
+		&:has(+ ul) {
+			max-height: 3rem;
+		}
 	}
 
 	ul {
 		display: flex;
 		gap: 0.25rem;
+		overflow: hidden;
+		flex-flow: wrap;
 		& > li {
 			border-radius: 0.25rem;
 			padding: 0 0.25rem;
 			background-color: var(--color-bg-bright);
 		}
+	}
+
+	.keyword {
+		word-break: keep-all;
 	}
 
 	.review-info {

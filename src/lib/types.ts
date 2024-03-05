@@ -34,12 +34,14 @@ type _PackageInternal = {
 	public: boolean;
 };
 
-export type Package = _PackageInternal & {
-	latest: string;
-	next?: string;
-	repository?: string;
-	author?: string;
-};
+export type Package = Expand<
+	_PackageInternal & {
+		latest: string;
+		next?: string;
+		repository?: string;
+		author?: string;
+	}
+>;
 
 export type NPMPackage = Expand<
 	_PackageInternal & {
