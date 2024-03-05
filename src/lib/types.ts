@@ -14,25 +14,49 @@ export type DBUser = {
 
 export type Review = {
 	id: string;
-	author: string;
+	author: User;
 	package: string;
 	review: string;
 	rating: number;
 	version: string;
 	created_at: string;
+	likes: number;
+	liked: boolean;
 };
 
-export type Package = {
-	// public: boolean,
+type _PackageInternal = {
 	name: string;
 	description: string;
-	tags: string[];
+	keywords?: string[];
 	version: string;
-	// license: string,
-	// repository: string,
-	// homepage: string,
-	author: string; // User
+	license?: string;
+	homepage?: string;
+	public: boolean;
 };
+
+export type Package = _PackageInternal & {
+	latest: string;
+	next?: string;
+	repository?: string;
+	author?: string;
+};
+
+export type NPMPackage = Expand<
+	_PackageInternal & {
+		'dist-tags': {
+			latest: string;
+			next?: string;
+		};
+		repository?: {
+			url: string;
+		};
+		author?: {
+			name: string;
+		};
+	}
+>;
+
+type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
 export function isReviewPackage(pkg: Package | ReviewedPackage): pkg is ReviewedPackage {
 	// @ts-expect-error ts is stupid idk why

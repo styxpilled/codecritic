@@ -11,3 +11,18 @@ export const fetchOr = async <T>(
 		return fallback;
 	}
 };
+
+export const getPackage = (params: { scope?: string; package: string }) => {
+	return params.scope ? `${params.scope}/${params.package}` : params.package;
+};
+
+export const parseIntSafe = (
+	input: string | undefined | null,
+	fallback: number,
+	radix?: number
+): number => {
+	if (input === undefined || input === null) return fallback;
+	const maybeNumber = parseInt(input, radix);
+	if (isNaN(maybeNumber)) return fallback;
+	else return maybeNumber;
+};

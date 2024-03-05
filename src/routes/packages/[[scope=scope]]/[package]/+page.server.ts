@@ -1,5 +1,5 @@
 import type { Actions, PageServerLoad } from './$types';
-import type { Review } from '$lib/types';
+import type { Package, Review } from '$lib/types';
 import { fetchOr } from '$lib';
 
 export const actions: Actions = {
@@ -20,18 +20,18 @@ export const actions: Actions = {
 export const load: PageServerLoad = async ({ fetch, params, cookies }) => {
 	const packageName = params.scope ? `${params.scope}/${params.package}` : params.package;
 
-	// eslint-disable-next-line @typescript-eslint/no-explicit-any
-	const pkg: any = await fetchOr(`https://registry.npmjs.org/${packageName}`, undefined, fetch);
+	const pkg = await fetchOr<Package>(`/api/packages/${packageName}`, undefined, fetch);
 	let readme = null;
+
+	console.log(pkg);
 
 	if (pkg?.repository) {
 		const ghAuth = cookies.get('github_access_token');
 		const auth = ghAuth ? { Authorization: `Bearer ${ghAuth}` } : {};
-		const repo: string = pkg.repository.url;
+		const repo = pkg.repository;
 		const readmeData = await fetchOr<{ content: string }>(
 			`https://api.github.com/repos/${repo.substring(
-				repo.indexOf('github.com') + 11,
-				repo.length - 4
+				repo.indexOf('github.com') + 11
 			)}/contents/README.md`,
 			undefined,
 			fetch,

@@ -44,8 +44,8 @@
 			<p>Install</p>
 			<p class="command">pnpm add {data.packageName}</p>
 		</div>
-		{#if data.package.repository && data.package.repository.type === 'git'}
-			{@const url = data.package.repository.url}
+		{#if data.package.repository}
+			{@const url = data.package.repository}
 			{@const repository =
 				'https://github.com' + url.substring(url.indexOf('github.com') + 10, url.length - 4)}
 			<div>
@@ -65,14 +65,15 @@
 				<input type="datetime-local" />
 			</div>
 			<textarea placeholder="Add a review..." name="review" />
-			<label>
+			TODO: versions
+			<!-- <label>
 				<span>Version</span>
 				<select name="version">
 					{#each Object.keys(data.package.versions).reverse() as g}
 						<option value={g}>{g}</option>
 					{/each}
 				</select>
-			</label>
+			</label> -->
 			<button type="submit">Save</button>
 		</form>
 		<div class="reviews">
