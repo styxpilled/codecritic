@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { examples } from '$lib/types';
+	import Card from '$ui/Card.svelte';
 	import List from '$ui/List.svelte';
 
 	export let data;
@@ -12,17 +12,19 @@
 		<h1>Welcome to codecritic!</h1>
 	{/if}
 	<p>Here's what your friends have been {data.greetMessage}:</p>
-	<!-- <Swear /> -->
-	<List packages={examples}>
-		<span>New from friends</span>
-		<span>All activity</span>
+	TODO: friends, friend activity
+	<List>
+		<svelte:fragment slot="head">
+			<span>New from friends</span>
+			<span>All activity</span>
+		</svelte:fragment>
+		<svelte:fragment slot="body">
+			{#each data.packages as pkg}
+				<Card {pkg} />
+			{/each}
+		</svelte:fragment>
 	</List>
-	<List
-		packages={structuredClone(examples).map((pkg) => {
-			pkg.review = undefined;
-			return pkg;
-		})}
-	>
+	<List>
 		<span>Recommended</span>
 		<span>All recommened</span>
 	</List>

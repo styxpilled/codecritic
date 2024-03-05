@@ -3,15 +3,25 @@ import { sql } from '$lib/server/database';
 import type { Review } from '$lib/types';
 import type { RequestHandler } from './$types';
 
-// TODO: code duplication
-export const GET: RequestHandler = async ({ params }) => {
+export const GET: RequestHandler = async ({ locals, params }) => {
 	const packageName = params.scope ? `${params.scope}/${params.package}` : params.package;
-	const review = (await sql`
-    SELECT * FROM reviews
+	const userID = locals.user?.id || '';
+	const reviews = (await sql`
+  SELECT
+      reviews.*,
+      (user_id = ${userID} AND user_id IS NOT NULL) liked,
+      row_to_json (users.*) author,
+      COUNT(review_id)::integer likes
+    FROM reviews
+      LEFT JOIN users
+        ON users.id = reviews.author
+      LEFT JOIN likes_reviews
+        ON reviews.id = review_id
       WHERE package = ${packageName}
+    GROUP BY reviews.id, users.*, user_id
   `) as Review[];
 
-	return ok(review);
+	return ok(reviews);
 };
 
 export const POST: RequestHandler = async ({ request, locals, params }) => {
@@ -19,15 +29,15 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 	const packageName = params.scope ? `${params.scope}/${params.package}` : params.package;
 	try {
 		const r: Review = await request.json();
+		const author = locals.user.id;
 		r.id = crypto.randomUUID();
-		r.author = locals.user.id;
 		r.package = packageName;
 		r.created_at = new Date().toLocaleString('en-US');
 		const [review] = (await sql`
       INSERT INTO reviews
         (id, author, package, created_at, version, review, rating)
       VALUES
-        (${r.id}, ${r.author}, ${r.package}, ${r.created_at}, ${r.version}, ${r.review}, ${r.rating})
+        (${r.id}, ${author}, ${r.package}, ${r.created_at}, ${r.version}, ${r.review}, ${r.rating})
       RETURNING *
     `) as [Review];
 		return ok(review);

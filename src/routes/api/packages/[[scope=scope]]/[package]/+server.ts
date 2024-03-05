@@ -32,6 +32,11 @@ export const POST: RequestHandler = async ({ fetch, params }) => {
 	);
 	if (npmPackage === undefined) throw notFound();
 
+	await sql`
+    DELETE FROM packages
+      WHERE name = ${npmPackage.name}
+  `;
+
 	const repoURL = npmPackage?.repository?.url;
 	const repository = repoURL
 		? 'https://github.com' +

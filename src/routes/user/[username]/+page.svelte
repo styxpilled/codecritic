@@ -1,5 +1,5 @@
 <script lang="ts">
-	import Rating from '$ui/Rating.svelte';
+	import Review from '$ui/Review.svelte';
 
 	export let data;
 </script>
@@ -13,10 +13,7 @@
 <ul>
 	{#each data.reviews as review}
 		<li>
-			<h2><a href="/packages/{review.package}">{review.package}</a></h2>
-			<p>{review.review}</p>
-			{new Date(review.created_at).toLocaleDateString()}
-			<Rating rating={review.rating} />
+			<Review {review} showPackageName={true} showUserName={false} />
 		</li>
 	{/each}
 </ul>

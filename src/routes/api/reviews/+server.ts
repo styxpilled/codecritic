@@ -1,8 +1,12 @@
+import { parseIntSafe } from '$lib';
 import { ok } from '$lib/server';
 import { sql } from '$lib/server/database';
 import type { Review } from '$lib/types';
 
-export const GET = async ({ locals, params }) => {
+export const GET = async ({ locals, url }) => {
+	const limit = Math.min(parseIntSafe(url.searchParams.get('limit'), 5), 25);
+	const offset = parseIntSafe(url.searchParams.get('offset'), 0);
+
 	const userID = locals.user?.id || '';
 
 	const reviews = (await sql`
@@ -16,8 +20,9 @@ export const GET = async ({ locals, params }) => {
         ON users.id = reviews.author
       LEFT JOIN likes_reviews
         ON reviews.id = review_id
-      WHERE users.username = ${params.username}
-    GROUP BY reviews.id, users.*, user_id
+	  GROUP BY reviews.id, users.*, user_id, review_id
+	  ORDER BY COUNT(review_id) DESC
+    LIMIT ${limit} OFFSET ${offset}
   `) as Review[];
 
 	return ok(reviews);

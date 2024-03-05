@@ -20,7 +20,7 @@
 				<h2>{data.packageName}</h2>
 			</div>
 			{#if data.package.author}
-				<p class="author">By {data.package.author.name}</p>
+				<p class="author">By {data.package.author}</p>
 			{/if}
 			<p class="description">{data.package.description}</p>
 			{#if data.package.keywords}
@@ -45,12 +45,9 @@
 			<p class="command">pnpm add {data.packageName}</p>
 		</div>
 		{#if data.package.repository}
-			{@const url = data.package.repository}
-			{@const repository =
-				'https://github.com' + url.substring(url.indexOf('github.com') + 10, url.length - 4)}
 			<div>
 				<p>Repository</p>
-				<a href={repository}>{repository}</a>
+				<a href={data.package.repository}>{data.package.repository}</a>
 			</div>
 		{/if}
 		{#if data.package.homepage}

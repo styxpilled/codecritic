@@ -23,8 +23,6 @@ export const load: PageServerLoad = async ({ fetch, params, cookies }) => {
 	const pkg = await fetchOr<Package>(`/api/packages/${packageName}`, undefined, fetch);
 	let readme = null;
 
-	console.log(pkg);
-
 	if (pkg?.repository) {
 		const ghAuth = cookies.get('github_access_token');
 		const auth = ghAuth ? { Authorization: `Bearer ${ghAuth}` } : {};

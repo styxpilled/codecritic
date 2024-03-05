@@ -14,6 +14,10 @@
 	}
 </script>
 
+<svelte:head>
+	<title>codecritic · Social node package manager package discovery</title>
+</svelte:head>
+
 <div id="root">
 	<Header />
 	<div id="main">

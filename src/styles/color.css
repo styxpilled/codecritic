@@ -3,6 +3,18 @@
 	--color-bg-bright: #383d45;
 }
 
+.accent {
+	background-color: #00e054;
+}
+
+.accent-text {
+	color: #00e054;
+}
+
+.accent-alt {
+	color: #f2b138;
+}
+
 /* "background": "#282C34",
 "black": "#282C34",
 "blue": "#61AFEF",
