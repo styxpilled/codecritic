@@ -28,7 +28,6 @@ type _PackageInternal = {
 	name: string;
 	description: string;
 	keywords?: string[];
-	version: string;
 	license?: string;
 	homepage?: string;
 	public: boolean;

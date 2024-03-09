@@ -1,7 +1,7 @@
 import type { RequestHandler } from './$types';
 import { fetchOr, getPackage } from '$lib';
 import { notFound, ok } from '$lib/server';
-import { sql } from '$lib/server/database';
+import { addPackage, getRepoURL, sql } from '$lib/server/database';
 import type { NPMPackage } from '$lib/types';
 
 export const GET: RequestHandler = async ({ fetch, params }) => {
@@ -37,30 +37,7 @@ export const POST: RequestHandler = async ({ fetch, params }) => {
       WHERE name = ${npmPackage.name}
   `;
 
-	const repoURL = npmPackage?.repository?.url;
-	const repository = repoURL
-		? 'https://github.com' +
-			repoURL.substring(repoURL.indexOf('github.com') + 10, repoURL.length - 4)
-		: undefined;
-
-	const [pkg] = await sql`
-    INSERT INTO packages
-      (name, description, keywords, latest, next, license, repository, homepage, author, public)
-    VALUES
-      (
-      ${npmPackage.name},
-      ${npmPackage.description},
-      ${npmPackage?.keywords},
-      ${npmPackage['dist-tags'].latest},
-      ${npmPackage['dist-tags']?.next},
-      ${npmPackage?.license},
-      ${repository},
-      ${npmPackage?.homepage},
-      ${npmPackage?.author?.name},
-      ${npmPackage?.public}
-      )
-    RETURNING *
-  `;
+	const [pkg] = await addPackage(npmPackage, getRepoURL(npmPackage?.repository?.url));
 
 	return ok(pkg);
 };
