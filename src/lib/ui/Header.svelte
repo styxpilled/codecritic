@@ -41,19 +41,17 @@
 				</li>
 				<li><a href="/packages">packages</a></li>
 				<li>members</li>
-				<li>
-					<button on:click={() => (search = search === null ? '' : null)}>
+				<li class="search-container">
+					<label class="search-button">
 						<Icon icon="octicon:search-16" />
-					</button>
-				</li>
-				<li>
-					{#if search === null}
-						log
-					{:else}
-						<form action="/packages/{search}">
-							<input type="text" bind:value={search} />
-						</form>
-					{/if}
+						<input type="checkbox" name="search-checkbox" />
+					</label>
+					<form class="search-box" action="/search?/search">
+						<input type="search" name="text" />
+					</form>
+					<form class="log-button" action="/log">
+						<button type="submit">Log</button>
+					</form>
 				</li>
 			</ul>
 		</nav>
@@ -120,5 +118,62 @@
 	.site-logo {
 		gap: 0.5rem;
 		font-weight: 700;
+	}
+
+	.search-button {
+		cursor: pointer;
+		& > input {
+			display: none;
+		}
+	}
+
+	.log-button {
+		display: block;
+		overflow: hidden;
+		text-align: center;
+		background-color: orange;
+		border-radius: 0.25rem;
+	}
+
+	.search-box {
+		position: relative;
+	}
+
+	.search-box > input {
+		position: absolute;
+		height: 1.75rem;
+		top: -14px;
+	}
+
+	.search-container {
+		width: 5rem;
+	}
+
+	/* Show Log button */
+	.search-container:not(:has(> label > input:checked)) {
+		width: 5rem;
+		transition: width 300ms;
+	}
+
+	.search-container:not(:has(> label > input:checked)) > .search-box > input {
+		width: 5rem;
+		top: -999px;
+		transition: width 300ms;
+	}
+
+	.search-container:not(:has(> label > input:checked)) > .log-button {
+		width: 5rem;
+		transition: width 1ms 300ms;
+	}
+
+	/* Show search bar */
+	.search-container:has(> label > input:checked) {
+		width: 10rem;
+		transition: width 300ms;
+	}
+
+	.search-container:has(> label > input:checked) > .search-box > input {
+		transition: width 300ms;
+		width: 10rem;
 	}
 </style>
