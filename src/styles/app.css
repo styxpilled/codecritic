@@ -16,11 +16,8 @@ body {
 	background-color: #181a1b;
 }
 
-.row {
-	display: inline-flex;
-	flex-direction: row;
-	align-items: center;
-	gap: 0.5rem;
+a.link {
+	color: #209ce4;
 }
 
 .hoverable {
