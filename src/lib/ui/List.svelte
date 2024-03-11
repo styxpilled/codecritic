@@ -1,7 +1,3 @@
-<script lang="ts">
-	import type { Package, ReviewedPackage } from '$lib/types';
-</script>
-
 <div class="list">
 	<div class="list-info">
 		<slot name="head" />
@@ -12,9 +8,10 @@
 </div>
 
 <style>
-	.list-content {
+	.list {
 		display: flex;
-		gap: 0.5rem;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	.list-info {
@@ -25,5 +22,14 @@
 		letter-spacing: 0.975px;
 		border-bottom: 1px solid slategrey;
 		margin-bottom: 0.5rem;
+		width: 70rem;
+	}
+
+	.list-content {
+		display: flex;
+		gap: 0.5rem;
+		flex-wrap: wrap;
+		justify-content: space-between;
+		width: 62rem;
 	}
 </style>

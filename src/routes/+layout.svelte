@@ -28,13 +28,10 @@
 </div>
 
 <style>
-	/* #root {
-		height: 100%;
-	} */
-
 	#main {
 		margin: 0 auto;
 		padding: 30px 0;
 		width: 1200px;
+		min-height: calc(100dvh - 4.5rem);
 	}
 </style>

@@ -1,11 +1,9 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { marked } from 'marked';
 	import RatingInput from '$ui/RatingInput.svelte';
 	import Review from '$ui/Review.svelte';
-	import List from '$ui/List.svelte';
 	export let data;
 
 	onMount(() => {
@@ -63,14 +61,12 @@
 			</div>
 			<textarea placeholder="Add a review..." name="review" />
 			TODO: versions
-			<!-- <label>
+			<label>
 				<span>Version</span>
 				<select name="version">
-					{#each Object.keys(data.package.versions).reverse() as g}
-						<option value={g}>{g}</option>
-					{/each}
+					<option value={data.package.latest}>{data.package.latest}</option>
 				</select>
-			</label> -->
+			</label>
 			<button type="submit">Save</button>
 		</form>
 		<div class="reviews">

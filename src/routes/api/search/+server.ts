@@ -12,9 +12,9 @@ export const GET: RequestHandler = async ({ url, fetch }) => {
 	);
 	if (res === undefined) throw serverError();
 
-	const packages: string[] = res.objects.map((pkg) => pkg.package.name);
+	const fetchedPackages: string[] = res.objects.map((pkg) => pkg.package.name);
 	const newPackages = (await sql`
-    SELECT input.* FROM UNNEST(${packages}::text[]) as input
+    SELECT input.* FROM UNNEST(${fetchedPackages}::text[]) as input
       LEFT JOIN packages
         ON packages.name = input
     WHERE packages.name IS NULL
@@ -23,6 +23,11 @@ export const GET: RequestHandler = async ({ url, fetch }) => {
 	for (const packageName of newPackages) {
 		await fetch(`/api/packages/${packageName.input}`, { method: 'POST' });
 	}
+
+	const packages = await sql`
+    SELECT * FROM packages
+      WHERE name = ANY(${fetchedPackages}::text[])
+  `;
 
 	return ok(packages);
 };

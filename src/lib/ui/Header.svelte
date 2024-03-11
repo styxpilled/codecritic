@@ -1,12 +1,12 @@
 <script lang="ts">
-	import type { Session, User } from 'lucia';
 	import { enhance } from '$app/forms';
 	import Avatar from './Avatar.svelte';
 	import Icon from '@iconify/svelte';
 	import { user } from '$lib/client/stores';
-	import { dev } from '$app/environment';
+	import { browser, dev } from '$app/environment';
+	import LiveSearchbar from './LiveSearchbar.svelte';
 
-	let search: string | null = null;
+	let showLiveSearch = false;
 </script>
 
 <header>
@@ -49,9 +49,21 @@
 					<form class="search-box" action="/search?/search">
 						<input type="search" name="text" />
 					</form>
-					<form class="log-button" action="/log">
-						<button type="submit">Log</button>
-					</form>
+					{#if browser}
+						<LiveSearchbar bind:show={showLiveSearch} />
+						<form
+							class="log-button"
+							on:submit|preventDefault={() => {
+								showLiveSearch = true;
+							}}
+						>
+							<button type="submit">Log</button>
+						</form>
+					{:else}
+						<form class="log-button" action="/log">
+							<button type="submit">Log</button>
+						</form>
+					{/if}
 				</li>
 			</ul>
 		</nav>

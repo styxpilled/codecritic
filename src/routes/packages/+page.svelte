@@ -10,11 +10,18 @@
 <div>
 	<h3>Popular packages this week:</h3>
 	<ul class="packages">
-		{#each data.packages as pkg}
-			<li>
-				<Card {pkg} />
-			</li>
-		{/each}
+		<List>
+			<svelte:fragment slot="head">
+				<span>TODO</span>
+				<span>TODO</span>
+			</svelte:fragment>
+			<svelte:fragment slot="body">
+				{#each data.packages as pkg}
+					<Card {pkg} />
+				{/each}
+			</svelte:fragment>
+		</List>
+		<li></li>
 	</ul>
 	<h3>Popular reviews this week:</h3>
 	<ul>
