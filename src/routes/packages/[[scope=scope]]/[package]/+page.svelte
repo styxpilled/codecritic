@@ -4,6 +4,7 @@
 	import { marked } from 'marked';
 	import RatingInput from '$ui/RatingInput.svelte';
 	import Review from '$ui/Review.svelte';
+	import Readme from '$ui/Readme.svelte';
 	export let data;
 
 	onMount(() => {
@@ -30,17 +31,32 @@
 			{/if}
 			<div class="readme">
 				{#if data.readme}
-					{#await marked.parse(data.readme, { gfm: true }) then readme}
-						{@html readme}
-					{/await}
+					<Readme readme={data.readme} />
 				{/if}
 			</div>
 		{/if}
 	</div>
 	<div class="package-sidebar">
 		<div>
-			<p>Install</p>
-			<p class="command">pnpm add {data.packageName}</p>
+			<p class="manager-selection row">
+				<label>
+					npm
+					<input class="hidden" type="radio" name="install" value="npm" checked />
+				</label>
+				<label>
+					yarn
+					<input class="hidden" type="radio" name="install" value="yarn" />
+				</label>
+				<label>
+					<input class="hidden" type="radio" name="install" value="pnpm" />
+					pnpm
+				</label>
+			</p>
+			<p class="command">
+				<span class="hidden npm">npm i {data.packageName}</span>
+				<span class="hidden yarn">yarn add {data.packageName}</span>
+				<span class="hidden pnpm">pnpm add {data.packageName}</span>
+			</p>
 		</div>
 		{#if data.package.repository}
 			<div>
@@ -54,7 +70,7 @@
 				<a href={data.package.homepage}>{data.package.homepage}</a>
 			</div>
 		{/if}
-		<form method="post" use:enhance>
+		<form class="submit-review" method="post" use:enhance>
 			<div>
 				<RatingInput />
 				<input type="datetime-local" />
@@ -97,6 +113,43 @@
 		grid-area: sidebar;
 	}
 
+	.manager-selection {
+		margin: 0.5rem 0.25rem;
+	}
+
+	.manager-selection > label {
+		background-color: #2b2a33;
+		padding: 0 0.5rem;
+		text-align: center;
+		border-radius: 0.25rem;
+		cursor: pointer;
+		user-select: none;
+	}
+
+	.manager-selection > label:has(input:checked) {
+		background-color: #383d45;
+	}
+
+	.manager-selection:has(> label > input[value='npm']:checked) ~ .command > .npm {
+		display: block;
+	}
+
+	.manager-selection:has(> label > input[value='yarn']:checked) ~ .command > .yarn {
+		display: block;
+	}
+
+	.manager-selection:has(> label > input[value='pnpm']:checked) ~ .command > .pnpm {
+		display: block;
+	}
+
+	.command {
+		background-color: #2b2a33;
+		border-radius: 0.25rem;
+		padding: 0.25rem 0.5rem;
+		margin: 0.5rem 0.25rem;
+		user-select: all;
+	}
+
 	form {
 		display: flex;
 		flex-direction: column;
@@ -114,6 +167,11 @@
 	textarea {
 		resize: none;
 		height: 6rem;
+		transition: height 300ms ease-in-out;
+	}
+
+	textarea:focus-visible {
+		height: 12rem;
 	}
 
 	.keywords {
@@ -128,18 +186,9 @@
 		border-radius: 0.25rem;
 	}
 
-	:global(.readme img) {
-		display: inline-block;
-		/* display: flex; */
+	.submit-review {
+		border-radius: 0.5rem;
+		margin: 0.5rem;
+		/* width: 50rem; */
 	}
-
-	:global(.readme > h1),
-	:global(.readme > h2),
-	:global(.readme > h3),
-	:global(.readme > p) {
-		margin: 1rem 0rem;
-	}
-	/* :global(.package p) {
-		display: flex;
-	} */
 </style>
