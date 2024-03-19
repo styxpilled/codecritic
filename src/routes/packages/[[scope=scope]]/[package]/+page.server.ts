@@ -42,7 +42,8 @@ export const load: PageServerLoad = async ({ fetch, params, cookies }) => {
 			}
 		);
 		if (readmeData !== undefined && readmeData.content) {
-			readme = atob(readmeData.content);
+			const buff = Buffer.from(readmeData.content, 'base64');
+			readme = buff.toString();
 		}
 	}
 
