@@ -1,11 +1,29 @@
 <script lang="ts">
-	import { marked } from 'marked';
+	import { Marked } from 'marked';
+	import { markedHighlight } from 'marked-highlight';
+	import { baseUrl } from 'marked-base-url';
+	import hljs from 'highlight.js';
+
+	import '$styles/github.css';
 
 	export let readme: string;
+	export let url: string;
+
+	const marked = new Marked(
+		markedHighlight({
+			langPrefix: 'hljs language-',
+			highlight(code, lang, info) {
+				const language = hljs.getLanguage(lang) ? lang : 'plaintext';
+				return hljs.highlight(code, { language }).value;
+			}
+		}),
+		baseUrl(url + '/blob/main/'),
+		{ gfm: true }
+	);
 </script>
 
 {#if readme}
-	{#await marked.parse(readme, { gfm: true }) then r}
+	{#await marked.parse(readme) then r}
 		{@html r}
 	{/await}
 {/if}
@@ -44,15 +62,16 @@
 	:global(.readme code[class^='language-']) {
 		display: block;
 		padding: 0.25rem 0.5rem 0;
-		background-color: #2b2a33;
+		background-color: #272c35;
 		border-radius: 0.25rem;
 		overflow: scroll;
 	}
 
 	:global(.readme code:not([class^='language-'])) {
 		padding: 0.2rem 0.4rem;
-		background-color: #2b2a33;
+		background-color: #272c35;
 		border-radius: 0.25rem;
+		color: #abb2bf;
 	}
 
 	:global(.readme ul) {
@@ -62,5 +81,15 @@
 		flex-direction: column;
 		gap: 0.5rem;
 		margin-top: 0.5rem;
+		margin-bottom: 0.5rem;
+	}
+
+	:global(.readme .language-bash) {
+		margin: 0.25rem 0;
+	}
+
+	:global(.readme hr) {
+		height: 0.25rem;
+		margin: 1.5rem 0;
 	}
 </style>

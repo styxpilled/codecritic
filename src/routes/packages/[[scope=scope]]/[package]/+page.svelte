@@ -31,7 +31,7 @@
 			{/if}
 			<div class="readme">
 				{#if data.readme}
-					<Readme readme={data.readme} />
+					<Readme readme={data.readme} url={data.package.repository || ''} />
 				{/if}
 			</div>
 		{/if}
