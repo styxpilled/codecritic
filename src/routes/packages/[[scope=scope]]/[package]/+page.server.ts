@@ -1,5 +1,6 @@
 import type { Actions, PageServerLoad } from './$types';
 import type { Package, Review } from '$lib/types';
+import { Buffer } from 'node:buffer';
 import { fetchOr } from '$lib';
 
 export const actions: Actions = {
