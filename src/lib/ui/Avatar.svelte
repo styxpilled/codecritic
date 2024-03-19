@@ -18,11 +18,13 @@
 		height: 1.75rem;
 		width: 1.75rem;
 		background-color: whitesmoke;
-		border-radius: 1.25rem;
+		border-radius: 999px;
+		outline: #383d45bb solid 2px;
 	}
 
 	img {
-		border-radius: 1.25rem;
+		border-radius: 999px;
+		border: 1px solid #383d45bb;
 	}
 
 	.sm {

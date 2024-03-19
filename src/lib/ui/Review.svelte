@@ -12,17 +12,27 @@
 
 <div class="review">
 	<div class="review-head">
-		<a href="/user/{review.author.username || ''}">
+		<a class="avatar" href="/user/{review.author.username || ''}">
 			<Avatar size="lg" username={review.author?.username} />
 		</a>
-		<div class="review-info">
-			{#if showPackageName}
-				<a href="/packages/{review.package}">
-					<h2>{review.package}</h2>
-				</a>
-			{/if}
+		<div class="review-info" class:center={true}>
+			<div class="row">
+				{#if showPackageName}
+					<a href="/packages/{review.package}">
+						<h2>{review.package}</h2>
+					</a>
+				{:else}
+					<p>
+						<a class="link" href="/user/{review.author.username || ''}">
+							{review.author.nickname || review.author.username || 'Loading...'}
+						</a>
+						rated
+					</p>
+				{/if}
+				<Rating rating={review.rating} />
+			</div>
 			<p>
-				{#if showUserName}
+				{#if showUserName && showPackageName}
 					<a class="link" href="/user/{review.author.username || ''}">
 						{review.author.nickname || review.author.username || 'Loading...'}
 					</a>
@@ -37,7 +47,6 @@
 		</div>
 	</div>
 	<div class="review-body">
-		<Rating rating={review.rating} />
 		<p class="review-content">{review.review}</p>
 		<div class="row">
 			{#if $user}
@@ -88,9 +97,15 @@
 	}
 
 	.review-head {
+		margin-left: 0.25rem;
 		display: flex;
-		align-items: flex-end;
-		gap: 1rem;
+		align-items: center;
+		gap: 0.5rem;
+	}
+
+	.avatar {
+		height: 2.5rem;
+		justify-self: center;
 	}
 
 	.review-info {
@@ -100,7 +115,7 @@
 	}
 
 	.review-body {
-		margin-left: 3.5rem;
+		margin-left: 3.25rem;
 	}
 
 	.review-content {

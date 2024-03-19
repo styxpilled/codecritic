@@ -1,12 +1,13 @@
 <script lang="ts">
-	import { isReviewPackage, type Package, type ReviewedPackage } from '$lib/types';
+	import { isReviewPackage, type Package } from '$lib/types';
 	import Avatar from './Avatar.svelte';
 	import Rating from './Rating.svelte';
 
 	export let pkg: Package;
+	export let wide = false;
 </script>
 
-<div class="package">
+<div class="package" class:wide>
 	<div class="package-info">
 		<h3><a href="/packages/{pkg.name}">{pkg.name}</a></h3>
 		<div class="details">
@@ -24,7 +25,9 @@
 		<p>
 			<!-- <Avatar username={pkg.author} size="sm" />
 			{pkg.author} -->
-			<span>Latest {pkg.latest}</span>
+			{#if pkg.latest}
+				<span>Latest {pkg.latest}</span>
+			{/if}
 			{#if pkg.license}
 				<span class="hoverable">License: <span class="hoverable-content">{pkg.license}</span></span>
 			{/if}
@@ -47,7 +50,12 @@
 		justify-content: space-between;
 		width: 20rem;
 		background-color: #2e3235;
+		padding: 0.25rem;
 		border-radius: 0.25rem;
+
+		&.wide {
+			width: 35rem;
+		}
 
 		& > .package-info {
 			padding: 0 0.25rem;
