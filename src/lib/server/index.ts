@@ -1,7 +1,7 @@
 import { error, redirect as kitRedirect } from '@sveltejs/kit';
 
 export const ok = (body?: unknown, cache?: 'short' | 'long') => {
-	return new Response(body ? JSON.stringify(body) : null, {
+	return new Response(JSON.stringify(body ?? {}), {
 		status: 200,
 		headers: {
 			'Cache-Control': cache

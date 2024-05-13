@@ -3,6 +3,8 @@ export type User = {
 	githubId: number;
 	username: string;
 	nickname: string;
+	following?: string;
+	followers?: string;
 };
 
 export type DBUser = {
