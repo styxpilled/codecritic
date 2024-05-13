@@ -27,9 +27,16 @@ a.link {
 	gap: 0.5rem;
 }
 
+.col {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
 .hoverable {
 	position: relative;
 	z-index: 3;
+	cursor: pointer;
 	&:hover > .hoverable-content {
 		display: block;
 	}

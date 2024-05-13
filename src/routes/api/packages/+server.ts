@@ -3,7 +3,7 @@ import { ok } from '$lib/server';
 import { sql } from '$lib/server/database';
 
 export const GET = async ({ url }) => {
-	const limit = Math.min(parseIntSafe(url.searchParams.get('limit'), 10), 25);
+	const limit = Math.min(parseIntSafe(url.searchParams.get('limit'), 9), 25);
 	const offset = parseIntSafe(url.searchParams.get('offset'), 0);
 
 	const packages = await sql`

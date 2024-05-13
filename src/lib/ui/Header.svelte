@@ -22,23 +22,21 @@
 		</h3>
 		<nav>
 			<ul>
-				<li class="user-dropdown">
-					{#if $user}
+				{#if $user}
+					<li class="user-dropdown">
 						<a class="user-link" href="/user/{$user.username}">
 							<Avatar username={$user.username} />
 							<p>{$user.username}</p>
 						</a>
-					{:else}
-						<a href="/login/github">Sign in with GitHub</a>
-					{/if}
-					<div class="user-dropdown-content">
-						{#if $user}
+						<div class="user-dropdown-content">
 							<form method="post" action="/logout" use:enhance>
 								<button>Sign out</button>
 							</form>
-						{/if}
-					</div>
-				</li>
+						</div>
+					</li>
+				{:else}
+					<li><a href="/login/github">Sign in with GitHub</a></li>
+				{/if}
 				<li><a href="/packages">packages</a></li>
 				<li>members</li>
 				<li class="search-container">
@@ -130,6 +128,7 @@
 	.site-logo {
 		gap: 0.5rem;
 		font-weight: 700;
+		user-select: none;
 	}
 
 	.search-button {

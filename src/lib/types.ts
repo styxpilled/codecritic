@@ -57,6 +57,24 @@ export type NPMPackage = Expand<
 	}
 >;
 
+export type NPMSearchPackage = {
+	name: string;
+	scope?: string;
+	version: string;
+	description?: string;
+	keywords?: string[];
+	date: string;
+	links: {
+		npm: string;
+		homepage?: string;
+		repository?: string;
+		bugs?: string;
+	};
+	author?: { name: string };
+	publisher?: { username: string; email: string };
+	maintainers?: { username: string; email: string }[];
+};
+
 type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
 export function isReviewPackage(pkg: Package | ReviewedPackage): pkg is ReviewedPackage {
@@ -65,47 +83,3 @@ export function isReviewPackage(pkg: Package | ReviewedPackage): pkg is Reviewed
 }
 
 export type ReviewedPackage = Package & { review: Review };
-
-export const examplePackage: Package = {
-	name: 'svelte',
-	description: 'Cybernetically enhanced web apps',
-	tags: ['UI', 'framework', 'templates', 'templating'],
-	version: '4.2.12',
-	author: 'svelte-admin'
-};
-
-export const examples: ReviewedPackage[] = [
-	{
-		name: 'svelte',
-		description: 'Cybernetically enhanced web apps',
-		tags: ['UI', 'framework', 'templates', 'templating'],
-		version: '4.2.12',
-		author: 'svelte-admin',
-		review: {
-			author: 'styxpilled',
-			rating: 9
-		}
-	},
-	{
-		name: 'lucia',
-		description: 'A simple and flexible authentication library',
-		tags: ['lucia', 'lucia-auth', 'authentication', 'auth'],
-		version: '3.0.1',
-		author: 'pilcrowonpaper',
-		review: {
-			author: 'styxpilled',
-			rating: 8
-		}
-	},
-	{
-		name: 'react',
-		description: 'React is a JavaScript library for building user interfaces.',
-		tags: ['react'],
-		version: '18.0.2',
-		author: 'gnoff',
-		review: {
-			author: 'styxpilled',
-			rating: 2
-		}
-	}
-];

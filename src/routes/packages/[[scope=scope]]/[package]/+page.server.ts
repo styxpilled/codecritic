@@ -7,7 +7,7 @@ export const actions: Actions = {
 	default: async ({ request, fetch, params }) => {
 		const packageName = params.scope ? `${params.scope}/${params.package}` : params.package;
 		const data = await request.formData();
-		await fetch(`/api/packages/${packageName}/reviews`, {
+		await fetch(`/api/package/${packageName}/reviews`, {
 			method: 'POST',
 			body: JSON.stringify({
 				review: data.get('review'),
@@ -21,7 +21,7 @@ export const actions: Actions = {
 export const load: PageServerLoad = async ({ fetch, params, cookies }) => {
 	const packageName = params.scope ? `${params.scope}/${params.package}` : params.package;
 
-	const pkg = await fetchOr<Package>(`/api/packages/${packageName}`, undefined, fetch);
+	const pkg = await fetchOr<Package>(`/api/package/${packageName}`, undefined, fetch);
 	let readme = null;
 
 	if (pkg?.repository) {
@@ -50,6 +50,6 @@ export const load: PageServerLoad = async ({ fetch, params, cookies }) => {
 
 	// TODO: age & cache-control headers
 
-	const reviews = await fetchOr<Review[]>(`/api/packages/${packageName}/reviews`, [], fetch);
+	const reviews = await fetchOr<Review[]>(`/api/package/${packageName}/reviews`, [], fetch);
 	return { packageName, package: pkg, readme, reviews: reviews };
 };

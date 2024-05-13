@@ -20,7 +20,7 @@ export const addPackage = async (npmPackage: NPMPackage, repository?: string) =>
     VALUES
       (
       ${npmPackage.name},
-      ${npmPackage.description},
+      ${npmPackage?.description || ''},
       ${npmPackage?.keywords},
       ${npmPackage['dist-tags']?.latest},
       ${npmPackage['dist-tags']?.next},

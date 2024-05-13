@@ -12,7 +12,7 @@ export const GET: RequestHandler = async ({ fetch, params }) => {
   `;
 
 	if (!pkg) {
-		const newPackage = await fetchOr(`/api/packages/${packageName}`, undefined, fetch, {
+		const newPackage = await fetchOr(`/api/package/${packageName}`, undefined, fetch, {
 			method: 'POST'
 		});
 		if (newPackage === undefined) throw notFound();

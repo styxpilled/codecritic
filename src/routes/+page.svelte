@@ -15,8 +15,8 @@
 	TODO: friends, friend activity
 	<List>
 		<svelte:fragment slot="head">
-			<span>New from friends</span>
-			<span>All activity</span>
+			<span>popular</span>
+			<span>more</span>
 		</svelte:fragment>
 		<svelte:fragment slot="body">
 			{#each data.packages as pkg}

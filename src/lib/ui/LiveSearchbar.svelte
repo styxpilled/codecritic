@@ -1,19 +1,25 @@
 <script lang="ts">
 	import { fetchOr } from '$lib';
-	import type { Package } from '$lib/types';
 	export let show = false;
 	let backdrop: HTMLDivElement;
 	let searchString = '';
-	let searchResults: Package[] = [];
-	let searching = false;
+	let searchResults: string[] = [];
+	let previousQuery = searchString;
+	let index = 0;
 
 	const search = async () => {
-		searching = true;
-		searchResults = await fetchOr(
-			`/api/search?text=${encodeURIComponent(searchString)}`,
-			searchResults
+		if (searchString === previousQuery) return;
+		const query = searchString;
+		const innerIndex = index + 1;
+		fetchOr(`/api/search?text=${encodeURIComponent(searchString)}`, searchResults).then(
+			(result) => {
+				if (innerIndex > index) {
+					index = innerIndex;
+					searchResults = result;
+					previousQuery = query;
+				}
+			}
 		);
-		searching = false;
 	};
 </script>
 
@@ -30,15 +36,14 @@
 		<form action="/">
 			<input type="search" bind:value={searchString} on:keydown={search} />
 		</form>
-		{#if searching}
-			Searching...
-		{/if}
 		{#if searchResults.length > 0}
-			<ul>
-				{#each searchResults as pkg}
-					<li><a href="/packages/{pkg.name}">{pkg.name}</a></li>
-				{/each}
-			</ul>
+			<div class="results">
+				<ul>
+					{#each searchResults as pkg}
+						<li><a href="/packages/{pkg}">{pkg}</a></li>
+					{/each}
+				</ul>
+			</div>
 		{/if}
 	</div>
 </div>
@@ -74,8 +79,9 @@
 		padding: 1rem;
 		margin-left: auto;
 		margin-right: auto;
-		background-color: orange;
+		background-color: var(--color-bg-bright);
 		position: relative;
+		border-radius: 0.5rem;
 	}
 
 	input[type='search'] {
@@ -83,16 +89,34 @@
 		width: 32rem;
 	}
 
+	.results {
+		position: absolute;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		width: 31rem;
+		top: 5.5rem;
+		background-color: var(--color-bg-bright);
+		border-radius: 0.5rem;
+	}
+
 	ul {
 		display: flex;
 		word-break: keep-all;
-		background-color: red;
 		flex-direction: column;
 		padding: 0 0.5rem;
 		margin: 0;
-		top: 4rem;
-		width: 31rem;
-		position: absolute;
 		overflow: scroll;
+	}
+
+	li > a {
+		display: block;
+		width: 100%;
+		padding: 0 0.5rem;
+		border-radius: 0.5rem;
+	}
+
+	li > a:hover {
+		background-color: var(--color-bg);
 	}
 </style>
