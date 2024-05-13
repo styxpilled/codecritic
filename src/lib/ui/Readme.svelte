@@ -56,7 +56,7 @@
 	:global(.readme a) {
 		text-decoration: underline;
 		text-underline-offset: 0.2rem;
-		color: #2f81f7;
+		color: var(--color-blue);
 	}
 
 	:global(.readme code[class^='language-']) {

@@ -1,18 +1,83 @@
 :root {
-	--color-bg: #282c34;
-	--color-bg-bright: #383d45;
+	--color-bg: #21252b;
+	--color-bg-bright: #282c34;
+
+	--color-text: #dcdfe4;
+
+	--color-red: #e06c75;
+	--color-yellow: #e5c07b;
+	--color-orange: #d19a66;
+	--color-green: #98c379;
+	--color-cyan: #56b6c2;
+	--color-blue: #61afef;
+	--color-purple: #c678dd;
 }
 
-.accent {
-	background-color: #00e054;
+*::selection {
+	background-color: #404859;
 }
 
-.accent-text {
-	color: #00e054;
+.bg-red {
+	color: var(--color-bg);
+	background-color: var(--color-red);
 }
 
-.accent-alt {
-	color: #f2b138;
+.bg-yellow {
+	color: var(--color-bg);
+	background-color: var(--color-yellow);
+}
+
+.bg-orange {
+	color: var(--color-bg);
+	background-color: var(--color-orange);
+}
+
+.bg-green {
+	color: var(--color-bg);
+	background-color: var(--color-green);
+}
+
+.bg-cyan {
+	color: var(--color-bg);
+	background-color: var(--color-cyan);
+}
+
+.bg-blue {
+	color: var(--color-bg);
+	background-color: var(--color-blue);
+}
+
+.bg-purple {
+	color: var(--color-bg);
+	background-color: var(--color-purple);
+}
+
+.fg-red {
+	color: var(--color-red);
+}
+
+.fg-orange {
+	color: var(--color-orange);
+}
+
+.fg-yellow {
+	color: var(--color-yellow);
+}
+
+.fg-green {
+	color: var(--color-green);
+}
+
+.fg-cyan {
+	color: var(--color-cyan);
+}
+
+.fg-blue {
+	color: var(--color-blue);
+}
+
+.fg-purple {
+	color: var(--color-purple);
 }
 
 /* "background": "#282C34",

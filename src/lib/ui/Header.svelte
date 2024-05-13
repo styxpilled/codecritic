@@ -25,7 +25,7 @@
 				{#if $user}
 					<li class="user-dropdown">
 						<a class="user-link" href="/user/{$user.username}">
-							<Avatar username={$user.username} />
+							<Avatar size="sm" username={$user.username} />
 							<p>{$user.username}</p>
 						</a>
 						<div class="user-dropdown-content">
@@ -50,7 +50,7 @@
 					{#if browser}
 						<LiveSearchbar bind:show={showLiveSearch} />
 						<form
-							class="log-button"
+							class="log-button bg-green"
 							on:submit|preventDefault={() => {
 								showLiveSearch = true;
 							}}
@@ -58,7 +58,7 @@
 							<button type="submit">Log</button>
 						</form>
 					{:else}
-						<form class="log-button" action="/log">
+						<form class="log-button bg-green" action="/log">
 							<button type="submit">Log</button>
 						</form>
 					{/if}
@@ -142,7 +142,6 @@
 		display: block;
 		overflow: hidden;
 		text-align: center;
-		background-color: orange;
 		border-radius: 0.25rem;
 	}
 

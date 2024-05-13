@@ -13,12 +13,12 @@
 <div class="review">
 	<div class="review-head">
 		<a class="avatar" href="/user/{review.author.username || ''}">
-			<Avatar size="lg" username={review.author?.username} />
+			<Avatar size="md" username={review.author?.username} />
 		</a>
 		<div class="review-info" class:center={true}>
 			<div class="row">
 				{#if showPackageName}
-					<a href="/packages/{review.package}">
+					<a class="hov-link hov-line" href="/packages/{review.package}">
 						<h2>{review.package}</h2>
 					</a>
 				{:else}
@@ -61,7 +61,7 @@
 							method="post"
 							action="/packages/{review.package}/reviews/{review.id}?/unlike"
 						>
-							<button><span class="accent-alt">❤︎</span> Liked</button>
+							<button><span class="fg-red">❤︎</span> Liked</button>
 						</form>
 					{:else}
 						<form
@@ -91,7 +91,7 @@
 	.review {
 		padding: 0.5rem;
 		margin: 0.5rem;
-		background-color: #383d45;
+		background-color: var(--color-bg-bright);
 		border-radius: 0.5rem;
 		max-width: 50rem;
 	}
