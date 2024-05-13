@@ -5,8 +5,8 @@
 	--color-text: #dcdfe4;
 
 	--color-red: #e06c75;
-	--color-yellow: #e5c07b;
 	--color-orange: #d19a66;
+	--color-yellow: #e5c07b;
 	--color-green: #98c379;
 	--color-cyan: #56b6c2;
 	--color-blue: #61afef;
@@ -22,14 +22,14 @@
 	background-color: var(--color-red);
 }
 
-.bg-yellow {
-	color: var(--color-bg);
-	background-color: var(--color-yellow);
-}
-
 .bg-orange {
 	color: var(--color-bg);
 	background-color: var(--color-orange);
+}
+
+.bg-yellow {
+	color: var(--color-bg);
+	background-color: var(--color-yellow);
 }
 
 .bg-green {

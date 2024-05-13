@@ -50,12 +50,11 @@
 					{#if browser}
 						<LiveSearchbar bind:show={showLiveSearch} />
 						<form
-							class="log-button bg-green"
 							on:submit|preventDefault={() => {
 								showLiveSearch = true;
 							}}
 						>
-							<button type="submit">Log</button>
+							<button class="log-button bg-green" type="submit">Log</button>
 						</form>
 					{:else}
 						<form class="log-button bg-green" action="/log">
@@ -142,7 +141,50 @@
 		display: block;
 		overflow: hidden;
 		text-align: center;
+		padding: 0 0.5rem;
 		border-radius: 0.25rem;
+	}
+
+	/* Thank you firefox */
+	/* "baseline" yeah right except that one thing */
+	@supports (color: hsl(from white h s l)) {
+		.log-button:hover {
+			animation: shift 10s linear infinite forwards;
+		}
+
+		@keyframes shift {
+			0% {
+				background-color: lab(from var(--color-green) l a b);
+			}
+
+			8% {
+				background-color: lab(from var(--color-orange) l a b);
+			}
+
+			24% {
+				background-color: lab(from var(--color-yellow) l a b);
+			}
+
+			40% {
+				background-color: lab(from var(--color-red) l a b);
+			}
+
+			56% {
+				background-color: lab(from var(--color-purple) l a b);
+			}
+
+			72% {
+				background-color: lab(from var(--color-blue) l a b);
+			}
+
+			88% {
+				background-color: lab(from var(--color-cyan) l a b);
+			}
+
+			100% {
+				background-color: lab(from var(--color-green) l a b);
+			}
+		}
 	}
 
 	.search-box {
