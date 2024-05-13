@@ -7,51 +7,48 @@
 	export let data;
 </script>
 
-<div>
-	<div class="row user-header">
-		<div class="row">
-			<Avatar size="lg" username={data.user.username} />
-			<h1>
-				{data.user.nickname} ({data.user.username})
-			</h1>
-			{#if data.user.id !== $user?.id}
-				{#if data.user.user_follows}
-					<form use:enhance action="/api/users/id/{data.user.id}/followers" method="delete">
-						<button class="hover-interact" type="submit">
-							<span class="btn hover-hide bg-green">Following</span>
-							<span class="btn hover-show bg-yellow">Unfollow</span>
-						</button>
-					</form>
-				{:else}
-					<form use:enhance action="/api/users/id/{data.user.id}/followers" method="post">
-						<button type="submit">Follow</button>
-					</form>
-				{/if}
+<div class="row user-header">
+	<div class="row">
+		<Avatar size="lg" username={data.user.username} />
+		<h1>
+			{data.user.nickname} ({data.user.username})
+		</h1>
+		{#if data.user.id !== $user?.id}
+			{#if data.user.user_follows}
+				<form use:enhance action="/api/users/id/{data.user.id}/followers" method="delete">
+					<button class="hover-interact" type="submit">
+						<span class="btn hover-hide bg-green">Following</span>
+						<span class="btn hover-show bg-yellow">Unfollow</span>
+					</button>
+				</form>
+			{:else}
+				<form use:enhance action="/api/users/id/{data.user.id}/followers" method="post">
+					<button type="submit">Follow</button>
+				</form>
 			{/if}
-		</div>
-		<div class="row">
-			<a href="/user/{data.user.username}/following" class="hov-link">
-				<div class="vertical">
-					<h4 class="mono">{data.user.following}</h4>
-					<span class="caption">Following</span>
-				</div>
-			</a>
-			<a href="/user/{data.user.username}/followers" class="hov-link">
-				<div class="vertical">
-					<h4 class="mono">{data.user.followers}</h4>
-					<span class="caption">Followers</span>
-				</div>
-			</a>
-			<a href="/user/{data.user.username}/reviews" class="hov-link">
-				<div class="vertical">
-					<h4 class="mono">{data.user.reviews}</h4>
-					<span class="caption">Reviews</span>
-				</div>
-			</a>
-		</div>
+		{/if}
+	</div>
+	<div class="row">
+		<a href="/user/{data.user.username}/following" class="hov-link">
+			<div class="vertical">
+				<h4 class="mono">{data.user.following}</h4>
+				<span class="caption">Following</span>
+			</div>
+		</a>
+		<a href="/user/{data.user.username}/followers" class="hov-link">
+			<div class="vertical">
+				<h4 class="mono">{data.user.followers}</h4>
+				<span class="caption">Followers</span>
+			</div>
+		</a>
+		<a href="/user/{data.user.username}/reviews" class="hov-link">
+			<div class="vertical">
+				<h4 class="mono">{data.user.reviews}</h4>
+				<span class="caption">Reviews</span>
+			</div>
+		</a>
 	</div>
 </div>
-
 <ul>
 	{#each data.reviews as review}
 		<li>
@@ -63,6 +60,7 @@
 <style>
 	.user-header.row {
 		justify-content: space-between;
+		padding: 1rem 0;
 	}
 
 	.vertical {

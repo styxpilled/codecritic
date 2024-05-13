@@ -12,90 +12,98 @@
 	});
 </script>
 
-<div class="package">
-	<div class="package-body">
-		{#if data.package}
-			<div class="package-head">
-				<div>
-					<h2>{data.packageName}</h2>
+<div class="package-container">
+	<div class="package">
+		<div class="package-body">
+			{#if data.package}
+				<div class="package-head">
+					<div>
+						<h2>{data.packageName}</h2>
+					</div>
+					{#if data.package.author}
+						<p class="author">By {data.package.author}</p>
+					{/if}
+					<p class="description">{data.package.description}</p>
+					{#if data.package.keywords}
+						<ul class="keywords">
+							{#each data.package.keywords as keyword}
+								<li>{keyword}</li>
+							{/each}
+						</ul>
+					{/if}
 				</div>
-				{#if data.package.author}
-					<p class="author">By {data.package.author}</p>
-				{/if}
-				<p class="description">{data.package.description}</p>
-				{#if data.package.keywords}
-					<ul class="keywords">
-						{#each data.package.keywords as keyword}
-							<li>{keyword}</li>
-						{/each}
-					</ul>
-				{/if}
-			</div>
-			<div class="readme">
-				{#if data.readme}
-					<Readme readme={data.readme} url={data.package.repository || ''} />
-				{/if}
-			</div>
-		{/if}
-	</div>
-	<div class="package-sidebar">
-		<div class="manager">
-			<p class="manager-selection row">
-				<label>
-					npm
-					<input class="hidden" type="radio" name="install" value="npm" checked />
-				</label>
-				<label>
-					yarn
-					<input class="hidden" type="radio" name="install" value="yarn" />
-				</label>
-				<label>
-					<input class="hidden" type="radio" name="install" value="pnpm" />
-					pnpm
-				</label>
-			</p>
-			<p class="command">
-				<span class="hidden npm">npm i {data.packageName}</span>
-				<span class="hidden yarn">yarn add {data.packageName}</span>
-				<span class="hidden pnpm">pnpm add {data.packageName}</span>
-			</p>
+				<div class="readme">
+					{#if data.readme}
+						<Readme readme={data.readme} url={data.package.repository || ''} />
+					{/if}
+				</div>
+			{/if}
 		</div>
-		{#if data.package.repository}
-			<div class="sidebar-link">
-				<p class="sidebar-link-label">Repository</p>
-				<p class="command"><a href={data.package.repository}>{data.package.repository}</a></p>
+		<div class="package-sidebar">
+			<div class="manager">
+				<p class="manager-selection row">
+					<label>
+						npm
+						<input class="hidden" type="radio" name="install" value="npm" checked />
+					</label>
+					<label>
+						yarn
+						<input class="hidden" type="radio" name="install" value="yarn" />
+					</label>
+					<label>
+						<input class="hidden" type="radio" name="install" value="pnpm" />
+						pnpm
+					</label>
+				</p>
+				<p class="command">
+					<span class="hidden npm">npm i {data.packageName}</span>
+					<span class="hidden yarn">yarn add {data.packageName}</span>
+					<span class="hidden pnpm">pnpm add {data.packageName}</span>
+				</p>
 			</div>
-		{/if}
-		{#if data.package.homepage}
-			<div class="sidebar-link">
-				<p class="sidebar-link-label">Homepage</p>
-				<p class="command"><a href={data.package.homepage}>{data.package.homepage}</a></p>
+			{#if data.package.repository}
+				<div class="sidebar-link">
+					<p class="sidebar-link-label">Repository</p>
+					<p class="command"><a href={data.package.repository}>{data.package.repository}</a></p>
+				</div>
+			{/if}
+			{#if data.package.homepage}
+				<div class="sidebar-link">
+					<p class="sidebar-link-label">Homepage</p>
+					<p class="command"><a href={data.package.homepage}>{data.package.homepage}</a></p>
+				</div>
+			{/if}
+			<form class="submit-review" method="post" use:enhance>
+				<div>
+					<RatingInput />
+					<input type="datetime-local" />
+				</div>
+				<textarea placeholder="Add a review..." name="review" />
+				TODO: versions
+				<label>
+					<span>Version</span>
+					<select name="version">
+						<option value={data.package.latest}>{data.package.latest}</option>
+					</select>
+				</label>
+				<button type="submit">Save</button>
+			</form>
+			<div class="reviews">
+				{#each data.reviews as review}
+					<Review {review} />
+				{/each}
 			</div>
-		{/if}
-		<form class="submit-review" method="post" use:enhance>
-			<div>
-				<RatingInput />
-				<input type="datetime-local" />
-			</div>
-			<textarea placeholder="Add a review..." name="review" />
-			TODO: versions
-			<label>
-				<span>Version</span>
-				<select name="version">
-					<option value={data.package.latest}>{data.package.latest}</option>
-				</select>
-			</label>
-			<button type="submit">Save</button>
-		</form>
-		<div class="reviews">
-			{#each data.reviews as review}
-				<Review {review} />
-			{/each}
 		</div>
 	</div>
 </div>
 
 <style>
+	.package-container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
 	.package {
 		display: grid;
 		grid-template-columns: 3fr 2fr;
