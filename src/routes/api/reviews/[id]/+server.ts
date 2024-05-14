@@ -1,5 +1,6 @@
-import { ok } from '$lib/server';
+import { notFound, ok, serverError, unauthorized } from '$lib/server';
 import { sql } from '$lib/server/database';
+import type { Review } from '$lib/types';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ locals, params }) => {
@@ -21,4 +22,30 @@ export const GET: RequestHandler = async ({ locals, params }) => {
   `;
 
 	return ok(review);
+};
+
+export const PUT: RequestHandler = async ({ request, locals, params }) => {
+	if (!locals.user) throw unauthorized();
+	try {
+		const [currentReview] = (await sql`
+      SELECT * FROM reviews
+        WHERE id = ${params.id};
+    `) as [(Review & { author: string })?];
+
+		if (!currentReview) throw notFound();
+		if (currentReview.author !== locals.user.id) throw unauthorized();
+
+		const editedReview: Review = await request.json();
+
+		const [review] = (await sql`
+      UPDATE reviews
+        SET review = ${editedReview.review},
+            rating = ${editedReview.rating}
+        WHERE id = ${params.id}
+      RETURNING *
+    `) as [Review];
+		return ok(review);
+	} catch (e) {
+		throw serverError();
+	}
 };
