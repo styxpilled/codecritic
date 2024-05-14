@@ -27,7 +27,7 @@
 					{#if data.package.keywords}
 						<ul class="keywords">
 							{#each data.package.keywords as keyword}
-								<li>{keyword}</li>
+								<li class="bg-light fg-dark">{keyword}</li>
 							{/each}
 						</ul>
 					{/if}
@@ -73,20 +73,22 @@
 					<p class="command"><a href={data.package.homepage}>{data.package.homepage}</a></p>
 				</div>
 			{/if}
-			<form class="submit-review" method="post" use:enhance>
-				<div>
+			<form class="submit-review bg-light" method="post" use:enhance>
+				<div class="row">
 					<RatingInput />
 					<input type="datetime-local" />
 				</div>
 				<textarea placeholder="Add a review..." name="review" />
 				TODO: versions
-				<label>
-					<span>Version</span>
-					<select name="version">
-						<option value={data.package.latest}>{data.package.latest}</option>
-					</select>
-				</label>
-				<button type="submit">Save</button>
+				<div class="row">
+					<label>
+						<span>Version</span>
+						<select name="version">
+							<option value={data.package.latest}>{data.package.latest}</option>
+						</select>
+					</label>
+					<button class="btn bg-green" type="submit">Save</button>
+				</div>
 			</form>
 			<div class="reviews">
 				{#each data.reviews as review}
@@ -147,6 +149,7 @@
 	}
 
 	.manager-selection > label:has(input:checked) {
+		/* TODO */
 		background-color: #383d45;
 	}
 
@@ -182,7 +185,7 @@
 	form {
 		display: flex;
 		flex-direction: column;
-		background-color: #383d45;
+		background-color: var(--color-bg-bright);
 		padding: 1rem;
 		gap: 1rem;
 	}
@@ -210,7 +213,6 @@
 	}
 
 	.keywords > li {
-		background-color: #383d45;
 		padding: 0 0.5rem;
 		border-radius: 0.25rem;
 	}

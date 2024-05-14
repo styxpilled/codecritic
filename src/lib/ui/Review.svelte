@@ -144,7 +144,9 @@
 	}
 
 	.review-body {
-		margin-left: 3.25rem;
+		padding: 0.5rem;
+		color: var(--color-text-darker);
+		/* margin-left: 3.25rem; */
 	}
 
 	.review-content {

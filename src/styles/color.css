@@ -3,6 +3,7 @@
 	--color-bg-bright: #282c34;
 
 	--color-text: #dcdfe4;
+	--color-text-darker: hsl(220, 13%, 80%);
 	--color-text-dark: hsl(220, 13%, 55%);
 
 	--color-red: #e06c75;
@@ -24,6 +25,10 @@
 
 .fg-dark {
 	color: var(--color-text-dark);
+}
+
+.bg-light {
+	background-color: var(--color-bg-bright);
 }
 
 .bg-red {

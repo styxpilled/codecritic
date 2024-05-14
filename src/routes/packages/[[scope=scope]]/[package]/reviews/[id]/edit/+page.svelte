@@ -39,7 +39,7 @@
 	form {
 		display: flex;
 		flex-direction: column;
-		background-color: #383d45;
+		background-color: var(--color-bg-bright);
 		padding: 1rem;
 		margin: 2rem;
 		gap: 1rem;

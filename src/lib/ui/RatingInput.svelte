@@ -39,7 +39,7 @@
 	}
 
 	.star {
-		fill: white;
+		fill: var(--color-text-dark);
 		cursor: pointer;
 		& input {
 			display: none;

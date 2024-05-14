@@ -113,7 +113,7 @@
 		display: none;
 		position: absolute;
 		top: 3rem;
-		background-color: #383d45;
+		background-color: var(--color-bg-bright);
 		padding: 0.5rem;
 		width: 9rem;
 	}

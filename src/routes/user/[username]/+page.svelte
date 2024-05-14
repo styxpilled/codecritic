@@ -21,6 +21,8 @@
 						<span class="btn hover-show bg-yellow">Unfollow</span>
 					</button>
 				</form>
+			{:else if $user === null}
+				<a class="btn fg-dark" href="/login/github">Sign in to follow</a>
 			{:else}
 				<form use:enhance action="/api/users/id/{data.user.id}/followers" method="post">
 					<button type="submit">Follow</button>

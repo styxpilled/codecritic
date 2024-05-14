@@ -42,7 +42,7 @@
 
 	:global(.readme > h1),
 	:global(.readme > h2) {
-		border-bottom: 1px solid #2b2a33;
+		border-bottom: 1px solid var(--color-bg-bright);
 		padding-bottom: 0.5rem;
 	}
 
@@ -62,14 +62,14 @@
 	:global(.readme code[class^='language-']) {
 		display: block;
 		padding: 0.25rem 0.5rem 0;
-		background-color: #272c35;
+		background-color: var(--color-bg-bright);
 		border-radius: 0.25rem;
 		overflow: scroll;
 	}
 
 	:global(.readme code:not([class^='language-'])) {
 		padding: 0.2rem 0.4rem;
-		background-color: #272c35;
+		background-color: var(--color-bg-bright);
 		border-radius: 0.25rem;
 		color: #abb2bf;
 	}

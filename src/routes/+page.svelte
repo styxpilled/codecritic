@@ -7,7 +7,11 @@
 
 <div class="greeting">
 	{#if data.auth.user}
-		<h1>Welcome back, {data.auth.user.nickname || data.auth.user.username}!</h1>
+		<h1>
+			Welcome back, <a href="/user/{data.auth.user.username}"
+				>{data.auth.user.nickname || data.auth.user.username}</a
+			>!
+		</h1>
 	{:else}
 		<h1>Welcome to codecritic!</h1>
 	{/if}
