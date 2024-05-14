@@ -3,6 +3,7 @@
 	--color-bg-bright: #282c34;
 
 	--color-text: #dcdfe4;
+	--color-text-dark: hsl(220, 13%, 55%);
 
 	--color-red: #e06c75;
 	--color-orange: #d19a66;
@@ -15,6 +16,14 @@
 
 *::selection {
 	background-color: #404859;
+}
+
+.fg-text {
+	color: var(--color-text);
+}
+
+.fg-dark {
+	color: var(--color-text-dark);
 }
 
 .bg-red {

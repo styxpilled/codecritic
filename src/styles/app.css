@@ -42,6 +42,12 @@ a.link {
 	gap: 0.5rem;
 }
 
+.end {
+	display: flex;
+	flex-direction: row;
+	justify-content: flex-end;
+}
+
 .mono {
 	font-family: monospace;
 }

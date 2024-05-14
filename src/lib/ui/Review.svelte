@@ -8,6 +8,7 @@
 	export let review: Review;
 	export let showPackageName = false;
 	export let showUserName = true;
+	export let redirectToPackage = false;
 </script>
 
 <div class="review">
@@ -17,31 +18,46 @@
 		</a>
 		<div class="review-info" class:center={true}>
 			<div class="row">
-				{#if showPackageName}
-					<a class="hov-link hov-line" href="/packages/{review.package}">
-						<h2>{review.package}</h2>
-					</a>
-				{:else}
-					<p>
-						<a class="link" href="/user/{review.author.username || ''}">
-							{review.author.nickname || review.author.username || 'Loading...'}
-						</a>
-						rated
-					</p>
+				<div class="row">
+					{#if showPackageName}
+						<h2>
+							<a
+								class="hov-link hov-line fg-dark"
+								href={redirectToPackage
+									? `/packages/${review.package}`
+									: `/packages/${review.package}/reviews/${review.id}`}
+							>
+								{review.package}
+							</a>
+						</h2>
+					{:else}
+						<p>
+							<a class="fg-red hov-line" href="/user/{review.author.username || ''}">
+								{review.author.nickname || review.author.username || 'Loading...'}
+							</a>
+							<a class="fg-purple" href="/packages/{review.package}/reviews/{review.id}">rated</a>
+						</p>
+					{/if}
+					<Rating rating={review.rating} />
+				</div>
+				{#if review.author.id === $user?.id}
+					<a href="/packages/{review.package}/reviews/{review.id}/edit">edit</a>
 				{/if}
-				<Rating rating={review.rating} />
 			</div>
 			<p>
 				{#if showUserName && showPackageName}
-					<a class="link" href="/user/{review.author.username || ''}">
-						{review.author.nickname || review.author.username || 'Loading...'}
+					<a class="fg-purple" href="/packages/{review.package}/reviews/{review.id}">review by</a>
+					<a class="fg-red hov-line" href="/user/{review.author.username || ''}">
+						{review.author.nickname || review.author.username || 'Loading...'}<span class="fg-text"
+							>;</span
+						>
 					</a>
 				{/if}
 				<a href="/packages/{review.package}/reviews/{review.id}">
-					Version
-					<span>{review.version}</span>
-					on
-					<span>{new Date(review.created_at).toLocaleDateString('en-US')}</span>
+					<span class="fg-yellow">version</span>
+					<span class="fg-green">"{review.version}"</span>
+					<span class="fg-purple">on</span>
+					<span class="fg-green">"{new Date(review.created_at).toLocaleDateString('en-US')}"</span>
 				</a>
 			</p>
 		</div>
@@ -61,7 +77,9 @@
 							method="post"
 							action="/packages/{review.package}/reviews/{review.id}?/unlike"
 						>
-							<button><span class="fg-red">❤︎</span> Liked</button>
+							<button style="color: var(--color-text-dark);"
+								><span class="fg-red">❤︎</span> Liked</button
+							>
 						</form>
 					{:else}
 						<form
@@ -73,7 +91,7 @@
 							method="post"
 							action="/packages/{review.package}/reviews/{review.id}?/like"
 						>
-							<button>❤︎ Like review</button>
+							<button><span>❤︎</span> Like review</button>
 						</form>
 					{/if}
 				{/if}
@@ -112,6 +130,17 @@
 		display: flex;
 		align-items: flex-start;
 		flex-direction: column;
+		width: 100%;
+	}
+
+	.review-info > .row {
+		display: flex;
+		width: 100%;
+		justify-content: space-between;
+
+		& > .row {
+			gap: 0.25rem;
+		}
 	}
 
 	.review-body {

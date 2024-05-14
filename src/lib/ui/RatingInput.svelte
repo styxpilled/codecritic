@@ -1,4 +1,5 @@
 <script lang="ts">
+	export let value = -1;
 	let elements = Array(10);
 	let index = -1;
 </script>
@@ -10,6 +11,7 @@
 				type="radio"
 				name="rating"
 				value={i + 1}
+				checked={value === i + 1 && index === -1}
 				bind:this={elements[i]}
 				on:click={() => {
 					if (index === i + 1) {

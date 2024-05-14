@@ -31,19 +31,19 @@
 	<div class="row">
 		<a href="/user/{data.user.username}/following" class="hov-link">
 			<div class="vertical">
-				<h4 class="mono">{data.user.following}</h4>
+				<h4 class="mono">{data.user.following.padStart(3, '0')}</h4>
 				<span class="caption">Following</span>
 			</div>
 		</a>
 		<a href="/user/{data.user.username}/followers" class="hov-link">
 			<div class="vertical">
-				<h4 class="mono">{data.user.followers}</h4>
+				<h4 class="mono">{data.user.followers.padStart(3, '0')}</h4>
 				<span class="caption">Followers</span>
 			</div>
 		</a>
 		<a href="/user/{data.user.username}/reviews" class="hov-link">
 			<div class="vertical">
-				<h4 class="mono">{data.user.reviews}</h4>
+				<h4 class="mono">{(data.user.reviews + '').padStart(3, '0')}</h4>
 				<span class="caption">Reviews</span>
 			</div>
 		</a>

@@ -22,7 +22,7 @@
 		letter-spacing: 0.975px;
 		border-bottom: 1px solid slategrey;
 		margin-bottom: 0.5rem;
-		width: 70rem;
+		width: 100%;
 	}
 
 	.list-content {

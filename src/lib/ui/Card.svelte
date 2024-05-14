@@ -7,7 +7,7 @@
 </script>
 
 <div class="package" class:wide>
-	<h3><a href="/packages/{pkg.name}">{pkg.name}</a></h3>
+	<h3><a class="fg-blue hov-line" href="/packages/{pkg.name}">{pkg.name}</a></h3>
 	<div class="details">
 		<p class="description">
 			<a href="/packages/{pkg.name}">{pkg.description}</a>
@@ -22,7 +22,7 @@
 	</div>
 	<p class="meta">
 		{#if pkg.latest}
-			<span>@latest {pkg.latest}</span>
+			<span><span class="fg-yellow">@latest</span> <span class="fg-green">{pkg.latest}</span></span>
 		{/if}
 		{#if pkg.license}
 			<span class="hoverable">
@@ -39,7 +39,7 @@
 		flex-direction: column;
 		justify-content: flex-start;
 		width: 20rem;
-		background-color: #2e3235;
+		background-color: var(--color-bg-bright);
 		padding: 0.25rem 0.5rem;
 		border-radius: 0.25rem;
 
@@ -76,7 +76,14 @@
 		& > li {
 			border-radius: 0.25rem;
 			padding: 0 0.25rem;
-			background-color: var(--color-bg-bright);
+			background-color: var(--color-bg);
+			color: var(--color-text-dark);
+
+			&:hover {
+				color: var(--color-bg);
+				background-color: var(--color-blue);
+				cursor: pointer;
+			}
 		}
 	}
 
