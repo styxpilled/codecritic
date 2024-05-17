@@ -36,8 +36,8 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	if (user === null) throw unauthorized();
 	if (user.id === params.id) throw badRequest();
 	await sql`
-    DELETE FROM users_follows
-      (user_id, following)
+    DELETE FROM
+      users_follows
     WHERE 
       user_id = ${user.id}
       AND following = ${params.id}

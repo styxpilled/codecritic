@@ -25,7 +25,5 @@ export const GET = async ({ params, locals }) => {
   `) as [User?];
 	if (!requestedUser) throw notFound();
 
-	console.log(requestedUser);
-
 	return ok(requestedUser);
 };

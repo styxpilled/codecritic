@@ -11,21 +11,42 @@
 	<div class="row">
 		<Avatar size="lg" username={data.user.username} />
 		<h1>
-			{data.user.nickname} ({data.user.username})
+			{#if data.user.nickname}
+				{data.user.nickname} ({data.user.username})
+			{:else}
+				{data.user.username}
+			{/if}
 		</h1>
 		{#if data.user.id !== $user?.id}
 			{#if data.user.user_follows}
-				<form use:enhance action="/api/users/id/{data.user.id}/followers" method="delete">
+				<form use:enhance action="/user/{data.user.username}?/unfollow" method="post">
+					<input class="hidden" type="text" name="id" value={data.user.id} />
 					<button class="hover-interact" type="submit">
-						<span class="btn hover-hide bg-green">Following</span>
+						<span class="btn hover-hide bg-green">
+							{#if data.user.follows_user}
+								<span>Mutuals</span>
+							{:else}
+								<span>Following</span>
+							{/if}
+						</span>
 						<span class="btn hover-show bg-yellow">Unfollow</span>
 					</button>
 				</form>
 			{:else if $user === null}
 				<a class="btn fg-dark" href="/login/github">Sign in to follow</a>
 			{:else}
-				<form use:enhance action="/api/users/id/{data.user.id}/followers" method="post">
-					<button type="submit">Follow</button>
+				<form use:enhance action="/user/{data.user.username}?/follow" method="post">
+					<input class="hidden" type="text" name="id" value={data.user.id} />
+					<button class="hover-interact" type="submit">
+						<span class="btn hover-hide bg-yellow">
+							{#if data.user.follows_user}
+								<span>Follows you</span>
+							{:else}
+								<span>Follow</span>
+							{/if}
+						</span>
+						<span class="btn hover-show bg-blue">Follow</span>
+					</button>
 				</form>
 			{/if}
 		{/if}
@@ -51,13 +72,20 @@
 		</a>
 	</div>
 </div>
-<ul>
-	{#each data.reviews as review}
-		<li>
-			<Review {review} showPackageName={true} showUserName={false} />
-		</li>
-	{/each}
-</ul>
+<div>
+	{#if data.reviews?.length > 0}
+		<h3>Reviews:</h3>
+		<ul>
+			{#each data.reviews as review}
+				<li>
+					<Review {review} showPackageName={true} showUserName={false} />
+				</li>
+			{/each}
+		</ul>
+	{:else}
+		<h3>No reviews yet!</h3>
+	{/if}
+</div>
 
 <style>
 	.user-header.row {
@@ -82,15 +110,16 @@
 		position: relative;
 		overflow: hidden;
 		height: 1.5rem;
+		/* width: 7rem; */
 		width: 7rem;
 	}
 
 	.hover-hide {
+		display: flex;
 		position: absolute;
 		top: 0;
-		width: 6rem;
+		width: 100%;
 		transition: top 150ms ease-in-out;
-		display: flex;
 	}
 
 	.hover-interact:hover > .hover-hide {
@@ -99,10 +128,10 @@
 	}
 
 	.hover-show {
+		display: flex;
 		position: absolute;
 		top: 2rem;
-		width: 6rem;
-		display: flex;
+		width: 100%;
 		transition: top 150ms ease-in-out;
 		/* display: none; */
 	}

@@ -8,14 +8,16 @@
 <div class="greeting">
 	{#if data.auth.user}
 		<h1>
-			Welcome back, <a href="/user/{data.auth.user.username}"
-				>{data.auth.user.nickname || data.auth.user.username}</a
-			>!
+			<span>
+				Welcome back, <a class="fg-red hov-line" href="/user/{data.auth.user.username}"
+					>{data.auth.user.nickname || data.auth.user.username}</a
+				>!
+			</span>
 		</h1>
 	{:else}
 		<h1>Welcome to codecritic!</h1>
 	{/if}
-	<p>Here's what your friends have been {data.greetMessage}:</p>
+	<h3>Here's what your friends have been {data.greetMessage}:</h3>
 	TODO: friends, friend activity
 	<List>
 		<svelte:fragment slot="head">
