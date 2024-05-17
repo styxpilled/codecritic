@@ -1,8 +1,9 @@
+import type { Review } from '$lib/types';
+import type { RequestHandler } from './$types';
 import { ok } from '$lib/server';
 import { sql } from '$lib/server/database';
-import type { Review } from '$lib/types';
 
-export const GET = async ({ locals, params }) => {
+export const GET: RequestHandler = async ({ locals, params }) => {
 	const userID = locals.user?.id || '';
 
 	const reviews = (await sql`
@@ -16,7 +17,7 @@ export const GET = async ({ locals, params }) => {
         ON users.id = reviews.author
       LEFT JOIN likes_reviews
         ON reviews.id = review_id
-      WHERE users.username = ${params.username}
+      WHERE users.id = ${params.id}
     GROUP BY reviews.id, users.*, user_id
   `) as Review[];
 
