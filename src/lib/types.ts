@@ -14,6 +14,13 @@ export type DBUser = {
 	nickname: string;
 };
 
+export type Profile = {
+	id: string;
+	bio?: string;
+	url?: string;
+	links?: string[];
+};
+
 export type Review = {
 	id: string;
 	author: User;
