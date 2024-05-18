@@ -5,7 +5,7 @@ export const actions: Actions = {
 	updateProfile: async ({ fetch, request, locals }) => {
 		if (!locals.user) throw unauthorized();
 		const data = await request.formData();
-		await fetch(`/api/users/id/${locals.user.id}/profile`, {
+		await fetch(`/api/users/${locals.user.id}/profile`, {
 			method: 'PUT',
 			body: JSON.stringify({
 				bio: data.get('bio') || '',

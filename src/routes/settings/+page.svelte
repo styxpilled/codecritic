@@ -9,7 +9,7 @@
 	<div class="col box">
 		<h2>Account settings</h2>
 		<label>
-			<span>Username:</span>
+			<span class="fg-dark">Username:</span>
 			<input type="text" value={$user?.username} disabled />
 		</label>
 		<label>
@@ -17,14 +17,14 @@
 			<input type="text" value={$user?.nickname} />
 		</label>
 		<label>
-			<span>GitHub ID:</span>
+			<span class="fg-dark">GitHub ID:</span>
 			<input type="text" value={$user?.githubId} disabled />
 		</label>
 		<h3>Profile</h3>
 		<form use:enhance action="/settings?/updateProfile" method="post">
 			<label>
 				<span>Bio:</span>
-				<input type="text" placeholder="Add a bio!" name="bio" value={data.profile.bio} />
+				<textarea placeholder="Add a bio!" name="bio" value={data.profile.bio} />
 			</label>
 			<label>
 				<span>URL:</span>
@@ -35,13 +35,16 @@
 					value={data.profile.url}
 				/>
 			</label>
-			<p>Links:</p>
-			{#if data.profile.links}
-				{#each data.profile.links as link}
-					<input type="text" value={link} />
-				{/each}
-			{/if}
-			<button class="btn fg-blue"><LucidePlus /> add_link()</button>
+			<div>
+				<p>Links:</p>
+				{#if data.profile.links}
+					{#each data.profile.links as link}
+						<input type="text" value={link} />
+					{/each}
+				{/if}
+				<button class="btn fg-blue"><LucidePlus /> add_link()</button>
+			</div>
+			<div class="row end"><button type="submit" class="btn bg-green">Save</button></div>
 		</form>
 	</div>
 	<div class="col box">Favourite packages:</div>
@@ -59,5 +62,16 @@
 	label {
 		display: flex;
 		flex-direction: column;
+	}
+
+	textarea {
+		height: 4rem;
+		width: 25rem;
+		color: var(--color-text-darker);
+		transition: height 250ms ease-in-out;
+	}
+
+	textarea:focus-visible {
+		height: 10rem;
 	}
 </style>
