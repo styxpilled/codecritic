@@ -16,6 +16,11 @@ body {
 	background-color: #181a1b;
 }
 
+* {
+	scrollbar-width: thin;
+	scrollbar-color: #707070ff #f0f0f000;
+}
+
 a.link {
 	color: var(--color-blue);
 }
@@ -40,6 +45,11 @@ a.link {
 	flex-direction: column;
 	align-items: center;
 	gap: 0.5rem;
+}
+
+.start {
+	display: flex;
+	align-items: flex-start;
 }
 
 .end {
@@ -111,6 +121,7 @@ textarea:focus-visible {
 }
 
 .btn:disabled,
+button:disabled,
 input:disabled,
 textarea:disabled {
 	cursor: not-allowed;

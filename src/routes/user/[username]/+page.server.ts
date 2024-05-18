@@ -8,7 +8,7 @@ export const actions: Actions = {
 		const data = await request.formData();
 		const id = data.get('id');
 		if (!id) throw badRequest();
-		await fetchOr(`/api/users/id/${id}/followers`, undefined, fetch, {
+		await fetchOr(`/api/users/${id}/followers`, undefined, fetch, {
 			method: 'POST'
 		});
 		throw redirect(302, `/user/${params.username}`);
@@ -17,7 +17,7 @@ export const actions: Actions = {
 		const data = await request.formData();
 		const id = data.get('id');
 		if (!id) throw badRequest();
-		await fetchOr(`/api/users/id/${id}/followers`, undefined, fetch, {
+		await fetchOr(`/api/users/${id}/followers`, undefined, fetch, {
 			method: 'DELETE'
 		});
 		throw redirect(302, `/user/${params.username}`);
