@@ -1,15 +1,17 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { onMount } from 'svelte';
-	import { marked } from 'marked';
 	import RatingInput from '$ui/RatingInput.svelte';
 	import Review from '$ui/Review.svelte';
 	import Readme from '$ui/Readme.svelte';
+	import { browser } from '$app/environment';
 	export let data;
 
 	onMount(() => {
 		console.log(data);
 	});
+
+	let manager = 'npm';
 </script>
 
 <div class="package-container">
@@ -44,14 +46,21 @@
 				<p class="manager-selection row">
 					<label>
 						npm
-						<input class="hidden" type="radio" name="install" value="npm" checked />
+						<input
+							class="hidden"
+							type="radio"
+							name="install"
+							value="npm"
+							bind:group={manager}
+							checked
+						/>
 					</label>
 					<label>
 						yarn
-						<input class="hidden" type="radio" name="install" value="yarn" />
+						<input class="hidden" type="radio" name="install" value="yarn" bind:group={manager} />
 					</label>
 					<label>
-						<input class="hidden" type="radio" name="install" value="pnpm" />
+						<input class="hidden" type="radio" name="install" value="pnpm" bind:group={manager} />
 						pnpm
 					</label>
 				</p>
@@ -59,6 +68,14 @@
 					<span class="hidden npm">npm i {data.packageName}</span>
 					<span class="hidden yarn">yarn add {data.packageName}</span>
 					<span class="hidden pnpm">pnpm add {data.packageName}</span>
+					<button
+						disabled={!browser}
+						on:click={async () => {
+							navigator.clipboard.writeText(
+								`${manager} ${manager === 'npm' ? 'i' : 'add'} ${data.packageName}`
+							);
+						}}><LucideCopy /></button
+					>
 				</p>
 			</div>
 			{#if data.package.repository}
@@ -76,7 +93,7 @@
 			<form class="submit-review bg-light" method="post" use:enhance>
 				<div class="row">
 					<RatingInput />
-					<input type="datetime-local" />
+					<input type="datetime-local" value={new Date().toISOString().slice(0, 19)} />
 				</div>
 				<textarea placeholder="Add a review..." name="review" />
 				TODO: versions
@@ -166,6 +183,8 @@
 	}
 
 	.command {
+		display: flex;
+		justify-content: space-between;
 		background-color: #2b2a33;
 		border-radius: 0.25rem;
 		padding: 0.25rem 0.5rem;

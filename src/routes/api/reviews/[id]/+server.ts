@@ -49,3 +49,24 @@ export const PUT: RequestHandler = async ({ request, locals, params }) => {
 		throw serverError();
 	}
 };
+
+export const DELETE: RequestHandler = async ({ locals, params }) => {
+	if (!locals.user) throw unauthorized();
+	try {
+		const [currentReview] = (await sql`
+      SELECT * FROM reviews
+        WHERE id = ${params.id};
+    `) as [(Review & { author: string })?];
+
+		if (!currentReview) throw notFound();
+		if (currentReview.author !== locals.user.id) throw unauthorized();
+
+		await sql`
+      DELETE FROM reviews
+        WHERE id = ${params.id} AND author = ${locals.user.id}
+    `;
+		return ok();
+	} catch (e) {
+		throw serverError();
+	}
+};

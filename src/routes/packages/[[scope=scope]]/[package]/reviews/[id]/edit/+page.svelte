@@ -7,7 +7,12 @@
 </script>
 
 <div class="review">
-	<form class="submit-review" method="post" use:enhance>
+	<form
+		class="submit-review"
+		use:enhance
+		method="post"
+		action="/packages/{data.review.package}/reviews/{data.review.id}/edit?/edit"
+	>
 		<div class="review-rating">
 			<h2 class="hov-link hov-line">
 				<a href="/packages/{data.review.package}">{data.review.package}</a>
@@ -22,7 +27,18 @@
 			/>
 		</div>
 		<textarea placeholder="Add a review..." name="review" bind:value={data.review.review} />
-		<div class="end"><button class="btn bg-green" type="submit">Save</button></div>
+		<div class="end">
+			<div class="row">
+				<form
+					use:enhance
+					method="post"
+					action="/packages/{data.review.package}/reviews/{data.review.id}/edit?/delete"
+				>
+					<button class="btn bg-red" type="submit">Delete</button>
+				</form>
+				<button class="btn bg-green" type="submit">Save</button>
+			</div>
+		</div>
 	</form>
 </div>
 
@@ -36,7 +52,7 @@
 		max-width: 50rem;
 	}
 
-	form {
+	.submit-review {
 		display: flex;
 		flex-direction: column;
 		background-color: var(--color-bg-bright);
@@ -45,7 +61,7 @@
 		gap: 1rem;
 	}
 
-	form > .review-rating {
+	.submit-review > .review-rating {
 		display: flex;
 		/* align-items: center; */
 		justify-content: space-between;
