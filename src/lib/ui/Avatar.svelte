@@ -1,10 +1,11 @@
 <script lang="ts">
-	export let size: 'sm' | 'md' | 'lg' | 'xl' = 'md';
+	export let size: 'xs' | 'sm' | 'md' | 'lg' | 'xl' = 'md';
 	export let username: string | undefined;
 
 	let pxSize = 32;
 
 	switch (size) {
+		case 'xs':
 		case 'sm':
 			pxSize = 32;
 			break;
@@ -45,8 +46,8 @@
 	}
 
 	.xs {
-		height: 1rem;
-		width: 1rem;
+		height: 1.5rem;
+		width: 1.5rem;
 	}
 
 	.sm {

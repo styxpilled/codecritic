@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import Avatar from './Avatar.svelte';
-	import Icon from '@iconify/svelte';
 	import { user } from '$lib/client/stores';
 	import { browser, dev } from '$app/environment';
 	import LiveSearchbar from './LiveSearchbar.svelte';
@@ -13,10 +12,13 @@
 	<section>
 		<h3 class="site-logo">
 			<a href="/">
-				<span class="logo">★☆_</span>
+				<span class="logo"
+					><span class="logo-1">★</span><span class="logo-2">☆</span><span class="logo-3">_</span
+					></span
+				>
 				<span>codecritic</span>
 				{#if dev}
-					<span style="color: red;">dev</span>
+					<span class="fg-red">dev</span>
 				{/if}
 			</a>
 		</h3>
@@ -24,11 +26,12 @@
 			<ul>
 				{#if $user}
 					<li class="user-dropdown">
-						<a class="user-link" href="/user/{$user.username}">
-							<Avatar size="sm" username={$user.username} />
+						<a class="user-link hov-link" href="/user/{$user.username}">
+							<Avatar size="xs" username={$user.username} />
 							<p>{$user.username}</p>
 						</a>
 						<div class="user-dropdown-content">
+							<a href="/settings">Settings</a>
 							<form method="post" action="/logout" use:enhance>
 								<button>Sign out</button>
 							</form>
@@ -37,11 +40,12 @@
 				{:else}
 					<li><a href="/login/github">Sign in with GitHub</a></li>
 				{/if}
-				<li><a href="/packages">packages</a></li>
-				<li>members</li>
+				<li class="hov-link"><a href="/packages">packages</a></li>
+				<li class="hov-link"><a href="/users">members</a></li>
+				<li class="hov-link"><a href="/stacks">stacks</a></li>
 				<li class="search-container">
-					<label class="search-button">
-						<Icon icon="octicon:search-16" />
+					<label class="search-button hov-link">
+						<LucideSearch />
 						<input type="checkbox" name="search-checkbox" />
 					</label>
 					<form class="search-box" action="/search?/search">
@@ -91,13 +95,15 @@
 		justify-content: space-around;
 		gap: 1rem;
 
-		& > li {
+		& > li:not(.search-container) {
 			text-transform: uppercase;
 			height: 3rem;
-			font-weight: 500;
+			font-weight: 600;
 			display: flex;
 			align-items: center;
-			gap: 0.25rem;
+			font-size: 0.85rem;
+			font-size: 0.75rem;
+			letter-spacing: 0.15em;
 		}
 	}
 
@@ -106,7 +112,9 @@
 	}
 
 	.user-dropdown:hover > .user-dropdown-content {
-		display: block;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
 	}
 
 	.user-dropdown-content {
@@ -130,6 +138,64 @@
 		user-select: none;
 	}
 
+	/* Doesn't work in Chrome for some reason! We love browsers! */
+	.logo:hover {
+		animation: animate-logo 5s linear infinite forwards;
+		--color-logo-1: var(--color-red);
+		--color-logo-2: var(--color-orange);
+		--color-logo-3: var(--color-yellow);
+
+		& .logo-1 {
+			color: var(--color-logo-1);
+		}
+
+		& .logo-2 {
+			color: var(--color-logo-2);
+		}
+
+		& .logo-3 {
+			color: var(--color-logo-3);
+		}
+	}
+
+	@keyframes animate-logo {
+		0% {
+			--color-logo-1: var(--color-red);
+			--color-logo-2: var(--color-orange);
+			--color-logo-3: var(--color-yellow);
+		}
+		14% {
+			--color-logo-1: var(--color-purple);
+			--color-logo-2: var(--color-red);
+			--color-logo-3: var(--color-orange);
+		}
+		28% {
+			--color-logo-1: var(--color-blue);
+			--color-logo-2: var(--color-purple);
+			--color-logo-3: var(--color-red);
+		}
+		42% {
+			--color-logo-1: var(--color-cyan);
+			--color-logo-2: var(--color-blue);
+			--color-logo-3: var(--color-purple);
+		}
+		56% {
+			--color-logo-1: var(--color-green);
+			--color-logo-2: var(--color-cyan);
+			--color-logo-3: var(--color-blue);
+		}
+		70% {
+			--color-logo-1: var(--color-yellow);
+			--color-logo-2: var(--color-green);
+			--color-logo-3: var(--color-cyan);
+		}
+		85% {
+			--color-logo-1: var(--color-orange);
+			--color-logo-2: var(--color-yellow);
+			--color-logo-3: var(--color-green);
+		}
+	}
+
 	.search-button {
 		cursor: pointer;
 		& > input {
@@ -148,8 +214,13 @@
 	/* Thank you firefox */
 	/* "baseline" yeah right except that one thing */
 	@supports (color: hsl(from white h s l)) {
-		.log-button:hover {
+		.log-button {
 			animation: shift 10s linear infinite forwards;
+			animation-play-state: paused;
+		}
+
+		.log-button:hover {
+			animation-play-state: running;
 		}
 
 		@keyframes shift {
@@ -198,7 +269,9 @@
 	}
 
 	.search-container {
-		width: 5rem;
+		display: flex;
+		align-items: center;
+		gap: 0.25rem;
 	}
 
 	/* Show Log button */

@@ -41,7 +41,9 @@
 					<Rating rating={review.rating} />
 				</div>
 				{#if review.author.id === $user?.id}
-					<a href="/packages/{review.package}/reviews/{review.id}/edit">edit</a>
+					<a class="hov-link" href="/packages/{review.package}/reviews/{review.id}/edit"
+						><LucidePen /></a
+					>
 				{/if}
 			</div>
 			<p>
