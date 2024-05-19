@@ -56,10 +56,12 @@
 					</a>
 				{/if}
 				<a href="/packages/{review.package}/reviews/{review.id}">
-					<span class="fg-yellow">version</span>
-					<span class="fg-green">"{review.version}"</span>
-					<span class="fg-purple">on</span>
-					<span class="fg-green">"{new Date(review.created_at).toLocaleDateString('en-US')}"</span>
+					<span class="fg-yellow hov-light">version</span>
+					<span class="fg-green hov-light">"{review.version}"</span>
+					<span class="fg-purple hov-light">on</span>
+					<span class="fg-green hov-light"
+						>"{new Date(review.created_at).toLocaleDateString('en-US')}"</span
+					>
 				</a>
 			</p>
 		</div>

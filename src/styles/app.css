@@ -33,6 +33,10 @@ a.link {
 	text-decoration: underline;
 }
 
+.hov-light:hover {
+	filter: brightness(1.1);
+}
+
 .row {
 	display: flex;
 	flex-direction: row;
@@ -56,6 +60,10 @@ a.link {
 	display: flex;
 	flex-direction: row;
 	justify-content: flex-end;
+}
+
+.space {
+	justify-content: space-between;
 }
 
 .mono {

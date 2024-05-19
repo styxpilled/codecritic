@@ -19,38 +19,38 @@
 						{data.user.username}
 					{/if}
 				</h1>
-				{#if data.user.id !== $user?.id}
-					{#if data.user.user_follows}
-						<form use:enhance action="/user/{data.user.username}?/unfollow" method="post">
-							<input class="hidden" type="text" name="id" value={data.user.id} />
-							<button class="hover-interact" type="submit">
-								<span class="btn hover-hide bg-green">
-									{#if data.user.follows_user}
-										<span>Mutuals</span>
-									{:else}
-										<span>Following</span>
-									{/if}
-								</span>
-								<span class="btn hover-show bg-yellow">Unfollow</span>
-							</button>
-						</form>
-					{:else if $user === null}
-						<a class="btn fg-dark" href="/login/github">Sign in to follow</a>
-					{:else}
-						<form use:enhance action="/user/{data.user.username}?/follow" method="post">
-							<input class="hidden" type="text" name="id" value={data.user.id} />
-							<button class="hover-interact" type="submit">
-								<span class="btn hover-hide bg-yellow">
-									{#if data.user.follows_user}
-										<span>Follows you</span>
-									{:else}
-										<span>Follow</span>
-									{/if}
-								</span>
-								<span class="btn hover-show bg-blue">Follow</span>
-							</button>
-						</form>
-					{/if}
+				{#if data.user.id === $user?.id}
+					<a class="btn fg-dark hov-light" href="/settings">Edit profile</a>
+				{:else if data.user.user_follows}
+					<form use:enhance action="/user/{data.user.username}?/unfollow" method="post">
+						<input class="hidden" type="text" name="id" value={data.user.id} />
+						<button class="hover-interact" type="submit">
+							<span class="btn hover-hide bg-green">
+								{#if data.user.follows_user}
+									<span>Mutuals</span>
+								{:else}
+									<span>Following</span>
+								{/if}
+							</span>
+							<span class="btn hover-show bg-yellow">Unfollow</span>
+						</button>
+					</form>
+				{:else if $user === null}
+					<a class="btn fg-dark hov-light" href="/login/github">Sign in to follow</a>
+				{:else}
+					<form use:enhance action="/user/{data.user.username}?/follow" method="post">
+						<input class="hidden" type="text" name="id" value={data.user.id} />
+						<button class="hover-interact" type="submit">
+							<span class="btn hover-hide bg-yellow">
+								{#if data.user.follows_user}
+									<span>Follows you</span>
+								{:else}
+									<span>Follow</span>
+								{/if}
+							</span>
+							<span class="btn hover-show bg-blue">Follow</span>
+						</button>
+					</form>
 				{/if}
 			</div>
 			{#if data.profile.bio}
