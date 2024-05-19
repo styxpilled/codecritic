@@ -13,7 +13,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
       COUNT(DISTINCT followers.user_id)::int followers,
       -- We need this to not GROUP BY followers.following
       ${userID} = ANY(ARRAY_AGG(following.following)) follows_user,
-      followers.user_id = ${userID} user_follows,
+      ${userID} = ANY(ARRAY_AGG(followers.user_id)) user_follows,
       COUNT(DISTINCT reviews.id)::int reviews
     FROM users
     LEFT JOIN reviews as reviews
@@ -23,7 +23,7 @@ export const GET: RequestHandler = async ({ params, locals }) => {
 	  LEFT JOIN users_follows AS following
       ON users.id = following.user_id     
     WHERE users.id = ${params.id}
-    GROUP BY users.id, following.user_id, followers.user_id
+    GROUP BY users.id, following.user_id, followers.following
   `) as [User?];
 	if (!requestedUser) throw notFound();
 
