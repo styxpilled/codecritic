@@ -10,6 +10,7 @@
 	export let showPackageName = false;
 	export let showUserName = true;
 	export let redirectToPackage = false;
+	export let truncate = true;
 </script>
 
 <div class="review" {style}>
@@ -68,7 +69,7 @@
 		</div>
 	</div>
 	<div class="review-body">
-		<p class="review-content">{review.review}</p>
+		<p class="review-content" class:truncate>{review.review}</p>
 		<div class="row">
 			{#if $user}
 				{#if review.author.id !== $user?.id}
@@ -164,5 +165,13 @@
 
 	.review-content {
 		white-space: pre-wrap;
+		text-overflow: ellipsis;
+	}
+
+	.review-content.truncate {
+		display: -webkit-box;
+		overflow: hidden;
+		-webkit-line-clamp: 8;
+		-webkit-box-orient: vertical;
 	}
 </style>
