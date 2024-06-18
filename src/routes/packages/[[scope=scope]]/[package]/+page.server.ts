@@ -27,7 +27,11 @@ export const load: PageServerLoad = async ({ fetch, params, cookies }) => {
 	if (pkg?.repository) {
 		const ghAuth = cookies.get('github_access_token');
 		const auth = ghAuth ? { Authorization: `Bearer ${ghAuth}` } : {};
-		const repo = pkg.repository;
+		const repo = pkg.repository.endsWith('.git')
+			? pkg.repository.substring(0, pkg.repository.length - 4)
+			: pkg.repository;
+
+		// TODO: cache readme
 		const readmeData = await fetchOr<{ content: string }>(
 			`https://api.github.com/repos/${repo.substring(
 				repo.indexOf('github.com') + 11

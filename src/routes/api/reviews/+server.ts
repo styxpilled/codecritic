@@ -12,15 +12,15 @@ export const GET = async ({ locals, url }) => {
 	const reviews = (await sql`
     SELECT
       reviews.*,
-      (user_id = ${userID} AND user_id IS NOT NULL) liked,
+      ${userID} = ANY(ARRAY_AGG(likes_reviews.user_id)) liked,
       row_to_json (users.*) author,
-      COUNT(review_id)::integer likes
+      COUNT(DISTINCT likes_reviews.user_id)::integer likes
     FROM reviews
       LEFT JOIN users
         ON users.id = reviews.author
       LEFT JOIN likes_reviews
         ON reviews.id = review_id
-	  GROUP BY reviews.id, users.*, user_id, review_id
+	  GROUP BY reviews.id, users.*
 	  ORDER BY COUNT(review_id) DESC
     LIMIT ${limit} OFFSET ${offset}
   `) as Review[];
