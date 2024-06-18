@@ -26,6 +26,6 @@ export const fetchUser = async (id: string) => {
 			return user;
 		}
 	}
-	user = await fetchOr<User | undefined>(`/api/users/id/${id}`, undefined);
+	user = await fetchOr<User | undefined>(`/api/users/${id}`, undefined);
 	return user;
 };

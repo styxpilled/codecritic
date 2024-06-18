@@ -1,12 +1,13 @@
 <script lang="ts">
 	export let direction = 'row';
+	export let width: 'fit' | 'full' | undefined = undefined;
 </script>
 
-<div class="list">
+<div class="list {width}">
 	<div class="list-info">
 		<slot name="head" />
 	</div>
-	<div class="{direction} list-content">
+	<div class="{direction} {width} list-content">
 		<slot name="body" />
 	</div>
 </div>
@@ -16,6 +17,10 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+	}
+
+	.list.full {
+		width: 100%;
 	}
 
 	.list-info {
@@ -32,10 +37,19 @@
 	.list-content {
 		display: flex;
 		gap: 0.5rem;
+		padding: 0 0.5rem;
 		flex-wrap: wrap;
 		justify-content: space-between;
 		align-items: start;
 		width: 62rem;
+	}
+
+	.list-content.fit {
+		width: fit-content;
+	}
+
+	.list-content.full {
+		width: 100%;
 	}
 
 	@media (width <= 65rem) {
