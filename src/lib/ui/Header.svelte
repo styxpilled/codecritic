@@ -81,6 +81,12 @@
 		margin: 0 auto;
 		width: 950px;
 		height: 3rem;
+
+		@media (width <= 950px) {
+			& {
+				width: 100vw;
+			}
+		}
 	}
 
 	section,
@@ -101,9 +107,14 @@
 			font-weight: 600;
 			display: flex;
 			align-items: center;
-			font-size: 0.85rem;
 			font-size: 0.75rem;
 			letter-spacing: 0.15em;
+
+			@media (width <= 950px) {
+				& {
+					font-size: 0.5rem;
+				}
+			}
 		}
 	}
 
@@ -136,6 +147,12 @@
 		gap: 0.5rem;
 		font-weight: 700;
 		user-select: none;
+
+		@media (width <= 950px) {
+			& {
+				font-size: 0.5rem;
+			}
+		}
 	}
 
 	/* Doesn't work in Chrome for some reason! We love browsers! */

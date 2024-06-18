@@ -21,9 +21,15 @@
 
 	section {
 		margin: 0 auto;
-		width: 950px;
 		display: flex;
 		justify-content: space-between;
+		width: 950px;
+
+		@media (width <= 950px) {
+			& {
+				width: 100vw;
+			}
+		}
 	}
 
 	.svelte {

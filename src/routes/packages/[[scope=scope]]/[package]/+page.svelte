@@ -19,8 +19,15 @@
 		<div class="package-body">
 			{#if data.package}
 				<div class="package-head">
-					<div>
+					<div class="row align">
 						<h2>{data.packageName}</h2>
+						<button title="Hide README">
+							<label class="collapse">
+								<span class="show"><LucideEye /></span>
+								<span class="hide"><LucideEyeOff /></span>
+								<input class="collapser" type="checkbox" />
+							</label>
+						</button>
 					</div>
 					{#if data.package.author}
 						<p class="author">By {data.package.author}</p>
@@ -127,9 +134,19 @@
 		display: grid;
 		grid-template-columns: 3fr 2fr;
 		grid-template-rows: 1fr;
-		max-width: 1200px;
+		flex-shrink: 0;
+		width: 1200px;
 		gap: 0px 0px;
 		grid-template-areas: 'body sidebar';
+
+		@media (width <= 1200px) {
+			& {
+				width: 100vw;
+				display: flex;
+				flex-direction: column;
+				padding: 0 1rem;
+			}
+		}
 	}
 
 	.package-head {
@@ -141,6 +158,34 @@
 		grid-area: body;
 		padding: 0.5rem;
 		max-width: 720px;
+
+		&:has(input.collapser:checked) > .readme {
+			display: none;
+		}
+	}
+
+	.collapse {
+		cursor: pointer;
+
+		& > .show {
+			display: none;
+		}
+
+		& > .hide {
+			display: block;
+		}
+		&:has(> input:checked) {
+			& > .hide {
+				display: none;
+			}
+			& > .show {
+				display: block;
+			}
+		}
+
+		& input {
+			display: none;
+		}
 	}
 
 	.package-sidebar {

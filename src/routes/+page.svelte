@@ -8,6 +8,7 @@
 <div class="greeting">
 	{#if data.auth.user}
 		<h1>
+			<!-- Don't reformat this because then we get a space before the ! -->
 			<span>
 				Welcome back, <a class="fg-red hov-line" href="/user/{data.auth.user.username}"
 					>{data.auth.user.nickname || data.auth.user.username}</a

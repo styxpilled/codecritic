@@ -24,12 +24,21 @@
 		</ul>
 	</div>
 	<div>
-		<h3>Popular reviews this week:</h3>
-		<ul>
+		<List direction="col">
+			<svelte:fragment slot="head">
+				<span>Popular reviews this week:</span>
+			</svelte:fragment>
+			<svelte:fragment slot="body">
+				{#each data.reviews as review}
+					<Review style="flex: 1; width: 100%; max-width: 61rem;" showPackageName={true} {review} />
+				{/each}
+			</svelte:fragment>
+		</List>
+		<!-- <ul>
 			{#each data.reviews as review}
 				<Review showPackageName={true} {review} />
 			{/each}
-		</ul>
+		</ul> -->
 	</div>
 </div>
 

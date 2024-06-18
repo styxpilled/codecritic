@@ -1,17 +1,18 @@
 <script lang="ts">
+	import type { Review } from '$lib/types';
 	import { enhance } from '$app/forms';
 	import { user } from '$lib/client/stores';
-	import type { Review } from '$lib/types';
 	import Avatar from './Avatar.svelte';
 	import Rating from './Rating.svelte';
 
+	export let style = '';
 	export let review: Review;
 	export let showPackageName = false;
 	export let showUserName = true;
 	export let redirectToPackage = false;
 </script>
 
-<div class="review">
+<div class="review" {style}>
 	<div class="review-head">
 		<a class="avatar" href="/user/{review.author.username || ''}">
 			<Avatar size="md" username={review.author?.username} />
@@ -41,7 +42,7 @@
 					<Rating rating={review.rating} />
 				</div>
 				{#if review.author.id === $user?.id}
-					<a class="hov-link" href="/packages/{review.package}/reviews/{review.id}/edit"
+					<a class="edit-btn hov-link" href="/packages/{review.package}/reviews/{review.id}/edit"
 						><LucidePen /></a
 					>
 				{/if}
@@ -59,9 +60,9 @@
 					<span class="fg-yellow hov-light">version</span>
 					<span class="fg-green hov-light">"{review.version}"</span>
 					<span class="fg-purple hov-light">on</span>
-					<span class="fg-green hov-light"
-						>"{new Date(review.created_at).toLocaleDateString('en-US')}"</span
-					>
+					<span class="fg-green hov-light">
+						"{new Date(review.created_at).toLocaleDateString('en-US')}"
+					</span>
 				</a>
 			</p>
 		</div>
@@ -116,6 +117,14 @@
 		background-color: var(--color-bg-bright);
 		border-radius: 0.5rem;
 		max-width: 50rem;
+	}
+
+	.edit-btn {
+		display: none;
+	}
+
+	.review:hover .edit-btn {
+		display: block;
 	}
 
 	.review-head {
