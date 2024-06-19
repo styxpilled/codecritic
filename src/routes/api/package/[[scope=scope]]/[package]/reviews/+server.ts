@@ -9,16 +9,16 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	const reviews = (await sql`
   SELECT
       reviews.*,
-      (user_id = ${userID} AND user_id IS NOT NULL) liked,
+      ${userID} = ANY(ARRAY_AGG(likes_reviews.user_id)) liked,
       row_to_json (users.*) author,
-      COUNT(review_id)::integer likes
+      COUNT(DISTINCT likes_reviews.user_id)::integer likes
     FROM reviews
       LEFT JOIN users
         ON users.id = reviews.author
       LEFT JOIN likes_reviews
         ON reviews.id = review_id
       WHERE package = ${packageName}
-    GROUP BY reviews.id, users.*, user_id
+    GROUP BY reviews.id, users.*
   `) as Review[];
 
 	return ok(reviews);
