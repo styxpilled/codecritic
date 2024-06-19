@@ -16,9 +16,9 @@ export const GET: RequestHandler = async ({ params, locals }) => {
       ${userID} = ANY(ARRAY_AGG(followers.user_id)) user_follows,
       COUNT(DISTINCT reviews.id)::int reviews
     FROM users
-    LEFT JOIN reviews as reviews
+    LEFT JOIN reviews AS reviews
       ON users.id = reviews.author
-	  LEFT JOIN users_follows as followers
+	  LEFT JOIN users_follows AS followers
       ON users.id = followers.following
 	  LEFT JOIN users_follows AS following
       ON users.id = following.user_id     

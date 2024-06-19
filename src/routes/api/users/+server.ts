@@ -10,7 +10,7 @@ export const GET = async ({ url }) => {
 	const reviews = (await sql`
     SELECT
       users.*,
-      COUNT(DISTINCT likes_reviews.user_id)::integer likes,
+      COUNT(likes_reviews.user_id)::integer likes,
   	  COUNT(DISTINCT reviews.id) reviews
     FROM reviews
       LEFT JOIN users
