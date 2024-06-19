@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Card from '$ui/Card.svelte';
 	import List from '$ui/List.svelte';
+	import Review from '$ui/Review.svelte';
 
 	export let data;
 </script>
@@ -19,10 +20,22 @@
 		<h1>Welcome to codecritic!</h1>
 	{/if}
 	<h3>Here's what your friends have been {data.greetMessage}:</h3>
-	TODO: friends, friend activity
+	{#if data.mutualReviews.length > 0}
+		<List>
+			<svelte:fragment slot="head">
+				<span>new from mutuals</span>
+				<span>more</span>
+			</svelte:fragment>
+			<svelte:fragment slot="body">
+				{#each data.mutualReviews as review}
+					<Review showPackageName truncateVersion fixedWidth truncate={4} {review} />
+				{/each}
+			</svelte:fragment>
+		</List>
+	{/if}
 	<List>
 		<svelte:fragment slot="head">
-			<span>popular</span>
+			<span>popular on codecritic</span>
 			<span>more</span>
 		</svelte:fragment>
 		<svelte:fragment slot="body">
@@ -32,8 +45,13 @@
 		</svelte:fragment>
 	</List>
 	<List>
-		<span>Recommended</span>
-		<span>All recommened</span>
+		<svelte:fragment slot="head">
+			<span>Recommended</span>
+			<span>All recommened</span>
+		</svelte:fragment>
+		<svelte:fragment slot="body">
+			<p>Coming soon!</p>
+		</svelte:fragment>
 	</List>
 </div>
 

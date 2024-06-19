@@ -7,6 +7,7 @@
 	import '$styles/app.css';
 	import '$styles/color.css';
 	import '$styles/static.css';
+	import { dev } from '$app/environment';
 
 	export let data;
 
@@ -16,7 +17,7 @@
 </script>
 
 <svelte:head>
-	<title>codecritic · Social node package manager package discovery</title>
+	<title>{dev ? 'DEV' : 'codecritic'} · Social node package manager package discovery</title>
 </svelte:head>
 
 <div id="root">

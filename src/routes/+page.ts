@@ -3,8 +3,11 @@ import type { PageLoad } from './$types';
 import { fetchOr } from '$lib';
 
 export const load: PageLoad = async ({ data, fetch }) => {
-	const packages = await fetchOr<Package[]>(`/api/packages?limit=9`, [], fetch);
-	const reviews = await fetchOr<Review[]>(`/api/reviews`, [], fetch);
+	const [packages, reviews, mutualReviews] = await Promise.all([
+		fetchOr<Package[]>(`/api/packages?limit=9`, [], fetch),
+		fetchOr<Review[]>(`/api/reviews`, [], fetch),
+		fetchOr<Review[]>(`/api/recommended/reviews/mutuals?limit=6`, [], fetch)
+	]);
 
-	return { packages, reviews, ...data };
+	return { packages, reviews, mutualReviews, ...data };
 };

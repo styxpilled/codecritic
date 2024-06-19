@@ -76,6 +76,8 @@ a.link {
 	cursor: pointer;
 	&:hover > .hoverable-content {
 		display: block;
+		word-break: keep-all;
+		white-space: nowrap;
 	}
 }
 

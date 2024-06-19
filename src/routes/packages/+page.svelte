@@ -25,7 +25,7 @@
 		</ul>
 	</div>
 	<div class="row start space">
-		<List direction="col" width="fit">
+		<List direction="col" width="fit" wrap={false}>
 			<svelte:fragment slot="head">
 				<span>Popular reviews this week:</span>
 			</svelte:fragment>
@@ -36,31 +36,36 @@
 			</svelte:fragment>
 		</List>
 		<div class="col">
-			<List direction="col" width="full">
+			<List direction="col" width="fit" align="start" wrap={false}>
 				<svelte:fragment slot="head">
 					<span>Popular reviewers:</span>
 				</svelte:fragment>
 				<svelte:fragment slot="body">
 					{#each data.reviewers as reviewer}
 						<div class="row">
-							<Avatar username={reviewer.username} />
+							<a href="/user/{reviewer.username}">
+								<Avatar username={reviewer.username} />
+							</a>
 							<div class="col start" style="gap: 0;">
-								<h3 class="fg-red">
-									{#if reviewer.nickname}
-										{reviewer.nickname} ({reviewer.username})
-									{:else}
-										{reviewer.username}
-									{/if}
-								</h3>
-								<p class="fg-dark">
-									{reviewer.reviews} reviews
+								<a href="/user/{reviewer.username}">
+									<h3 class="fg-red hov-line">
+										{#if reviewer.nickname}
+											{reviewer.nickname} ({reviewer.username})
+										{:else}
+											{reviewer.username}
+										{/if}
+									</h3>
+								</a>
+								<p>
+									<span class="fg-dark">{reviewer.reviews} reviews</span>,
+									<span class="fg-dark">{reviewer.likes} total likes</span>
 								</p>
 							</div>
 						</div>
 					{/each}
 				</svelte:fragment>
 			</List>
-			<List direction="col" width="full">
+			<List direction="col" width="full" wrap={false}>
 				<svelte:fragment slot="head">
 					<span>Found an error?</span>
 				</svelte:fragment>
@@ -97,5 +102,12 @@
 
 	.row.start.space {
 		width: 100%;
+
+		@media (width <= 950px) {
+			& {
+				width: 90%;
+				flex-direction: column;
+			}
+		}
 	}
 </style>

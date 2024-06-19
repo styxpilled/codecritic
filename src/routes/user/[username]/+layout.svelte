@@ -9,7 +9,7 @@
 <!-- This is completely unreadable. What is this. -->
 <div class="row user-header">
 	<div class="row">
-		<Avatar size="lg" username={data.user.username} />
+		<Avatar size="xl" username={data.user.username} />
 		<div class="col start name-actions-bio">
 			<div class="row name-actions">
 				<h1>

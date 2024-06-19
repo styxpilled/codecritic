@@ -10,10 +10,12 @@
 	export let showPackageName = false;
 	export let showUserName = true;
 	export let redirectToPackage = false;
-	export let truncate = true;
+	export let truncate: number | undefined = 8;
+	export let truncateVersion = false;
+	export let fixedWidth = false;
 </script>
 
-<div class="review" {style}>
+<div class="review" {style} class:fixed-width={fixedWidth}>
 	<div class="review-head">
 		<a class="avatar" href="/user/{review.author.username || ''}">
 			<Avatar size="md" username={review.author?.username} />
@@ -24,7 +26,7 @@
 					{#if showPackageName}
 						<h2>
 							<a
-								class="hov-link hov-line fg-dark"
+								class="hov-link hov-line fg-blue"
 								href={redirectToPackage
 									? `/packages/${review.package}`
 									: `/packages/${review.package}/reviews/${review.id}`}
@@ -57,9 +59,20 @@
 						>
 					</a>
 				{/if}
-				<a href="/packages/{review.package}/reviews/{review.id}">
+				<a href="/packages/{review.package}/reviews/{review.id}" style="display: block;">
 					<span class="fg-yellow hov-light">version</span>
-					<span class="fg-green hov-light">"{review.version}"</span>
+					<span class="fg-green hov-light">
+						{#if truncateVersion}
+							{@const sixthChar = review.version.charAt(5)}
+							{@const index = sixthChar >= '0' && sixthChar <= '9' ? 6 : 5}
+							<span class="hoverable">
+								<span>"{review.version.slice(0, index)}"</span>
+								<div class="hoverable-content">{review.version}</div>
+							</span>
+						{:else}
+							"{review.version}"
+						{/if}
+					</span>
 					<span class="fg-purple hov-light">on</span>
 					<span class="fg-green hov-light">
 						"{new Date(review.created_at).toLocaleDateString('en-US')}"
@@ -69,7 +82,13 @@
 		</div>
 	</div>
 	<div class="review-body">
-		<p class="review-content" class:truncate>{review.review}</p>
+		<p
+			class="review-content"
+			class:truncate
+			style={truncate ? `-webkit-line-clamp: ${truncate};` : ''}
+		>
+			{review.review}
+		</p>
 		<div class="row">
 			{#if $user}
 				{#if review.author.id !== $user?.id}
@@ -114,10 +133,15 @@
 <style>
 	.review {
 		padding: 0.5rem;
-		margin: 0.5rem;
 		background-color: var(--color-bg-bright);
 		border-radius: 0.5rem;
+		width: 100%;
 		max-width: 50rem;
+	}
+
+	.review.fixed-width {
+		width: 20.65rem;
+		height: 100%;
 	}
 
 	.edit-btn {
@@ -131,13 +155,13 @@
 	.review-head {
 		margin-left: 0.25rem;
 		display: flex;
-		align-items: center;
+		align-items: start;
 		gap: 0.5rem;
 	}
 
 	.avatar {
-		height: 2.5rem;
-		justify-self: center;
+		margin-top: 0.5rem;
+		height: 3rem;
 	}
 
 	.review-info {
@@ -171,7 +195,6 @@
 	.review-content.truncate {
 		display: -webkit-box;
 		overflow: hidden;
-		-webkit-line-clamp: 8;
 		-webkit-box-orient: vertical;
 	}
 </style>

@@ -38,7 +38,7 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
-		width: 20rem;
+		width: 20.65rem;
 		background-color: var(--color-bg-bright);
 		padding: 0.25rem 0.5rem;
 		border-radius: 0.25rem;

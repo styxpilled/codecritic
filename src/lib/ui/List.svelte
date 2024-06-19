@@ -1,13 +1,15 @@
 <script lang="ts">
 	export let direction = 'row';
 	export let width: 'fit' | 'full' | undefined = undefined;
+	export let wrap = true;
+	export let align: 'start' | 'center' = 'center';
 </script>
 
 <div class="list {width}">
 	<div class="list-info">
 		<slot name="head" />
 	</div>
-	<div class="{direction} {width} list-content">
+	<div class="{direction} {width} {align} list-content" class:wrap>
 		<slot name="body" />
 	</div>
 </div>
@@ -38,10 +40,20 @@
 		display: flex;
 		gap: 0.5rem;
 		padding: 0 0.5rem;
-		flex-wrap: wrap;
 		justify-content: space-between;
+		align-items: center;
+		width: 64rem;
+		flex-direction: column;
+
+		&.wrap {
+			flex-direction: row;
+			flex-wrap: wrap;
+			align-items: start;
+		}
+	}
+
+	.list-content.start {
 		align-items: start;
-		width: 62rem;
 	}
 
 	.list-content.fit {

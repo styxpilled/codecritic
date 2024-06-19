@@ -61,12 +61,12 @@
 	}
 
 	.lg {
-		height: 8rem;
-		width: 8rem;
+		height: 4rem;
+		width: 4rem;
 	}
 
 	.xl {
-		height: 16rem;
-		width: 16rem;
+		height: 8rem;
+		width: 8rem;
 	}
 </style>
