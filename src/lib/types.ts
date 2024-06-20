@@ -92,3 +92,12 @@ export function isReviewPackage(pkg: Package | ReviewedPackage): pkg is Reviewed
 }
 
 export type ReviewedPackage = Package & { review: Review };
+
+export type Stack = {
+	id: number;
+	author: string;
+	name: string;
+	created_at: Date;
+	updated_at: Date;
+	description: string;
+};
