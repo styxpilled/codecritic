@@ -2,6 +2,7 @@
 	import { enhance } from '$app/forms';
 	import { user } from '$lib/client/stores';
 	import Avatar from '$ui/Avatar.svelte';
+	import List from '$ui/List.svelte';
 
 	export let data;
 </script>
@@ -13,11 +14,13 @@
 		<div class="col start name-actions-bio">
 			<div class="row name-actions">
 				<h1>
-					{#if data.user.nickname}
-						{data.user.nickname} ({data.user.username})
-					{:else}
-						{data.user.username}
-					{/if}
+					<a class="fg-red hov-line" href="/user/{data.user.username}">
+						{#if data.user.nickname}
+							{data.user.nickname} ({data.user.username})
+						{:else}
+							{data.user.username}
+						{/if}
+					</a>
 				</h1>
 				{#if data.user.id === $user?.id}
 					<a class="btn fg-dark hov-light" href="/settings">Edit profile</a>
@@ -79,14 +82,27 @@
 		</a>
 	</div>
 </div>
+<List width="full">
+	<svelte:fragment slot="head">
+		<!-- <span>popular on codecritic</span>
+			<span>more</span> -->
+	</svelte:fragment>
+	<svelte:fragment slot="body">
+		<h4><a class="hov-link hov-line" href="/user/{data.user.username}/reviews">Reviews</a></h4>
+		<h4><a class="hov-link hov-line" href="/user/{data.user.username}/stacks">Stacks</a></h4>
+		<h4><a class="hov-link hov-line" href="/user/{data.user.username}/stacks">Network</a></h4>
+		<h4><a class="hov-link hov-line" href="/user/{data.user.username}/stacks">Likes</a></h4>
+		<h4><a class="hov-link hov-line" href="/user/{data.user.username}/stacks">Stats</a></h4>
+	</svelte:fragment>
+</List>
 <slot />
 
 <style>
 	.user-header.row {
 		justify-content: space-between;
-		border-bottom: 1px solid var(--color-text-dark);
+		/* border-bottom: 1px solid var(--color-text-dark); */
 		padding-bottom: 0.5rem;
-		margin-bottom: 0.5rem;
+		/* margin-bottom: 0.5rem; */
 		height: fit-content;
 	}
 
