@@ -155,7 +155,7 @@
 	.review-head {
 		margin-left: 0.25rem;
 		display: flex;
-		align-items: start;
+		align-items: flex-start;
 		gap: 0.5rem;
 	}
 

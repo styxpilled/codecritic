@@ -48,12 +48,12 @@
 		&.wrap {
 			flex-direction: row;
 			flex-wrap: wrap;
-			align-items: start;
+			align-items: flex-start;
 		}
 	}
 
 	.list-content.start {
-		align-items: start;
+		align-items: flex-start;
 	}
 
 	.list-content.fit {
