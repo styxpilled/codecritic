@@ -11,7 +11,8 @@
 		console.log(data);
 	});
 
-	let manager = 'npm';
+	let selectedManager = 'npm';
+	const managers = ['npm', 'yarn', 'pnpm', 'bun'];
 </script>
 
 <div class="package-container">
@@ -51,38 +52,32 @@
 		<div class="package-sidebar">
 			<div class="manager">
 				<p class="manager-selection row">
-					<label>
-						npm
-						<input
-							class="hidden"
-							type="radio"
-							name="install"
-							value="npm"
-							bind:group={manager}
-							checked
-						/>
-					</label>
-					<label>
-						yarn
-						<input class="hidden" type="radio" name="install" value="yarn" bind:group={manager} />
-					</label>
-					<label>
-						<input class="hidden" type="radio" name="install" value="pnpm" bind:group={manager} />
-						pnpm
-					</label>
+					{#each managers as manager, i}
+						<label>
+							{manager}
+							<input
+								class="hidden"
+								type="radio"
+								name="install"
+								value={manager}
+								bind:group={selectedManager}
+								checked={i === 0}
+							/>
+						</label>
+					{/each}
 				</p>
 				<p class="command">
-					<span class="hidden npm">npm i {data.packageName}</span>
-					<span class="hidden yarn">yarn add {data.packageName}</span>
-					<span class="hidden pnpm">pnpm add {data.packageName}</span>
+					{#each managers as manager}
+						<span class="hidden {manager}">{manager} add {data.packageName}</span>
+					{/each}
 					<button
 						disabled={!browser}
 						on:click={async () => {
-							navigator.clipboard.writeText(
-								`${manager} ${manager === 'npm' ? 'i' : 'add'} ${data.packageName}`
-							);
-						}}><LucideCopy /></button
+							navigator.clipboard.writeText(`${selectedManager} add ${data.packageName}`);
+						}}
 					>
+						<LucideCopy />
+					</button>
 				</p>
 			</div>
 			{#if data.package.repository}
@@ -100,7 +95,7 @@
 			<form class="submit-review bg-light" method="post" use:enhance>
 				<div class="row">
 					<RatingInput />
-					<input type="datetime-local" value={new Date().toISOString().slice(0, 19)} />
+					<input type="date" value={new Date().toISOString().slice(0, 10)} />
 				</div>
 				<textarea placeholder="Add a review..." name="review" />
 				TODO: versions
@@ -151,7 +146,7 @@
 
 	.package-head {
 		padding-bottom: 0.5rem;
-		border-bottom: 1px solid #2b2a33;
+		border-bottom: 1px solid var(--color-bg-bright);
 	}
 
 	.package-body {
@@ -193,16 +188,12 @@
 		margin-left: 0.5rem;
 	}
 
-	.manager {
-		margin: 0 0.5rem;
-	}
-
 	.manager-selection {
 		margin: 0.5rem 0;
 	}
 
 	.manager-selection > label {
-		background-color: #2b2a33;
+		background-color: var(--color-bg-bright);
 		padding: 0 0.5rem;
 		text-align: center;
 		border-radius: 0.25rem;
@@ -215,6 +206,7 @@
 		background-color: #383d45;
 	}
 
+	/* Figure out something nicer */
 	.manager-selection:has(> label > input[value='npm']:checked) ~ .command > .npm {
 		display: block;
 	}
@@ -227,18 +219,18 @@
 		display: block;
 	}
 
+	.manager-selection:has(> label > input[value='bun']:checked) ~ .command > .bun {
+		display: block;
+	}
+
 	.command {
 		display: flex;
 		justify-content: space-between;
-		background-color: #2b2a33;
+		background-color: var(--color-bg-bright);
 		border-radius: 0.25rem;
 		padding: 0.25rem 0.5rem;
 		user-select: all;
 		color: #abb2bf;
-	}
-
-	.sidebar-link {
-		margin: 0 0.5rem;
 	}
 
 	.sidebar-link-label {
@@ -283,7 +275,7 @@
 
 	.submit-review {
 		border-radius: 0.5rem;
-		margin: 0.5rem;
+		margin: 0.5rem 0;
 		/* width: 50rem; */
 	}
 </style>

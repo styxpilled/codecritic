@@ -103,7 +103,7 @@
 							action="/packages/{review.package}/reviews/{review.id}?/unlike"
 						>
 							<button style="color: var(--color-text-dark);"
-								><span class="fg-red">❤︎</span> Liked</button
+								><span class="fg-red no-twemoji">❤︎</span> Liked</button
 							>
 						</form>
 					{:else}
@@ -116,7 +116,7 @@
 							method="post"
 							action="/packages/{review.package}/reviews/{review.id}?/like"
 						>
-							<button><span>❤︎</span> Like review</button>
+							<button><span class="no-twemoji">❤︎</span> Like review</button>
 						</form>
 					{/if}
 				{/if}
