@@ -9,18 +9,38 @@ html {
 	height: 100%;
 }
 
+/* Sourced from https://github.com/twitter/twemoji */
+/* It uses COLRv0 because Safari doesn't support COLRv1 because why do anything */
 @font-face {
 	font-family: 'Twemoji';
-	src:
-		url('/twemoji.woff2'),
-		url('/twemoji.ttf') format('truetype');
+	src: url('/Twemoji.Mozilla.ttf') format('truetype');
 }
 
 body {
-	font-family: 'Twemoji', 'Inter Variable';
+	font-family: 'Inter Variable', 'Twemoji';
 	scrollbar-width: thin;
 	color: var(--color-text);
 	background-color: #181a1b;
+}
+
+/* For some things we rely on the built-in fonts */
+/* NOTE: check how it looks on Linux & MacOS */
+.no-twemoji {
+	font-family:
+		ui-sans-serif,
+		system-ui,
+		-apple-system,
+		BlinkMacSystemFont,
+		'Segoe UI',
+		Roboto,
+		'Helvetica Neue',
+		Arial,
+		'Noto Sans',
+		sans-serif,
+		'Apple Color Emoji',
+		'Segoe UI Symbol',
+		'Segoe UI Emoji',
+		'Noto Color Emoji';
 }
 
 * {
