@@ -9,8 +9,15 @@ html {
 	height: 100%;
 }
 
+@font-face {
+	font-family: 'Twemoji';
+	src:
+		url('/twemoji.woff2'),
+		url('/twemoji.ttf') format('truetype');
+}
+
 body {
-	font-family: 'Inter Variable';
+	font-family: 'Twemoji', 'Inter Variable';
 	scrollbar-width: thin;
 	color: var(--color-text);
 	background-color: #181a1b;
