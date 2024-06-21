@@ -1,10 +1,11 @@
-import { sql } from '$lib/server/database';
+import { reviewSalt, sql } from '$lib/server/database';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async () => {
 	sql`
     SELECT 
-      reviews.*
+      reviews.*,
+      extensions.id_encode(reviews.id, ${reviewSalt}, 4) id,
     FROM reviews
       INNER JOIN users_follows 
         ON reviews.author = users_follows.following

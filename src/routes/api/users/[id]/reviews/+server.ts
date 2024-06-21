@@ -1,7 +1,7 @@
 import type { Review } from '$lib/types';
 import type { RequestHandler } from './$types';
 import { ok } from '$lib/server';
-import { sql } from '$lib/server/database';
+import { reviewSalt, sql } from '$lib/server/database';
 
 export const GET: RequestHandler = async ({ locals, params, url }) => {
 	const userID = locals.user?.id || '';
@@ -9,6 +9,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 	const reviews = (await sql`
     SELECT
       reviews.*,
+      extensions.id_encode(reviews.id, ${reviewSalt}, 4) id,
 	    ${userID} = ANY(ARRAY_AGG(likes_reviews.user_id)) liked,
       row_to_json (users.*) author,
       COUNT(DISTINCT likes_reviews.user_id)::integer likes

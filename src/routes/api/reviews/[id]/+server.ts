@@ -1,5 +1,5 @@
 import { notFound, ok, serverError, unauthorized } from '$lib/server';
-import { sql } from '$lib/server/database';
+import { reviewSalt, sql } from '$lib/server/database';
 import type { Review } from '$lib/types';
 import type { RequestHandler } from './$types';
 
@@ -9,6 +9,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	const [review] = await sql`
     SELECT
       reviews.*,
+      extensions.id_encode(reviews.id, ${reviewSalt}, 4) id,
       (user_id = ${userID} AND user_id IS NOT NULL) liked,
       row_to_json (users.*) author,
       COUNT(review_id)::integer likes
@@ -17,7 +18,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
         ON users.id = reviews.author
       LEFT JOIN likes_reviews
         ON reviews.id = review_id
-      WHERE reviews.id = ${params.id}
+      WHERE reviews.id = extensions.id_decode_once(${params.id}, ${reviewSalt}, 4)
     GROUP BY reviews.id, users.*, user_id, review_id
   `;
 

@@ -1,5 +1,5 @@
 import { ok, serverError, unauthorized } from '$lib/server';
-import { sql } from '$lib/server/database';
+import { reviewSalt, sql } from '$lib/server/database';
 import type { Review } from '$lib/types';
 import type { RequestHandler } from './$types';
 
@@ -9,6 +9,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 	const reviews = (await sql`
   SELECT
       reviews.*,
+      extensions.id_encode(reviews.id, ${reviewSalt}, 4) id,
       ${userID} = ANY(ARRAY_AGG(likes_reviews.user_id)) liked,
       row_to_json (users.*) author,
       COUNT(DISTINCT likes_reviews.user_id)::integer likes
@@ -30,17 +31,15 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 	try {
 		const r: Review = await request.json();
 		const author = locals.user.id;
-		r.id = crypto.randomUUID();
 		r.package = packageName;
 		r.created_at = new Date().toLocaleString('en-US');
-		const [review] = (await sql`
+		await sql`
       INSERT INTO reviews
-        (id, author, package, created_at, version, review, rating)
+        (author, package, created_at, version, review, rating)
       VALUES
-        (${r.id}, ${author}, ${r.package}, ${r.created_at}, ${r.version}, ${r.review}, ${r.rating})
-      RETURNING *
-    `) as [Review];
-		return ok(review);
+        (${author}, ${r.package}, ${r.created_at}, ${r.version}, ${r.review}, ${r.rating})
+    `;
+		return ok();
 	} catch (e) {
 		console.log(e);
 		throw serverError();

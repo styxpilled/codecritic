@@ -1,6 +1,6 @@
 import { parseIntSafe } from '$lib';
 import { ok, unauthorized } from '$lib/server';
-import { sql } from '$lib/server/database';
+import { reviewSalt, sql } from '$lib/server/database';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ locals, url }) => {
@@ -13,6 +13,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const reviews = await sql`
     SELECT 
       reviews.*,
+      extensions.id_encode(reviews.id, ${reviewSalt}, 4) id,
       ${userID} = ANY(ARRAY_AGG(likes_reviews.user_id)) liked,
       COUNT(DISTINCT likes_reviews.user_id)::integer likes,
       row_to_json(users.*) author

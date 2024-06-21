@@ -1,4 +1,4 @@
-import { DATABASE_URL, DB_SALT } from '$env/static/private';
+import { DATABASE_URL, STACK_SALT, REVIEW_SALT } from '$env/static/private';
 import type { NPMPackage, Package } from '$lib/types';
 // import postgres from 'postgres';
 import { neon } from '@neondatabase/serverless';
@@ -7,7 +7,8 @@ import { neon } from '@neondatabase/serverless';
 export const sql = neon(DATABASE_URL);
 // export const $s = postgres(DATABASE_URL);
 
-export const salt = DB_SALT;
+export const stackSalt = STACK_SALT;
+export const reviewSalt = REVIEW_SALT;
 
 export const getRepoURL = (url?: string) => {
 	return url

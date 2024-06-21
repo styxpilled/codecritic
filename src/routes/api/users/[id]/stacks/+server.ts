@@ -1,6 +1,6 @@
 import { parseIntSafe } from '$lib';
 import { ok } from '$lib/server';
-import { salt, sql } from '$lib/server/database';
+import { stackSalt, sql } from '$lib/server/database';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ params, url }) => {
@@ -10,7 +10,7 @@ export const GET: RequestHandler = async ({ params, url }) => {
 	const stacks = await sql`
     SELECT 
       stacks.*,
-      extensions.id_encode(id, ${salt}, 4) id
+      extensions.id_encode(id, ${stackSalt}, 4) id
     FROM stacks
       WHERE author = ${params.id}
     ORDER BY stacks.name
