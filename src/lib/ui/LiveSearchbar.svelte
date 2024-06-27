@@ -6,14 +6,17 @@
 	let searchResults: string[] = [];
 	let previousQuery = searchString;
 	let index = 0;
+	let awaitingIndex = 0;
 
 	const search = async () => {
 		if (searchString === previousQuery) return;
 		const query = searchString;
 		const innerIndex = index + 1;
+		awaitingIndex += 1;
+		const innerAwaitingIndex = awaitingIndex;
 		fetchOr(`/api/search?text=${encodeURIComponent(searchString)}`, searchResults).then(
 			(result) => {
-				if (innerIndex > index) {
+				if (innerIndex > index || innerAwaitingIndex > awaitingIndex) {
 					index = innerIndex;
 					searchResults = result;
 					previousQuery = query;
@@ -34,7 +37,7 @@
 >
 	<div class="dialog">
 		<form action="/">
-			<input type="search" bind:value={searchString} on:keydown={search} />
+			<input type="search" bind:value={searchString} on:keyup={search} />
 		</form>
 		{#if searchResults.length > 0}
 			<div class="results">
