@@ -17,5 +17,8 @@ export const GET: RequestHandler = async ({ params }) => {
     GROUP BY stacks.id
   `;
 	if (!stack) throw notFound();
+	if (stack.packages[0] === null) {
+		stack.packages = [];
+	}
 	return ok(stack);
 };
