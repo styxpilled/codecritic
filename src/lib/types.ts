@@ -95,7 +95,7 @@ export type ReviewedPackage = Package & { review: Review };
 
 export type Stack = {
 	id: number;
-	author: string;
+	author: string | User;
 	name: string;
 	created_at: Date;
 	updated_at: Date;

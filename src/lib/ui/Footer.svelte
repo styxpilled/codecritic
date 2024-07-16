@@ -1,12 +1,12 @@
 <footer>
 	<section>
 		<p>
-			Made with <a href="https://svelte.dev/" class="svelte">Svelte</a>/<a
+			Made with <a href="https://svelte.dev/" class="svelte hov-line">Svelte</a>/<a
 				href="https://kit.svelte.dev/"
-				class="svelte">Kit</a
+				class="svelte hov-line">Kit</a
 			>
 		</p>
-		<p>A <a href="https://styx.gay/" class="link">@styx</a> endeavour</p>
+		<p>A <a href="https://styx.gay/" class="fg-blue hov-line">@styx</a> endeavour</p>
 		<p>
 			<a href="https://www.kryogenix.org/code/browser/everyonehasjs.html">NoJS</a> compatible (hopefully)
 		</p>

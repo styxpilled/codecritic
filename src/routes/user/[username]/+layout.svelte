@@ -82,19 +82,24 @@
 		</a>
 	</div>
 </div>
-<List width="full">
-	<svelte:fragment slot="head">
-		<!-- <span>popular on codecritic</span>
-			<span>more</span> -->
-	</svelte:fragment>
-	<svelte:fragment slot="body">
+<ul>
+	<li>
 		<h4><a class="hov-link hov-line" href="/user/{data.user.username}/reviews">Reviews</a></h4>
+	</li>
+	<li>
 		<h4><a class="hov-link hov-line" href="/user/{data.user.username}/stacks">Stacks</a></h4>
+	</li>
+	<li>
 		<h4><a class="hov-link hov-line" href="/user/{data.user.username}/stacks">Network</a></h4>
+	</li>
+	<li>
 		<h4><a class="hov-link hov-line" href="/user/{data.user.username}/stacks">Likes</a></h4>
+	</li>
+	<li>
 		<h4><a class="hov-link hov-line" href="/user/{data.user.username}/stacks">Stats</a></h4>
-	</svelte:fragment>
-</List>
+	</li>
+</ul>
+<div class="spacer"></div>
 <slot />
 
 <style>
@@ -117,6 +122,14 @@
 			font-weight: 400;
 			letter-spacing: 0.075em;
 		}
+	}
+
+	ul {
+		display: flex;
+		justify-content: space-between;
+		padding: 0.5rem;
+		border-top: 1px solid var(--color-text-dark);
+		border-bottom: 1px solid var(--color-text-dark);
 	}
 
 	.hover-interact {
@@ -160,5 +173,9 @@
 		overflow-x: hidden;
 		white-space: pre-line;
 		max-height: 6rem;
+	}
+
+	.spacer {
+		margin-bottom: 1rem;
 	}
 </style>

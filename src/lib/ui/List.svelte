@@ -1,6 +1,6 @@
 <script lang="ts">
 	export let direction = 'row';
-	export let width: 'fit' | 'full' | undefined = undefined;
+	export let width: 'fit' | 'full' | 'auto' = 'auto';
 	export let wrap = true;
 	export let align: 'start' | 'center' = 'center';
 </script>

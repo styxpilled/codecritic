@@ -4,4 +4,5 @@
 	export let data;
 </script>
 
-<Review review={data.review} truncate={false} redirectToPackage showPackageName />
+{data.pkg.name} TODO
+<Review review={data.review} redirectToPackage showPackageName />

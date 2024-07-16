@@ -3,14 +3,19 @@
 	import Card from '$ui/Card.svelte';
 	import List from '$ui/List.svelte';
 	import Review from '$ui/Review.svelte';
+	import SimplePage from '$ui/SimplePage.svelte';
+	import User from '$ui/User.svelte';
 
 	export let data;
 </script>
 
-<div class="packages-page col">
+<SimplePage>
+	<h2 class="fg-dark">
+		React state management, Typescript types and slow npm installs - it's all here.
+	</h2>
 	<div>
 		<ul class="packages">
-			<List>
+			<List width="auto">
 				<svelte:fragment slot="head">
 					<span>Popular packages this week</span>
 					<a href="/">TODO MORE</a>
@@ -42,26 +47,7 @@
 				</svelte:fragment>
 				<svelte:fragment slot="body">
 					{#each data.reviewers as reviewer}
-						<div class="row">
-							<a href="/user/{reviewer.username}">
-								<Avatar username={reviewer.username} />
-							</a>
-							<div class="col start" style="gap: 0;">
-								<a href="/user/{reviewer.username}">
-									<h3 class="fg-red hov-line">
-										{#if reviewer.nickname}
-											{reviewer.nickname} ({reviewer.username})
-										{:else}
-											{reviewer.username}
-										{/if}
-									</h3>
-								</a>
-								<p>
-									<span class="fg-dark">{reviewer.reviews} reviews</span>,
-									<span class="fg-dark">{reviewer.likes} total likes</span>
-								</p>
-							</div>
-						</div>
+						<User user={reviewer} />
 					{/each}
 				</svelte:fragment>
 			</List>
@@ -81,20 +67,10 @@
 				</svelte:fragment>
 			</List>
 		</div>
-
-		<!-- <ul>
-			{#each data.reviews as review}
-				<Review showPackageName={true} {review} />
-			{/each}
-		</ul> -->
 	</div>
-</div>
+</SimplePage>
 
 <style>
-	.packages-page {
-		gap: 2rem;
-	}
-
 	ul.packages {
 		display: flex;
 		gap: 0.5rem;
