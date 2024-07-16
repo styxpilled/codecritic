@@ -1,3 +1,4 @@
+import { getPackage } from '$lib';
 import { ok, serverError, unauthorized } from '$lib/server';
 import { reviewSalt, sql } from '$lib/server/database';
 import type { Review } from '$lib/types';
@@ -27,12 +28,13 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 
 export const POST: RequestHandler = async ({ request, locals, params }) => {
 	if (!locals.user) throw unauthorized();
-	const packageName = params.scope ? `${params.scope}/${params.package}` : params.package;
 	try {
 		const r: Review = await request.json();
 		const author = locals.user.id;
-		r.package = packageName;
+		r.package = getPackage(params);
 		r.created_at = new Date().toLocaleString('en-US');
+		r.rating = Number.isInteger(r.rating) ? r.rating : 0;
+		r.rating = Math.min(Math.max(r.rating, 1), 10);
 		await sql`
       INSERT INTO reviews
         (author, package, created_at, version, review, rating)
