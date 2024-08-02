@@ -1,8 +1,8 @@
-import { reviewSalt, sql } from '$lib/server/database';
+import { reviewSalt } from '$lib/server/database';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async () => {
-	sql`
+export const GET: RequestHandler = async ({ locals }) => {
+	locals.sql`
     SELECT 
       reviews.*,
       extensions.id_encode(reviews.id, ${reviewSalt}, 4) id,

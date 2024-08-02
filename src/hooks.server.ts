@@ -1,7 +1,38 @@
-import { lucia } from '$lib/server/lucia';
+// import { lucia } from '$lib/server/lucia';
+import { dev } from '$app/environment';
+import { Lucia } from 'lucia';
+import postgres from 'postgres';
+import { PostgresJsAdapter } from '@lucia-auth/adapter-postgresql';
+import { DATABASE_URL } from '$env/static/private';
 import type { Handle } from '@sveltejs/kit';
 
 export const handle: Handle = async ({ event, resolve }) => {
+	const sql = postgres(DATABASE_URL);
+
+	const adapter = new PostgresJsAdapter(sql, {
+		user: 'users',
+		session: 'user_session'
+	});
+
+	const lucia = new Lucia(adapter, {
+		sessionCookie: {
+			attributes: {
+				// set to `true` when using HTTPS
+				secure: !dev
+			}
+		},
+		getUserAttributes: (attributes) => {
+			return {
+				githubId: attributes.github_id,
+				username: attributes.username,
+				nickname: attributes.nickname
+			};
+		}
+	});
+
+	event.locals.sql = sql;
+	event.locals.lucia = lucia;
+
 	const sessionId = event.cookies.get(lucia.sessionCookieName);
 	if (!sessionId) {
 		event.locals.user = null;

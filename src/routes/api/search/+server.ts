@@ -1,10 +1,9 @@
 import { fetchOr } from '$lib';
 import { badRequest, ok, serverError } from '$lib/server';
-import { sql } from '$lib/server/database';
 import type { NPMPackage, NPMSearchPackage } from '$lib/types';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ url, fetch }) => {
+export const GET: RequestHandler = async ({ locals, url, fetch }) => {
 	const res = await fetchOr<
 		{ objects: { package: NPMSearchPackage; score: { final: number } }[] } | undefined
 	>(`https://registry.npmjs.org/-/v1/search${url.search}`, undefined, fetch);

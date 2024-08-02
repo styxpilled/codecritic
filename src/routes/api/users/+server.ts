@@ -1,13 +1,12 @@
 import { parseIntSafe } from '$lib';
 import { ok } from '$lib/server';
-import { sql } from '$lib/server/database';
 import type { Review } from '$lib/types';
 
-export const GET = async ({ url }) => {
+export const GET = async ({ locals, url }) => {
 	const limit = Math.min(parseIntSafe(url.searchParams.get('limit'), 5), 25);
 	const offset = parseIntSafe(url.searchParams.get('offset'), 0);
 
-	const reviews = (await sql`
+	const reviews = (await locals.sql`
     SELECT
       users.*,
       COUNT(likes_reviews.user_id)::integer likes,

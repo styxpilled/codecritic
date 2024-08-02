@@ -1,6 +1,6 @@
 import { parseIntSafe } from '$lib';
 import { ok, unauthorized } from '$lib/server';
-import { reviewSalt, sql } from '$lib/server/database';
+import { reviewSalt } from '$lib/server/database';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ locals, url }) => {
@@ -10,7 +10,7 @@ export const GET: RequestHandler = async ({ locals, url }) => {
 	const limit = Math.min(parseIntSafe(url.searchParams.get('limit'), 5), 25);
 	const offset = parseIntSafe(url.searchParams.get('offset'), 0);
 
-	const reviews = await sql`
+	const reviews = await locals.sql`
     SELECT 
       reviews.*,
       extensions.id_encode(reviews.id, ${reviewSalt}, 4) id,

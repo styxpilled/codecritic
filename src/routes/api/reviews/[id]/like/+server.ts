@@ -1,12 +1,12 @@
 import { ok, unauthorized } from '$lib/server';
-import { reviewSalt, sql } from '$lib/server/database';
+import { reviewSalt } from '$lib/server/database';
 import type { RequestHandler } from './$types';
 
 export const POST: RequestHandler = async ({ locals, params }) => {
 	const user = locals.user;
 
 	if (user === null) throw unauthorized();
-	await sql`
+	await locals.sql`
     INSERT INTO likes_reviews
       (review_id, user_id)
     VALUES
@@ -20,7 +20,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 	const user = locals.user;
 
 	if (user === null) throw unauthorized();
-	await sql`
+	await locals.sql`
     DELETE FROM likes_reviews
       WHERE 
         review_id = extensions.id_decode_once(${params.id}, ${reviewSalt}, 4)

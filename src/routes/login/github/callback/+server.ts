@@ -1,13 +1,12 @@
 // routes/login/github/callback/+server.ts
 import { OAuth2RequestError } from 'arctic';
 import { generateId } from 'lucia';
-import { github, lucia } from '$lib/server/lucia';
+import { github } from '$lib/server/lucia';
 
-import { sql } from '$lib/server/database';
 import type { User } from '$lib/types';
 import { dev } from '$app/environment';
 
-export async function GET({ cookies, url, fetch }): Promise<Response> {
+export async function GET({ locals, cookies, url, fetch }): Promise<Response> {
 	const code = url.searchParams.get('code');
 	const state = url.searchParams.get('state');
 	const storedState = cookies.get('github_oauth_state') ?? null;
@@ -28,28 +27,28 @@ export async function GET({ cookies, url, fetch }): Promise<Response> {
 		});
 		const githubUser: GitHubUser = await githubUserResponse.json();
 
-		const [existingUser] = (await sql`
+		const [existingUser] = (await locals.sql`
       SELECT * FROM users
         WHERE github_id = ${githubUser.id}
     `) as [User?];
 
 		if (existingUser) {
-			const session = await lucia.createSession(existingUser.id, {});
-			const sessionCookie = lucia.createSessionCookie(session.id);
+			const session = await locals.lucia.createSession(existingUser.id, {});
+			const sessionCookie = locals.lucia.createSessionCookie(session.id);
 			cookies.set(sessionCookie.name, sessionCookie.value, {
 				path: '.',
 				...sessionCookie.attributes
 			});
 		} else {
 			const userId = generateId(15);
-			await sql`
+			await locals.sql`
         INSERT INTO users
           (id, github_id, username, nickname)
         VALUES
           (${userId}, ${githubUser.id}, ${githubUser.login}, ${githubUser.name})
       `;
-			const session = await lucia.createSession(userId, {});
-			const sessionCookie = lucia.createSessionCookie(session.id);
+			const session = await locals.lucia.createSession(userId, {});
+			const sessionCookie = locals.lucia.createSessionCookie(session.id);
 			cookies.set(sessionCookie.name, sessionCookie.value, {
 				path: '.',
 				...sessionCookie.attributes

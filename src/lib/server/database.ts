@@ -1,10 +1,9 @@
 import { DATABASE_URL, STACK_SALT, REVIEW_SALT } from '$env/static/private';
 import type { NPMPackage, Package } from '$lib/types';
 // import postgres from 'postgres';
-import { neon } from '@neondatabase/serverless';
-
+// import type { ReservedSql } from 'postgres';
 // export const sql = () => postgres(DATABASE_URL);
-export const sql = neon(DATABASE_URL);
+// export const locals.sql = neon(DATABASE_URL);
 // export const $s = postgres(DATABASE_URL);
 
 export const stackSalt = STACK_SALT;
@@ -16,8 +15,12 @@ export const getRepoURL = (url?: string) => {
 		: undefined;
 };
 
-export const addPackage = async (npmPackage: NPMPackage, repository?: string) => {
-	return (await sql`
+export const addPackage = async (
+	sql: any,
+	npmPackage: NPMPackage,
+	repository?: string
+): Promise<Package[]> => {
+	return sql`
     INSERT INTO packages
       (name, description, keywords, latest, next, license, repository, homepage, author, public)
     VALUES
@@ -35,5 +38,5 @@ export const addPackage = async (npmPackage: NPMPackage, repository?: string) =>
       )
     ON CONFLICT DO NOTHING
     RETURNING *
-  `) as Package[];
+  `;
 };

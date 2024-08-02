@@ -1,6 +1,6 @@
 import { parseIntSafe } from '$lib';
 import { ok } from '$lib/server';
-import { reviewSalt, sql } from '$lib/server/database';
+import { reviewSalt } from '$lib/server/database';
 import type { Review } from '$lib/types';
 
 export const GET = async ({ locals, url }) => {
@@ -9,7 +9,7 @@ export const GET = async ({ locals, url }) => {
 
 	const userID = locals.user?.id || '';
 
-	const reviews = (await sql`
+	const reviews = (await locals.sql`
     SELECT
       reviews.*,
       extensions.id_encode(reviews.id, ${reviewSalt}, 4) id,

@@ -1,12 +1,11 @@
 import { badRequest, ok, unauthorized } from '$lib/server';
-import { sql } from '$lib/server/database';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ params, url }) => {
+export const GET: RequestHandler = async ({ locals, params, url }) => {
 	// const cursor = url.searchParams.get('cursor');
 	const offset = JSON.parse(url.searchParams.get('offset') || '0');
 	const limit = JSON.parse(url.searchParams.get('limit') || '25');
-	const followers = await sql`
+	const followers = await locals.sql`
     SELECT users.* FROM
       users
     LEFT JOIN users_follows
@@ -30,7 +29,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 	const user = locals.user;
 	if (user === null) throw unauthorized();
 	if (user.id === params.id) throw badRequest();
-	await sql`
+	await locals.sql`
     INSERT INTO users_follows
       (user_id, following)
     VALUES
@@ -45,7 +44,7 @@ export const DELETE: RequestHandler = async ({ params, locals }) => {
 	const user = locals.user;
 	if (user === null) throw unauthorized();
 	if (user.id === params.id) throw badRequest();
-	await sql`
+	await locals.sql`
     DELETE FROM
       users_follows
     WHERE 

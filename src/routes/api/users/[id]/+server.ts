@@ -1,12 +1,11 @@
 import type { RequestHandler } from './$types';
 import type { User } from 'lucia';
 import { notFound, ok } from '$lib/server';
-import { sql } from '$lib/server/database';
 
 export const GET: RequestHandler = async ({ params, locals }) => {
 	const userID = locals.user?.id || null;
 
-	const [requestedUser] = (await sql`
+	const [requestedUser] = (await locals.sql`
     SELECT 
       users.*,
       COUNT(DISTINCT following.following)::int following,

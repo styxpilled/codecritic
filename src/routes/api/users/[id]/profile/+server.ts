@@ -1,21 +1,20 @@
 import { notFound, ok, unauthorized } from '$lib/server';
-import { sql } from '$lib/server/database';
 import type { Profile, User } from '$lib/types';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ params }) => {
-	const [profile] = (await sql`
+export const GET: RequestHandler = async ({ locals, params }) => {
+	const [profile] = (await locals.sql`
     SELECT * FROM profiles
       WHERE id = ${params.id}
   `) as [Profile];
 
 	if (!profile) {
-		const [user] = (await sql`
+		const [user] = (await locals.sql`
       SELECT * FROM users
         WHERE id = ${params.id}
     `) as [User];
 		if (!user) throw notFound();
-		const [createdProfile] = (await sql`
+		const [createdProfile] = (await locals.sql`
       INSERT INTO profiles
         (id, bio, url, links)
       VALUES
@@ -30,7 +29,7 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 	const user = locals.user;
 	if (!user) throw unauthorized();
 	const changes: Profile = await request.json();
-	const [profile] = (await sql`
+	const [profile] = (await locals.sql`
     INSERT INTO profiles
       (id, bio, url, links)
     VALUES

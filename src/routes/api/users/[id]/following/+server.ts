@@ -1,12 +1,11 @@
 import { ok } from '$lib/server';
-import { sql } from '$lib/server/database';
 import type { RequestHandler } from './$types';
 
-export const GET: RequestHandler = async ({ params, url }) => {
+export const GET: RequestHandler = async ({ locals, params, url }) => {
 	// const cursor = url.searchParams.get('cursor');
 	const offset = JSON.parse(url.searchParams.get('offset') || '0');
 	const limit = JSON.parse(url.searchParams.get('limit') || '25');
-	const following = await sql`
+	const following = await locals.sql`
     SELECT users.* FROM
       users
     LEFT JOIN users_follows

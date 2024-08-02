@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+  viewBox="0 0 512 512" style="enable-background:new 0 0 512 512;" xml:space="preserve">
+  <style type="text/css">
+    .st0 {
+      fill: #282C34;
+    }
+
+    .st1 {
+      fill: #DCDFE4;
+    }
+
+    .st2 {
+      font-family: 'MyriadPro-Regular';
+    }
+
+    .st3 {
+      font-size: 32.269px;
+    }
+
+    .st4 {
+      font-size: 20.7316px;
+    }
+
+    .st5 {
+      fill: none;
+      stroke: #FBC250;
+      stroke-width: 8;
+      stroke-miterlimit: 10;
+    }
+
+    .st6 {
+      display: none;
+    }
+
+    .st7 {
+      display: inline;
+    }
+
+    .st8 {
+      fill: none;
+      stroke: #000000;
+      stroke-width: 2.6667;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+      stroke-miterlimit: 5.3333;
+    }
+  </style>
+  <g id="Layer_2">
+    <rect class="st0" width="512" height="512" />
+  </g>
+  <g id="Layer_1">
+    <text transform="matrix(1 0 0 1 94.4061 76.2599)" class="st1 st2 st3">Tired of slow bundling?</text>
+    <text transform="matrix(1 0 0 1 73.0283 435.6151)">
+      <tspan x="0" y="0" class="st1 st2 st3">Vercel's new Blazingly Fast</tspan>
+      <tspan x="60.31" y="38.72" class="st1 st2 st3">bundler can help!</tspan>
+    </text>
+    <g>
+      <text transform="matrix(0.9666 -0.2562 0.2562 0.9666 12.6681 419.0354)" class="st1 st2 st4">(psst... it's written
+        in Rust!)</text>
+    </g>
+    <g>
+      <path class="st5" d="M359.1,202.65c-0.01-7.82-4.18-15.04-10.95-18.94l-76.65-43.8c-6.78-3.91-15.13-3.91-21.9,0l-76.65,43.8
+			c-6.77,3.91-10.94,11.13-10.95,18.94v87.61c0.01,7.82,4.18,15.04,10.95,18.94l76.65,43.8c6.78,3.91,15.13,3.91,21.9,0l76.65-43.8
+			c6.77-3.91,10.94-11.13,10.95-18.94V202.65z" />
+      <path class="st5" d="M165.28,191.7l95.27,54.75l95.27-54.75 M260.55,355.96V246.46" />
+    </g>
+  </g>
+  <g id="Layer_3" class="st6">
+    <g class="st7">
+      <path class="st8" d="M233.17,277.24v-5.33h-5.33" />
+      <path class="st8" d="M243.84,279.9v10.67c0,1.47-1.2,2.67-2.67,2.67h-16c-1.47,0-2.67-1.2-2.67-2.67V279.9
+			c0-1.47,1.2-2.66,2.67-2.66h16C242.64,277.24,243.84,278.43,243.84,279.9z" />
+      <path class="st8" d="M219.84,285.24h2.67 M243.84,285.24h2.67 M237.17,283.91v2.67 M229.17,283.91v2.67" />
+    </g>
+  </g>
+</svg>

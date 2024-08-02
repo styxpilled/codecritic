@@ -1,9 +1,8 @@
 import type { RequestHandler } from './$types';
 import { notFound, ok } from '$lib/server';
-import { sql } from '$lib/server/database';
 
-export const GET: RequestHandler = async ({ params }) => {
-	const [user] = await sql`
+export const GET: RequestHandler = async ({ locals, params }) => {
+	const [user] = await locals.sql`
     SELECT * FROM users
       WHERE username = ${params.name}
   `;

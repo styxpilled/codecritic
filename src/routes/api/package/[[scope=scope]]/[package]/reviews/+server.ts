@@ -1,13 +1,13 @@
 import { getPackage } from '$lib';
 import { ok, serverError, unauthorized } from '$lib/server';
-import { reviewSalt, sql } from '$lib/server/database';
+import { reviewSalt } from '$lib/server/database';
 import type { Review } from '$lib/types';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ locals, params }) => {
 	const packageName = params.scope ? `${params.scope}/${params.package}` : params.package;
 	const userID = locals.user?.id || '';
-	const reviews = (await sql`
+	const reviews = (await locals.sql`
   SELECT
       reviews.*,
       extensions.id_encode(reviews.id, ${reviewSalt}, 4) id,
@@ -35,7 +35,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
 		r.created_at = new Date().toLocaleString('en-US');
 		r.rating = Number.isInteger(r.rating) ? r.rating : 0;
 		r.rating = Math.min(Math.max(r.rating, 1), 10);
-		await sql`
+		await locals.sql`
       INSERT INTO reviews
         (author, package, created_at, version, review, rating)
       VALUES

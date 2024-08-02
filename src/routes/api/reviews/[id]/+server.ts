@@ -1,12 +1,12 @@
 import { notFound, ok, serverError, unauthorized } from '$lib/server';
-import { reviewSalt, sql } from '$lib/server/database';
+import { reviewSalt } from '$lib/server/database';
 import type { Review } from '$lib/types';
 import type { RequestHandler } from './$types';
 
 export const GET: RequestHandler = async ({ locals, params }) => {
 	const userID = locals.user?.id || '';
 
-	const [review] = await sql`
+	const [review] = await locals.sql`
     SELECT
       reviews.*,
       extensions.id_encode(reviews.id, ${reviewSalt}, 4) id,
@@ -28,7 +28,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
 export const PUT: RequestHandler = async ({ request, locals, params }) => {
 	if (!locals.user) throw unauthorized();
 	try {
-		const [currentReview] = (await sql`
+		const [currentReview] = (await locals.sql`
       SELECT * FROM reviews
         WHERE id = ${params.id};
     `) as [(Review & { author: string })?];
@@ -38,7 +38,7 @@ export const PUT: RequestHandler = async ({ request, locals, params }) => {
 
 		const editedReview: Review = await request.json();
 
-		const [review] = (await sql`
+		const [review] = (await locals.sql`
       UPDATE reviews
         SET review = ${editedReview.review},
             rating = ${editedReview.rating}
@@ -54,7 +54,7 @@ export const PUT: RequestHandler = async ({ request, locals, params }) => {
 export const DELETE: RequestHandler = async ({ locals, params }) => {
 	if (!locals.user) throw unauthorized();
 	try {
-		const [currentReview] = (await sql`
+		const [currentReview] = (await locals.sql`
       SELECT * FROM reviews
         WHERE id = ${params.id};
     `) as [(Review & { author: string })?];
@@ -62,7 +62,7 @@ export const DELETE: RequestHandler = async ({ locals, params }) => {
 		if (!currentReview) throw notFound();
 		if (currentReview.author !== locals.user.id) throw unauthorized();
 
-		await sql`
+		await locals.sql`
       DELETE FROM reviews
         WHERE id = ${params.id} AND author = ${locals.user.id}
     `;
