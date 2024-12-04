@@ -1,8 +1,12 @@
 <script lang="ts">
-	export let size: 'xs' | 'sm' | 'md' | 'lg' | 'xl' = 'md';
-	export let username: string | undefined;
+	interface Props {
+		size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+		username: string | undefined;
+	}
 
-	let pxSize = 32;
+	let { size = 'md', username }: Props = $props();
+
+	let pxSize = $state(32);
 
 	switch (size) {
 		case 'xs':

@@ -1,3 +1,4 @@
+<!-- @migration-task Error while migrating Svelte code: `<form>` is invalid inside `<form>` -->
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import RatingInput from '$ui/RatingInput.svelte';

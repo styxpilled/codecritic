@@ -1,20 +1,28 @@
 <script lang="ts">
 	import List from '$ui/List.svelte';
 	import Review from '$ui/Review.svelte';
-	export let data;
+	interface Props {
+		data: any;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 <div class="row start">
 	{#if data.reviews?.length > 0}
 		<List width="full" wrap={false}>
-			<svelte:fragment slot="head">
-				<span>Reviews</span>
-			</svelte:fragment>
-			<svelte:fragment slot="body">
-				{#each data.reviews as review}
-					<Review {review} showPackageName={true} showUserName={false} />
-				{/each}
-			</svelte:fragment>
+			{#snippet head()}
+					
+					<span>Reviews</span>
+				
+					{/snippet}
+			{#snippet body()}
+					
+					{#each data.reviews as review}
+						<Review {review} showPackageName={true} showUserName={false} />
+					{/each}
+				
+					{/snippet}
 		</List>
 	{:else}
 		<h3>No reviews yet!</h3>

@@ -2,8 +2,12 @@
 	import { type Package } from '$lib/types';
 	import License from './icons/License.svelte';
 
-	export let pkg: Package;
-	export let wide = false;
+	interface Props {
+		pkg: Package;
+		wide?: boolean;
+	}
+
+	let { pkg, wide = false }: Props = $props();
 </script>
 
 <div class="package" class:wide>
@@ -27,7 +31,7 @@
 		{#if pkg.license}
 			<span class="hoverable">
 				<License />
-				<div class="hoverable-content">{pkg.license}</div>
+				<span class="hoverable-content">{pkg.license}</span>
 			</span>
 		{/if}
 	</p>

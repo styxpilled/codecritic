@@ -1,32 +1,34 @@
 <script lang="ts">
+	import { run, preventDefault } from 'svelte/legacy';
+
 	import { fetchOr } from '$lib';
 	import { user } from '$lib/client/stores';
 	import { onMount } from 'svelte';
 	import type { Stack } from '$lib/types';
 
-	export let edit = false;
 
-	export let stack: Stack = {
+	interface Props {
+		edit?: boolean;
+		stack?: Stack;
+	}
+
+	let { edit = false, stack = $bindable({
 		name: '',
 		description: '',
 		created_at: new Date(),
 		author: $user?.id || '',
 		id: 0,
 		updated_at: new Date()
-	};
+	}) }: Props = $props();
 
-	let showLiveSearch = false;
+	let showLiveSearch = $state(false);
 
-	let searchString = '';
-	let searchResults: string[] = [];
+	let searchString = $state('');
+	let searchResults: string[] = $state([]);
 	let previousQuery = searchString;
 	let index = 0;
-	let selectedPackages: string[] = [];
+	let selectedPackages: string[] = $state([]);
 
-	$: {
-		searchString;
-		search();
-	}
 
 	const search = async () => {
 		if (searchString === previousQuery) return;
@@ -45,6 +47,10 @@
 
 	onMount(() => {
 		showLiveSearch = true;
+	});
+	run(() => {
+		searchString;
+		search();
 	});
 </script>
 
@@ -83,12 +89,12 @@
 				<div class="search">
 					<form
 						action="/"
-						on:submit|preventDefault={() => {
+						onsubmit={preventDefault(() => {
 							if (!selectedPackages.includes(searchString)) selectedPackages.push(searchString);
 							selectedPackages = selectedPackages;
 							searchResults = [];
 							searchString = '';
-						}}
+						})}
 					>
 						<label>
 							add a package
@@ -101,12 +107,12 @@
 								{#each searchResults as pkg}
 									<li>
 										<button
-											on:click|preventDefault={() => {
+											onclick={preventDefault(() => {
 												if (!selectedPackages.includes(pkg)) selectedPackages.push(pkg);
 												selectedPackages = selectedPackages;
 												searchResults = [];
 												searchString = '';
-											}}
+											})}
 										>
 											{pkg}
 										</button>
@@ -126,7 +132,7 @@
 					{pkg}
 					<button
 						type="button"
-						on:click={() => {
+						onclick={() => {
 							selectedPackages.splice(i, 1);
 							selectedPackages = selectedPackages;
 						}}

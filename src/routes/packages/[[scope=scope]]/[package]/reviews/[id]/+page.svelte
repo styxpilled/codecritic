@@ -1,7 +1,11 @@
 <script lang="ts">
 	import Review from '$ui/Review.svelte';
 
-	export let data;
+	interface Props {
+		data: any;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 {data.pkg.name} TODO

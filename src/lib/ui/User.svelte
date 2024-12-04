@@ -2,7 +2,11 @@
 	import type { User } from '$lib/types';
 	import Avatar from './Avatar.svelte';
 
-	export let user: User & { likes?: number; reviews?: number };
+	interface Props {
+		user: User & { likes?: number; reviews?: number };
+	}
+
+	let { user }: Props = $props();
 </script>
 
 <div class="row">

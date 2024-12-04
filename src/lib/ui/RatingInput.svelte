@@ -1,7 +1,11 @@
 <script lang="ts">
-	export let value = -1;
-	let elements = Array(10);
-	let index = -1;
+	interface Props {
+		value?: any;
+	}
+
+	let { value = -1 }: Props = $props();
+	let elements = $state(Array(10));
+	let index = $state(-1);
 </script>
 
 <div class="rating">
@@ -13,7 +17,7 @@
 				value={i + 1}
 				checked={value === i + 1 && index === -1}
 				bind:this={elements[i]}
-				on:click={() => {
+				onclick={() => {
 					if (index === i + 1) {
 						index = -1;
 						elements[i].checked = false;

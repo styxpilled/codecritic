@@ -1,16 +1,29 @@
 <script lang="ts">
-	export let direction = 'row';
-	export let width: 'fit' | 'full' | 'auto' = 'auto';
-	export let wrap = true;
-	export let align: 'start' | 'center' = 'center';
+	interface Props {
+		direction?: string;
+		width?: 'fit' | 'full' | 'auto';
+		wrap?: boolean;
+		align?: 'start' | 'center';
+		head?: import('svelte').Snippet;
+		body?: import('svelte').Snippet;
+	}
+
+	let {
+		direction = 'row',
+		width = 'auto',
+		wrap = true,
+		align = 'center',
+		head,
+		body
+	}: Props = $props();
 </script>
 
 <div class="list {width}">
 	<div class="list-info">
-		<slot name="head" />
+		{@render head?.()}
 	</div>
 	<div class="{direction} {width} {align} list-content" class:wrap>
-		<slot name="body" />
+		{@render body?.()}
 	</div>
 </div>
 

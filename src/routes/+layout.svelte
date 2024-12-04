@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { run } from 'svelte/legacy';
+
 	import { user } from '$lib/client/stores';
 	import Header from '$lib/ui/Header.svelte';
 	import Footer from '$ui/Footer.svelte';
@@ -9,11 +11,16 @@
 	import '$styles/static.css';
 	import { dev } from '$app/environment';
 
-	export let data;
-
-	$: {
-		$user = data.auth.user;
+	interface Props {
+		data: any;
+		children?: import('svelte').Snippet;
 	}
+
+	let { data, children }: Props = $props();
+
+	$effect(() => {
+		$user = data.auth.user;
+	});
 </script>
 
 <svelte:head>
@@ -23,7 +30,7 @@
 <div id="root">
 	<Header />
 	<div id="main">
-		<slot />
+		{@render children?.()}
 	</div>
 	<Footer />
 </div>

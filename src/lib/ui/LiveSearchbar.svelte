@@ -1,9 +1,15 @@
 <script lang="ts">
+	import { self } from 'svelte/legacy';
+
 	import { fetchOr } from '$lib';
-	export let show = false;
-	let backdrop: HTMLDivElement;
-	let searchString = '';
-	let searchResults: string[] = [];
+	interface Props {
+		show?: boolean;
+	}
+
+	let { show = $bindable(false) }: Props = $props();
+	let backdrop: HTMLDivElement = $state();
+	let searchString = $state('');
+	let searchResults: string[] = $state([]);
 	let previousQuery = searchString;
 	let index = 0;
 	let awaitingIndex = 0;
@@ -26,10 +32,10 @@
 	};
 </script>
 
-<!-- svelte-ignore a11y-click-events-have-key-events -->
-<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+<!-- svelte-ignore a11y_click_events_have_key_events -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div
-	on:click|self={() => (show = false)}
+	onclick={self(() => (show = false))}
 	bind:this={backdrop}
 	class:show
 	class="dialog-backdrop"
@@ -37,7 +43,7 @@
 >
 	<div class="dialog">
 		<form action="/">
-			<input type="search" bind:value={searchString} on:keyup={search} />
+			<input type="search" bind:value={searchString} onkeyup={search} />
 		</form>
 		{#if searchResults.length > 0}
 			<div class="results">

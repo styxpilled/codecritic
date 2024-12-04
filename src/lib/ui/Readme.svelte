@@ -6,8 +6,12 @@
 
 	import '$styles/github.css';
 
-	export let readme: string;
-	export let url: string;
+	interface Props {
+		readme: string;
+		url: string;
+	}
+
+	let { readme, url }: Props = $props();
 
 	const marked = new Marked(
 		markedHighlight({

@@ -3,7 +3,11 @@
 	import SimplePage from '$ui/SimplePage.svelte';
 	import Stack from '$ui/Stack.svelte';
 
-	export let data;
+	interface Props {
+		data: any;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 <SimplePage>
@@ -17,22 +21,30 @@
 		</h3>
 	</div>
 	<List width="full">
-		<svelte:fragment slot="head">
-			<span>new from mutuals</span>
-			<span>more</span>
-		</svelte:fragment>
-		<svelte:fragment slot="body"></svelte:fragment>
+		{#snippet head()}
+			
+				<span>new from mutuals</span>
+				<span>more</span>
+			
+			{/snippet}
+		{#snippet body()}
+				<svelte:fragment ></svelte:fragment>
+			{/snippet}
 	</List>
 	<List width="full">
-		<svelte:fragment slot="head">
-			<span>popular stacks</span>
-			<span>more</span>
-		</svelte:fragment>
-		<svelte:fragment slot="body">
-			{#each data.stacks as stack}
-				<Stack {stack} />
-			{/each}
-		</svelte:fragment>
+		{#snippet head()}
+			
+				<span>popular stacks</span>
+				<span>more</span>
+			
+			{/snippet}
+		{#snippet body()}
+			
+				{#each data.stacks as stack}
+					<Stack {stack} />
+				{/each}
+			
+			{/snippet}
 	</List>
 </SimplePage>
 

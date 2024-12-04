@@ -4,7 +4,12 @@
 	import Avatar from '$ui/Avatar.svelte';
 	import List from '$ui/List.svelte';
 
-	export let data;
+	interface Props {
+		data: any;
+		children?: import('svelte').Snippet;
+	}
+
+	let { data, children }: Props = $props();
 </script>
 
 <!-- This is completely unreadable. What is this. -->
@@ -100,7 +105,7 @@
 	</li>
 </ul>
 <div class="spacer"></div>
-<slot />
+{@render children?.()}
 
 <style>
 	.user-header.row {

@@ -4,7 +4,11 @@
 	import Review from '$ui/Review.svelte';
 	import SimplePage from '$ui/SimplePage.svelte';
 
-	export let data;
+	interface Props {
+		data: any;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 <SimplePage>
@@ -26,35 +30,47 @@
 	</div>
 	{#if data.mutualReviews.length > 0}
 		<List>
-			<svelte:fragment slot="head">
-				<span>new from mutuals</span>
-				<span>more</span>
-			</svelte:fragment>
-			<svelte:fragment slot="body">
-				{#each data.mutualReviews as review}
-					<Review showPackageName truncateVersion fixedWidth truncate={4} {review} />
-				{/each}
-			</svelte:fragment>
+			{#snippet head()}
+					
+					<span>new from mutuals</span>
+					<span>more</span>
+				
+					{/snippet}
+			{#snippet body()}
+					
+					{#each data.mutualReviews as review}
+						<Review showPackageName truncateVersion fixedWidth truncate={4} {review} />
+					{/each}
+				
+					{/snippet}
 		</List>
 	{/if}
 	<List>
-		<svelte:fragment slot="head">
-			<span>popular on codecritic</span>
-			<span>more</span>
-		</svelte:fragment>
-		<svelte:fragment slot="body">
-			{#each data.packages as pkg}
-				<Card {pkg} />
-			{/each}
-		</svelte:fragment>
+		{#snippet head()}
+			
+				<span>popular on codecritic</span>
+				<span>more</span>
+			
+			{/snippet}
+		{#snippet body()}
+			
+				{#each data.packages as pkg}
+					<Card {pkg} />
+				{/each}
+			
+			{/snippet}
 	</List>
 	<List>
-		<svelte:fragment slot="head">
-			<span>Recommended</span>
-			<span>All recommened</span>
-		</svelte:fragment>
-		<svelte:fragment slot="body">
-			<p>Coming soon!</p>
-		</svelte:fragment>
+		{#snippet head()}
+			
+				<span>Recommended</span>
+				<span>All recommened</span>
+			
+			{/snippet}
+		{#snippet body()}
+			
+				<p>Coming soon!</p>
+			
+			{/snippet}
 	</List>
 </SimplePage>

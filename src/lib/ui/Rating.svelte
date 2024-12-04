@@ -1,5 +1,9 @@
 <script lang="ts">
-	export let rating: number;
+	interface Props {
+		rating: number;
+	}
+
+	let { rating }: Props = $props();
 </script>
 
 <span class="fg-blue">

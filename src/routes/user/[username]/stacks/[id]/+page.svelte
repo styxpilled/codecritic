@@ -2,7 +2,11 @@
 	import { user } from '$lib/client/stores';
 	import Card from '$ui/Card.svelte';
 
-	export let data;
+	interface Props {
+		data: any;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 <div class="stack">

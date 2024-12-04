@@ -2,7 +2,11 @@
 	import { enhance } from '$app/forms';
 	import { user } from '$lib/client/stores';
 
-	export let data;
+	interface Props {
+		data: any;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 <div class="row">
@@ -24,7 +28,7 @@
 		<form use:enhance action="/settings?/updateProfile" method="post">
 			<label>
 				<span>Bio:</span>
-				<textarea placeholder="Add a bio!" name="bio" value={data.profile.bio} />
+				<textarea placeholder="Add a bio!" name="bio" value={data.profile.bio}></textarea>
 			</label>
 			<label>
 				<span>URL:</span>

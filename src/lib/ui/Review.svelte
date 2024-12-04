@@ -5,14 +5,27 @@
 	import Avatar from './Avatar.svelte';
 	import Rating from './Rating.svelte';
 
-	export let style = '';
-	export let review: Review;
-	export let showPackageName = false;
-	export let showUserName = true;
-	export let redirectToPackage = false;
-	export let truncate: number | undefined = 8;
-	export let truncateVersion = false;
-	export let fixedWidth = false;
+	interface Props {
+		style?: string;
+		review: Review;
+		showPackageName?: boolean;
+		showUserName?: boolean;
+		redirectToPackage?: boolean;
+		truncate?: number | undefined;
+		truncateVersion?: boolean;
+		fixedWidth?: boolean;
+	}
+
+	let {
+		style = '',
+		review = $bindable(),
+		showPackageName = false,
+		showUserName = true,
+		redirectToPackage = false,
+		truncate = 8,
+		truncateVersion = false,
+		fixedWidth = false
+	}: Props = $props();
 </script>
 
 <div class="review" {style} class:fixed-width={fixedWidth}>
@@ -95,7 +108,7 @@
 					{#if review.liked}
 						<form
 							use:enhance
-							on:submit={() => {
+							onsubmit={() => {
 								review.liked = false;
 								review.likes -= 1;
 							}}
@@ -109,7 +122,7 @@
 					{:else}
 						<form
 							use:enhance
-							on:submit={() => {
+							onsubmit={() => {
 								review.liked = true;
 								review.likes += 1;
 							}}

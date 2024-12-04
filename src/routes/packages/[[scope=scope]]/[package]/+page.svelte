@@ -5,13 +5,17 @@
 	import Review from '$ui/Review.svelte';
 	import Readme from '$ui/Readme.svelte';
 	import { browser } from '$app/environment';
-	export let data;
+	interface Props {
+		data: any;
+	}
+
+	let { data }: Props = $props();
 
 	onMount(() => {
 		console.log(data);
 	});
 
-	let selectedManager = 'npm';
+	let selectedManager = $state('npm');
 	const managers = ['npm', 'yarn', 'pnpm', 'bun'];
 </script>
 
@@ -72,7 +76,7 @@
 					{/each}
 					<button
 						disabled={!browser}
-						on:click={async () => {
+						onclick={async () => {
 							navigator.clipboard.writeText(`${selectedManager} add ${data.packageName}`);
 						}}
 					>
@@ -97,7 +101,7 @@
 					<RatingInput />
 					<input type="date" value={new Date().toISOString().slice(0, 10)} />
 				</div>
-				<textarea placeholder="Add a review..." name="review" />
+				<textarea placeholder="Add a review..." name="review"></textarea>
 				TODO: versions
 				<div class="row">
 					<label>

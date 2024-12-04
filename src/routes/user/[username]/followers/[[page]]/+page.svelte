@@ -3,20 +3,28 @@
 	import List from '$ui/List.svelte';
 	import User from '$ui/User.svelte';
 
-	export let data;
+	interface Props {
+		data: any;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 <div class="col start">
 	{#if data.followers?.length > 0}
 		<List width="full" wrap={false} align="start">
-			<svelte:fragment slot="head">
-				<span>Followers:</span>
-			</svelte:fragment>
-			<svelte:fragment slot="body">
-				{#each data.followers as follower}
-					<User user={follower} />
-				{/each}
-			</svelte:fragment>
+			{#snippet head()}
+					
+					<span>Followers:</span>
+				
+					{/snippet}
+			{#snippet body()}
+					
+					{#each data.followers as follower}
+						<User user={follower} />
+					{/each}
+				
+					{/snippet}
 		</List>
 	{:else}
 		<h3>Not following anyone yet!</h3>

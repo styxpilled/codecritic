@@ -2,7 +2,11 @@
 	import type { Stack } from '$lib/types';
 	import Avatar from './Avatar.svelte';
 
-	export let stack: Stack & { packages?: number };
+	interface Props {
+		stack: Stack & { packages?: number };
+	}
+
+	let { stack }: Props = $props();
 </script>
 
 <div class="stack col start">

@@ -1,11 +1,13 @@
 <script lang="ts">
+	import { preventDefault } from 'svelte/legacy';
+
 	import { enhance } from '$app/forms';
 	import Avatar from './Avatar.svelte';
 	import { user } from '$lib/client/stores';
 	import { browser, dev } from '$app/environment';
 	import LiveSearchbar from './LiveSearchbar.svelte';
 
-	let showLiveSearch = false;
+	let showLiveSearch = $state(false);
 </script>
 
 <header>
@@ -54,9 +56,9 @@
 					{#if browser}
 						<LiveSearchbar bind:show={showLiveSearch} />
 						<form
-							on:submit|preventDefault={() => {
+							onsubmit={preventDefault(() => {
 								showLiveSearch = true;
-							}}
+							})}
 						>
 							<button class="log-button bg-green" type="submit">Log</button>
 						</form>

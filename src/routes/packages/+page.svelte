@@ -6,7 +6,11 @@
 	import SimplePage from '$ui/SimplePage.svelte';
 	import User from '$ui/User.svelte';
 
-	export let data;
+	interface Props {
+		data: any;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 <SimplePage>
@@ -16,55 +20,71 @@
 	<div>
 		<ul class="packages">
 			<List width="auto">
-				<svelte:fragment slot="head">
-					<span>Popular packages this week</span>
-					<a href="/">TODO MORE</a>
-				</svelte:fragment>
-				<svelte:fragment slot="body">
-					{#each data.packages as pkg}
-						<Card {pkg} />
-					{/each}
-				</svelte:fragment>
+				{#snippet head()}
+							
+						<span>Popular packages this week</span>
+						<a href="/">TODO MORE</a>
+					
+							{/snippet}
+				{#snippet body()}
+							
+						{#each data.packages as pkg}
+							<Card {pkg} />
+						{/each}
+					
+							{/snippet}
 			</List>
 			<li></li>
 		</ul>
 	</div>
 	<div class="row start space">
 		<List direction="col" width="fit" wrap={false}>
-			<svelte:fragment slot="head">
-				<span>Popular reviews this week:</span>
-			</svelte:fragment>
-			<svelte:fragment slot="body">
-				{#each data.reviews as review}
-					<Review style="flex: 1; width: 100%; max-width: 35rem;" showPackageName={true} {review} />
-				{/each}
-			</svelte:fragment>
+			{#snippet head()}
+					
+					<span>Popular reviews this week:</span>
+				
+					{/snippet}
+			{#snippet body()}
+					
+					{#each data.reviews as review}
+						<Review style="flex: 1; width: 100%; max-width: 35rem;" showPackageName={true} {review} />
+					{/each}
+				
+					{/snippet}
 		</List>
 		<div class="col">
 			<List direction="col" width="fit" align="start" wrap={false}>
-				<svelte:fragment slot="head">
-					<span>Popular reviewers:</span>
-				</svelte:fragment>
-				<svelte:fragment slot="body">
-					{#each data.reviewers as reviewer}
-						<User user={reviewer} />
-					{/each}
-				</svelte:fragment>
+				{#snippet head()}
+							
+						<span>Popular reviewers:</span>
+					
+							{/snippet}
+				{#snippet body()}
+							
+						{#each data.reviewers as reviewer}
+							<User user={reviewer} />
+						{/each}
+					
+							{/snippet}
 			</List>
 			<List direction="col" width="full" wrap={false}>
-				<svelte:fragment slot="head">
-					<span>Found an error?</span>
-				</svelte:fragment>
-				<svelte:fragment slot="body">
-					<p class="fg-dark">
-						Help keep codecritic running smoothly!
-						<br />
-						Report it on
-						<a class="link hov-line" href="https://github.com/styxpilled/codecritic">
-							our GitHub</a
-						>!
-					</p>
-				</svelte:fragment>
+				{#snippet head()}
+							
+						<span>Found an error?</span>
+					
+							{/snippet}
+				{#snippet body()}
+							
+						<p class="fg-dark">
+							Help keep codecritic running smoothly!
+							<br />
+							Report it on
+							<a class="link hov-line" href="https://github.com/styxpilled/codecritic">
+								our GitHub</a
+							>!
+						</p>
+					
+							{/snippet}
 			</List>
 		</div>
 	</div>
