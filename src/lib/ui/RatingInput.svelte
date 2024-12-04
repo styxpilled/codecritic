@@ -54,12 +54,12 @@
 		transform: scale(-1, 1);
 	}
 
-	.star:has(~ .star:hover),
+	.star:has(:global(~ .star:hover)),
 	.star:hover {
 		fill: var(--color-blue);
 	}
 
-	:not(.rating:hover) .star:has(~ .star > input:checked),
+	:not(.rating:hover) .star:has(:global(~ .star > input:checked)),
 	:not(.rating:hover) .star > input:checked + svg {
 		fill: var(--color-green);
 	}

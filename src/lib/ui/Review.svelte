@@ -80,7 +80,7 @@
 							{@const index = sixthChar >= '0' && sixthChar <= '9' ? 6 : 5}
 							<span class="hoverable">
 								<span>"{review.version.slice(0, index)}"</span>
-								<div class="hoverable-content">{review.version}</div>
+								<span class="hoverable-content">{review.version}</span>
 							</span>
 						{:else}
 							"{review.version}"

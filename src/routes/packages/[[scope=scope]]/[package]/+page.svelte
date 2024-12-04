@@ -211,19 +211,19 @@
 	}
 
 	/* Figure out something nicer */
-	.manager-selection:has(> label > input[value='npm']:checked) ~ .command > .npm {
+	:global(.manager-selection:has(> label > input[value='npm']:checked) ~ .command > .npm) {
 		display: block;
 	}
 
-	.manager-selection:has(> label > input[value='yarn']:checked) ~ .command > .yarn {
+	:global(.manager-selection:has(> label > input[value='yarn']:checked) ~ .command > .yarn) {
 		display: block;
 	}
 
-	.manager-selection:has(> label > input[value='pnpm']:checked) ~ .command > .pnpm {
+	:global(.manager-selection:has(> label > input[value='pnpm']:checked) ~ .command > .pnpm) {
 		display: block;
 	}
 
-	.manager-selection:has(> label > input[value='bun']:checked) ~ .command > .bun {
+	:global(.manager-selection:has(> label > input[value='bun']:checked) ~ .command > .bun) {
 		display: block;
 	}
 
