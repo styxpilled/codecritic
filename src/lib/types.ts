@@ -1,3 +1,5 @@
+import type { Package as _PackageInteral } from '$db/schema';
+
 export type User = {
 	id: string;
 	githubId: number;
@@ -33,7 +35,7 @@ export type Review = {
 	liked: boolean;
 };
 
-type _PackageInternal = {
+type __PackageInternal = {
 	name: string;
 	description: string;
 	keywords?: string[];
@@ -42,17 +44,22 @@ type _PackageInternal = {
 	public: boolean;
 };
 
-export type Package = Expand<
-	_PackageInternal & {
-		latest: string;
-		next?: string;
-		repository?: string;
-		author?: string;
-	}
->;
+export type Package = _PackageInteral;
+export const examplePackage = Object.keys({
+	name: '',
+	description: '',
+	keywords: [],
+	latest: '',
+	next: '',
+	license: '',
+	repository: '',
+	homepage: '',
+	author: '',
+	public: true
+}) as (keyof Package)[];
 
 export type NPMPackage = Expand<
-	_PackageInternal & {
+	__PackageInternal & {
 		'dist-tags': {
 			latest: string;
 			next?: string;
@@ -82,6 +89,7 @@ export type NPMSearchPackage = {
 	author?: { name: string };
 	publisher?: { username: string; email: string };
 	maintainers?: { username: string; email: string }[];
+	license?: string;
 };
 
 type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;

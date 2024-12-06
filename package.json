@@ -39,6 +39,8 @@
 		"@iconify-json/lucide": "^1.1.187",
 		"@lucia-auth/adapter-postgresql": "^3.1.0",
 		"@neondatabase/serverless": "^0.10.4",
+		"@oslojs/crypto": "^1.0.1",
+		"@oslojs/encoding": "^1.1.0",
 		"arctic": "^1.2.1",
 		"dexie": "^3.2.5",
 		"dotenv": "^16.4.7",

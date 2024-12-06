@@ -22,6 +22,20 @@
       "when": 1733299199313,
       "tag": "0002_broad_spirit",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1733310992143,
+      "tag": "0003_mixed_sunfire",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1733311375576,
+      "tag": "0004_spicy_omega_red",
+      "breakpoints": true
     }
   ]
 }

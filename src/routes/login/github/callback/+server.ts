@@ -1,12 +1,14 @@
 // routes/login/github/callback/+server.ts
 import { OAuth2RequestError } from 'arctic';
-import { generateId } from 'lucia';
 import { github } from '$lib/server/lucia';
 
-import type { User } from '$lib/types';
+// import type { User } from '$db/index.js';
 import { dev } from '$app/environment';
+import { $pg, db } from '$db';
+import { eq } from 'drizzle-orm';
+import { createSession, generateSessionToken, setSessionTokenCookie } from '$lib/server/auth';
 
-export async function GET({ locals, cookies, url, fetch }): Promise<Response> {
+export async function GET({ cookies, url, fetch }): Promise<Response> {
 	const code = url.searchParams.get('code');
 	const state = url.searchParams.get('state');
 	const storedState = cookies.get('github_oauth_state') ?? null;
@@ -27,33 +29,30 @@ export async function GET({ locals, cookies, url, fetch }): Promise<Response> {
 		});
 		const githubUser: GitHubUser = await githubUserResponse.json();
 
-		const [existingUser] = (await locals.sql`
-      SELECT * FROM users
-        WHERE github_id = ${githubUser.id}
-    `) as [User?];
+		const [existingUser] = await db
+			.select()
+			.from($pg.users)
+			.where(eq($pg.users.github_id, githubUser.id));
 
 		if (existingUser) {
-			const session = await locals.lucia.createSession(existingUser.id, {});
-			const sessionCookie = locals.lucia.createSessionCookie(session.id);
-			cookies.set(sessionCookie.name, sessionCookie.value, {
-				path: '.',
-				...sessionCookie.attributes
-			});
+			const token = generateSessionToken();
+			const session = await createSession(token, existingUser.id);
+			setSessionTokenCookie(cookies, session);
 		} else {
-			const userId = generateId(15);
-			await locals.sql`
-        INSERT INTO users
-          (id, github_id, username, nickname)
-        VALUES
-          (${userId}, ${githubUser.id}, ${githubUser.login}, ${githubUser.name})
-      `;
-			const session = await locals.lucia.createSession(userId, {});
-			const sessionCookie = locals.lucia.createSessionCookie(session.id);
-			cookies.set(sessionCookie.name, sessionCookie.value, {
-				path: '.',
-				...sessionCookie.attributes
-			});
+			const [user] = await db
+				.insert($pg.users)
+				.values({
+					github_id: githubUser.id,
+					username: githubUser.login,
+					nickname: githubUser.name
+				})
+				.returning();
+			const token = generateSessionToken();
+			const session = await createSession(token, user.id);
+			setSessionTokenCookie(cookies, session);
 		}
+
+		console.log(cookies.get('session'));
 
 		cookies.set('github_access_token', tokens.accessToken, {
 			path: '/',

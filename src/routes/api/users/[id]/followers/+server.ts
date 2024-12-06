@@ -28,7 +28,7 @@ export const GET: RequestHandler = async ({ locals, params, url }) => {
 export const POST: RequestHandler = async ({ params, locals }) => {
 	const user = locals.user;
 	if (user === null) throw unauthorized();
-	if (user.id === params.id) throw badRequest();
+	if (user.id.toString() === params.id) throw badRequest();
 	await locals.sql`
     INSERT INTO users_follows
       (user_id, following)
@@ -43,7 +43,7 @@ export const POST: RequestHandler = async ({ params, locals }) => {
 export const DELETE: RequestHandler = async ({ params, locals }) => {
 	const user = locals.user;
 	if (user === null) throw unauthorized();
-	if (user.id === params.id) throw badRequest();
+	if (user.id.toString() === params.id) throw badRequest();
 	await locals.sql`
     DELETE FROM
       users_follows

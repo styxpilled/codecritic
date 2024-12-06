@@ -1,20 +1,24 @@
-import { relations } from 'drizzle-orm';
+import { relations, sql, type InferSelectModel } from 'drizzle-orm';
 import {
 	pgTable,
-	numeric,
 	text,
 	boolean,
 	integer,
 	timestamp,
 	smallint,
-	primaryKey
+	primaryKey,
+	check
 } from 'drizzle-orm/pg-core';
 
+export type User = InferSelectModel<typeof users>;
+export type Session = InferSelectModel<typeof sessions>;
+export type Package = InferSelectModel<typeof packages>;
+
 export const users = pgTable('users', {
-	id: text().primaryKey(),
+	id: integer().primaryKey().generatedAlwaysAsIdentity(),
 	username: text().notNull(),
 	nickname: text(),
-	github_id: numeric().notNull().unique()
+	github_id: integer().notNull().unique()
 });
 
 export const usersRelations = relations(users, ({ one, many }) => ({
@@ -28,8 +32,8 @@ export const usersRelations = relations(users, ({ one, many }) => ({
 
 export const sessions = pgTable('user_session', {
 	id: text().primaryKey(),
-	expiresAt: timestamp('expires_at').notNull(),
-	userId: text('user_id')
+	expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
+	userId: integer('user_id')
 		.notNull()
 		.references(() => users.id)
 });
@@ -42,7 +46,7 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
 }));
 
 export const profiles = pgTable('profiles', {
-	id: text()
+	id: integer()
 		.primaryKey()
 		.references(() => users.id),
 	bio: text(),
@@ -60,10 +64,10 @@ export const profilesRelations = relations(profiles, ({ one }) => ({
 export const usersFollows = pgTable(
 	'users_follows',
 	{
-		userId: text('user_id')
+		userId: integer('user_id')
 			.notNull()
 			.references(() => users.id),
-		following: text()
+		following: integer()
 			.notNull()
 			.references(() => users.id)
 	},
@@ -89,27 +93,33 @@ export const packagesRelations = relations(packages, ({ many }) => ({
 	stacks: many(stacksPackages)
 }));
 
-export const reviews = pgTable('reviews', {
-	id: integer().primaryKey(),
-	// TODO: rename to reviewId
-	author: text()
-		.notNull()
-		.references(() => users.id),
-	// TODO: rename to packageId
-	package: text()
-		.notNull()
-		.references(() => packages.name),
-	createdAt: timestamp('created_at').notNull(),
-	version: text().notNull(),
-	// TODO: rename to content
-	review: text().notNull(),
-	rating: smallint().notNull()
-});
+export const reviews = pgTable(
+	'reviews',
+	{
+		id: integer().primaryKey(),
+		// TODO: rename to reviewId
+		author: integer()
+			.notNull()
+			.references(() => users.id),
+		// TODO: rename to packageId
+		package: text()
+			.notNull()
+			.references(() => packages.name),
+		createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull(),
+		version: text().notNull(),
+		// TODO: rename to content
+		review: text().notNull(),
+		rating: smallint().notNull()
+	},
+	(table) => ({
+		checkConstraint: check('age_check1', sql`${table.rating} < 10`)
+	})
+);
 
 export const likesReviews = pgTable(
 	'likes_reviews',
 	{
-		userId: text('user_id').notNull(),
+		userId: integer('user_id').notNull(),
 		// .references(() => users.id),
 		reviewId: integer('review_id')
 		// .references(() => reviews.id),
@@ -140,8 +150,8 @@ export const stacks = pgTable('stacks', {
 	author: text().notNull(),
 	name: text().notNull(),
 	description: text().notNull(),
-	createdAt: timestamp('created_at').notNull().defaultNow(),
-	updatedAt: timestamp('updated_at')
+	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+	updatedAt: timestamp('updated_at', { withTimezone: true, mode: 'date' })
 		.notNull()
 		.$onUpdate(() => new Date())
 });

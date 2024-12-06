@@ -9,5 +9,7 @@ export const load: PageLoad = async ({ data, fetch }) => {
 		fetchOr<Review[]>(`/api/recommended/reviews/mutuals?limit=6`, [], fetch)
 	]);
 
+	// const [packages, reviews, mutualReviews] = [[], [], []];
+
 	return { packages, reviews, mutualReviews, ...data };
 };

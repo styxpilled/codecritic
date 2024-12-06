@@ -22,7 +22,7 @@ export const GET: RequestHandler = async ({ fetch, params, locals }) => {
 	return ok(pkg);
 };
 
-export const POST: RequestHandler = async ({ fetch, params }) => {
+export const POST: RequestHandler = async ({ fetch, params, locals }) => {
 	const packageName = getPackage(params);
 
 	const npmPackage = await fetchOr<NPMPackage>(
@@ -37,7 +37,7 @@ export const POST: RequestHandler = async ({ fetch, params }) => {
       WHERE name = ${npmPackage.name}
   `;
 
-	const [pkg] = await addPackage(npmPackage, getRepoURL(npmPackage?.repository?.url));
+	const [pkg] = await addPackage(locals.sql, npmPackage, getRepoURL(npmPackage?.repository?.url));
 
 	return ok(pkg);
 };

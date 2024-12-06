@@ -1,5 +1,6 @@
-import { DATABASE_URL, STACK_SALT, REVIEW_SALT } from '$env/static/private';
-import type { NPMPackage, Package } from '$lib/types';
+import { STACK_SALT, REVIEW_SALT } from '$env/static/private';
+import { examplePackage, type NPMPackage, type Package } from '$lib/types';
+import type postgres from 'postgres';
 // import postgres from 'postgres';
 // import type { ReservedSql } from 'postgres';
 // export const sql = () => postgres(DATABASE_URL);
@@ -16,7 +17,7 @@ export const getRepoURL = (url?: string) => {
 };
 
 export const addPackage = async (
-	sql: any,
+	sql: ReturnType<typeof postgres>,
 	npmPackage: NPMPackage,
 	repository?: string
 ): Promise<Package[]> => {
@@ -38,5 +39,13 @@ export const addPackage = async (
       )
     ON CONFLICT DO NOTHING
     RETURNING *
+  `;
+};
+
+export const addPackages = async (sql: ReturnType<typeof postgres>, pkgs: Package[]) => {
+	return sql`
+    INSERT INTO packages
+      ${sql(pkgs, examplePackage)}
+    ON CONFLICT DO NOTHING
   `;
 };

@@ -31,46 +31,34 @@
 	{#if data.mutualReviews.length > 0}
 		<List>
 			{#snippet head()}
-					
-					<span>new from mutuals</span>
-					<span>more</span>
-				
-					{/snippet}
+				<span>new from mutuals</span>
+				<span>more</span>
+			{/snippet}
 			{#snippet body()}
-					
-					{#each data.mutualReviews as review}
-						<Review showPackageName truncateVersion fixedWidth truncate={4} {review} />
-					{/each}
-				
-					{/snippet}
+				{#each data.mutualReviews as review}
+					<Review showPackageName truncateVersion fixedWidth truncate={4} {review} />
+				{/each}
+			{/snippet}
 		</List>
 	{/if}
 	<List>
 		{#snippet head()}
-			
-				<span>popular on codecritic</span>
-				<span>more</span>
-			
-			{/snippet}
+			<span>popular on codecritic</span>
+			<span>more</span>
+		{/snippet}
 		{#snippet body()}
-			
-				{#each data.packages as pkg}
-					<Card {pkg} />
-				{/each}
-			
-			{/snippet}
+			{#each data.packages as pkg}
+				<Card {pkg} />
+			{/each}
+		{/snippet}
 	</List>
 	<List>
 		{#snippet head()}
-			
-				<span>Recommended</span>
-				<span>All recommened</span>
-			
-			{/snippet}
+			<span>Recommended</span>
+			<span>All recommended</span>
+		{/snippet}
 		{#snippet body()}
-			
-				<p>Coming soon!</p>
-			
-			{/snippet}
+			<p>Coming soon!</p>
+		{/snippet}
 	</List>
 </SimplePage>
