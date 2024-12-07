@@ -13,6 +13,7 @@ import {
 export type User = InferSelectModel<typeof users>;
 export type Session = InferSelectModel<typeof sessions>;
 export type Package = InferSelectModel<typeof packages>;
+export type Readme = InferSelectModel<typeof readmes>;
 
 export const users = pgTable('users', {
 	id: integer().primaryKey().generatedAlwaysAsIdentity(),
@@ -93,11 +94,26 @@ export const packagesRelations = relations(packages, ({ many }) => ({
 	stacks: many(stacksPackages)
 }));
 
+export const readmes = pgTable('readmes', {
+	name: text()
+		.primaryKey()
+		.references(() => packages.name),
+	value: text().notNull(),
+	expires: timestamp('expires', { withTimezone: true, mode: 'date' }).notNull()
+});
+
+export const readmeRelations = relations(readmes, ({ one }) => ({
+	user: one(packages, {
+		fields: [readmes.name],
+		references: [packages.name]
+	})
+}));
+
 export const reviews = pgTable(
 	'reviews',
 	{
-		id: integer().primaryKey(),
-		// TODO: rename to reviewId
+		id: integer().primaryKey().generatedAlwaysAsIdentity(),
+		// TODO: rename to authorId?
 		author: integer()
 			.notNull()
 			.references(() => users.id),
@@ -112,7 +128,7 @@ export const reviews = pgTable(
 		rating: smallint().notNull()
 	},
 	(table) => ({
-		checkConstraint: check('age_check1', sql`${table.rating} < 10`)
+		checkConstraint: check('rating_lt_10', sql`${table.rating} <= 10`)
 	})
 );
 
@@ -147,7 +163,7 @@ export const usersToReview = relations(likesReviews, ({ one }) => ({
 
 export const stacks = pgTable('stacks', {
 	id: integer().primaryKey(),
-	author: text().notNull(),
+	author: integer().notNull(),
 	name: text().notNull(),
 	description: text().notNull(),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
