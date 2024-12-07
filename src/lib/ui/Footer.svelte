@@ -8,7 +8,9 @@
 		</p>
 		<p>A <a href="https://styx.gay/" class="fg-blue hov-line">@styx</a> endeavour</p>
 		<p>
-			<a href="https://www.kryogenix.org/code/browser/everyonehasjs.html">NoJS</a> compatible (hopefully)
+			<a class="nojs hov-line" href="https://www.kryogenix.org/code/browser/everyonehasjs.html"
+				>NoJS</a
+			> compatible (hopefully)
 		</p>
 	</section>
 </footer>
@@ -34,5 +36,9 @@
 
 	.svelte {
 		color: #ff3e00;
+	}
+
+	.nojs {
+		color: #ebd64d;
 	}
 </style>

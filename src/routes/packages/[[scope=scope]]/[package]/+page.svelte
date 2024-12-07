@@ -5,11 +5,9 @@
 	import Review from '$ui/Review.svelte';
 	import Readme from '$ui/Readme.svelte';
 	import { browser } from '$app/environment';
-	interface Props {
-		data: any;
-	}
+	import Banner from '$ui/banners/Banner.svelte';
 
-	let { data }: Props = $props();
+	let { data } = $props();
 
 	onMount(() => {
 		console.log(data);
@@ -48,7 +46,7 @@
 				</div>
 				<div class="readme">
 					{#if data.readme}
-						<Readme readme={data.readme} url={data.package.repository || ''} />
+						<Readme readme={data.readme.value} url={data.package.repository || ''} />
 					{/if}
 				</div>
 			{/if}
@@ -113,9 +111,12 @@
 					<button class="btn bg-green" type="submit">Save</button>
 				</div>
 			</form>
+			<Banner rand={data.rand} />
 			<div class="reviews">
 				{#each data.reviews as review}
 					<Review {review} />
+				{:else}
+					<Banner rand={data.rand} />
 				{/each}
 			</div>
 		</div>

@@ -311,12 +311,12 @@
 	}
 
 	/* Show search bar */
-	.search-container:has(> label > input:checked) {
+	.search-container:has(:global(> label > input:checked)) {
 		width: 10rem;
 		transition: width 300ms;
 	}
 
-	.search-container:has(> label > input:checked) > .search-box > input {
+	.search-container:has(:global(> label > input:checked)) > .search-box > input {
 		transition: width 300ms;
 		width: 10rem;
 	}

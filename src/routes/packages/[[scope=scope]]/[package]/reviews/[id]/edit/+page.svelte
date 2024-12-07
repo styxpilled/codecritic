@@ -27,20 +27,21 @@
 					.slice(0, 19)}
 			/>
 		</div>
-		<textarea placeholder="Add a review..." name="review" bind:value={data.review.review} />
+		<textarea bind:value={data.review.review} placeholder="Add a review..." name="review">
+		</textarea>
 		<div class="end">
 			<div class="row">
-				<form
-					use:enhance
-					method="post"
-					action="/packages/{data.review.package}/reviews/{data.review.id}/edit?/delete"
-				>
-					<button class="btn bg-red" type="submit">Delete</button>
-				</form>
+				<button form="delete-review" class="btn bg-red" type="submit">Delete</button>
 				<button class="btn bg-green" type="submit">Save</button>
 			</div>
 		</div>
 	</form>
+	<form
+		use:enhance
+		id="delete-review"
+		method="post"
+		action="/packages/{data.review.package}/reviews/{data.review.id}/edit?/delete"
+	></form>
 </div>
 
 <style>

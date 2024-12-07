@@ -22,29 +22,21 @@
 	</div>
 	<List width="full">
 		{#snippet head()}
-			
-				<span>new from mutuals</span>
-				<span>more</span>
-			
-			{/snippet}
-		{#snippet body()}
-				<svelte:fragment ></svelte:fragment>
-			{/snippet}
+			<span>new from mutuals</span>
+			<span>more</span>
+		{/snippet}
+		{#snippet body()}{/snippet}
 	</List>
 	<List width="full">
 		{#snippet head()}
-			
-				<span>popular stacks</span>
-				<span>more</span>
-			
-			{/snippet}
+			<span>popular stacks</span>
+			<span>more</span>
+		{/snippet}
 		{#snippet body()}
-			
-				{#each data.stacks as stack}
-					<Stack {stack} />
-				{/each}
-			
-			{/snippet}
+			{#each data.stacks as stack}
+				<Stack {stack} />
+			{/each}
+		{/snippet}
 	</List>
 </SimplePage>
 

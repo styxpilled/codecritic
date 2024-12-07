@@ -63,6 +63,11 @@
 			flex-wrap: wrap;
 			align-items: flex-start;
 		}
+
+		&:empty::after {
+			content: 'Nothing here...';
+			color: var(--color-text-dark);
+		}
 	}
 
 	.list-content.start {

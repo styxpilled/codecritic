@@ -2,6 +2,7 @@
 	import { self } from 'svelte/legacy';
 
 	import { fetchOr } from '$lib';
+	import type { Package } from '$db/schema';
 	interface Props {
 		show?: boolean;
 	}
@@ -9,13 +10,13 @@
 	let { show = $bindable(false) }: Props = $props();
 	let backdrop: HTMLDivElement = $state();
 	let searchString = $state('');
-	let searchResults: string[] = $state([]);
+	let searchResults: Package[] = $state([]);
 	let previousQuery = searchString;
 	let index = 0;
 	let awaitingIndex = 0;
 
 	const search = async () => {
-		if (searchString === previousQuery) return;
+		// if (searchString === previousQuery) return;
 		const query = searchString;
 		const innerIndex = index + 1;
 		awaitingIndex += 1;
@@ -43,13 +44,13 @@
 >
 	<div class="dialog">
 		<form action="/">
-			<input type="search" bind:value={searchString} onkeyup={search} />
+			<input type="search" bind:value={searchString} oninput={search} />
 		</form>
 		{#if searchResults.length > 0}
 			<div class="results">
 				<ul>
 					{#each searchResults as pkg}
-						<li><a href="/packages/{pkg}">{pkg}</a></li>
+						<li><a href="/packages/{pkg}">{pkg.name}</a></li>
 					{/each}
 				</ul>
 			</div>

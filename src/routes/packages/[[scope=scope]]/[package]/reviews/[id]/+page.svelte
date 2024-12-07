@@ -1,12 +1,8 @@
 <script lang="ts">
 	import Review from '$ui/Review.svelte';
 
-	interface Props {
-		data: any;
-	}
-
-	let { data }: Props = $props();
+	let { data } = $props();
 </script>
 
-{data.pkg.name} TODO
-<Review review={data.review} redirectToPackage showPackageName />
+<h1>{data.pkg.name}</h1>
+<Review review={data.review} redirectToPackage />

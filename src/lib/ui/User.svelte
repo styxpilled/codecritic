@@ -25,7 +25,7 @@
 		</a>
 		<p>
 			{#if user?.reviews}
-				<span class="fg-dark">{user.reviews} reviews</span>,
+				<span class="fg-dark">{user.reviews} reviews</span>
 			{/if}
 			{#if user?.likes}
 				<span class="fg-dark">{user.likes} total likes</span>
@@ -33,3 +33,9 @@
 		</p>
 	</div>
 </div>
+
+<style>
+	span.fg-dark:not(:last-child)::after {
+		content: ',';
+	}
+</style>
