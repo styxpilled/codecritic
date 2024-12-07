@@ -1,7 +1,7 @@
 import type { Package as _PackageInteral } from '$db/schema';
 
 export type User = {
-	id: string;
+	id: number;
 	githubId: number;
 	username: string;
 	nickname: string;

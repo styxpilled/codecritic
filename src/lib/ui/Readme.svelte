@@ -5,6 +5,7 @@
 	import hljs from 'highlight.js';
 
 	import '$styles/github.css';
+	import { stripGit } from '$lib';
 
 	interface Props {
 		readme: string;
@@ -12,6 +13,8 @@
 	}
 
 	let { readme, url }: Props = $props();
+
+	url = stripGit(url);
 
 	const marked = new Marked(
 		markedHighlight({
@@ -27,7 +30,7 @@
 </script>
 
 {#if readme}
-	{#await marked.parse(readme) then r}
+	{#await marked.parse(readme.replaceAll('src="./', `src="${url}/raw/main/`)) then r}
 		{@html r}
 	{/await}
 {/if}

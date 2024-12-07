@@ -16,6 +16,12 @@ export const getPackage = (params: { scope?: string; package: string }) => {
 	return params.scope ? `${params.scope}/${params.package}` : params.package;
 };
 
+export const stripGit = (url: string) => {
+	const plusGit = url.startsWith('git+');
+	const dotGit = url.endsWith('.git');
+	return url.substring(plusGit ? 4 : 0, dotGit ? url.length - 4 : url.length);
+};
+
 export const parseIntSafe = (
 	input: string | undefined | null,
 	fallback: number,
