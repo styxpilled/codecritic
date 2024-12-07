@@ -6,20 +6,22 @@
 	import { onMount } from 'svelte';
 	import type { Stack } from '$lib/types';
 
-
 	interface Props {
 		edit?: boolean;
 		stack?: Stack;
 	}
 
-	let { edit = false, stack = $bindable({
-		name: '',
-		description: '',
-		created_at: new Date(),
-		author: $user?.id || '',
-		id: 0,
-		updated_at: new Date()
-	}) }: Props = $props();
+	let {
+		edit = false,
+		stack = $bindable({
+			name: '',
+			description: '',
+			created_at: new Date(),
+			author: $user?.id || '',
+			id: 0,
+			updated_at: new Date()
+		})
+	}: Props = $props();
 
 	let showLiveSearch = $state(false);
 
@@ -28,7 +30,6 @@
 	let previousQuery = searchString;
 	let index = 0;
 	let selectedPackages: string[] = $state([]);
-
 
 	const search = async () => {
 		if (searchString === previousQuery) return;
@@ -168,7 +169,7 @@
 			max-height: 12rem;
 			overflow-y: scroll;
 			border-radius: 0.5rem;
-			background-color: var(--color-bg-bright);
+			background-color: var(--color-bg-brighter);
 			padding: 0.25rem 0.5rem;
 		}
 

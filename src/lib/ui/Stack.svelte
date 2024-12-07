@@ -42,7 +42,7 @@
 
 <style>
 	.stack {
-		background-color: var(--color-bg-bright);
+		background-color: var(--color-bg-brighter);
 		padding: 0.5rem;
 		border-radius: 0.5rem;
 	}

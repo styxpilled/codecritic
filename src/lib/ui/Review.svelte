@@ -146,7 +146,7 @@
 <style>
 	.review {
 		padding: 0.5rem;
-		background-color: var(--color-bg-bright);
+		background-color: var(--color-bg-brighter);
 		border-radius: 0.5rem;
 		width: 100%;
 		max-width: 50rem;

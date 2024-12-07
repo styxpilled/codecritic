@@ -57,7 +57,7 @@
 	.submit-review {
 		display: flex;
 		flex-direction: column;
-		background-color: var(--color-bg-bright);
+		background-color: var(--color-bg-brighter);
 		padding: 1rem;
 		margin: 2rem;
 		gap: 1rem;

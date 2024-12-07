@@ -89,7 +89,7 @@
 		padding: 1rem;
 		margin-left: auto;
 		margin-right: auto;
-		background-color: var(--color-bg-bright);
+		background-color: var(--color-bg-brighter);
 		position: relative;
 		border-radius: 0.5rem;
 	}
@@ -106,7 +106,7 @@
 		align-items: center;
 		width: 31rem;
 		top: 5.5rem;
-		background-color: var(--color-bg-bright);
+		background-color: var(--color-bg-brighter);
 		border-radius: 0.5rem;
 	}
 

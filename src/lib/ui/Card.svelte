@@ -19,7 +19,9 @@
 		{#if pkg.keywords}
 			<ul>
 				{#each pkg.keywords as keyword}
-					<li class="keyword">{keyword}</li>
+					<li class="keyword fg-dark bg-bright hov-link hov-invert">
+						<a href="/search?text=keywords:{keyword}">{keyword}</a>
+					</li>
 				{/each}
 			</ul>
 		{/if}
@@ -43,7 +45,7 @@
 		flex-direction: column;
 		justify-content: flex-start;
 		width: 20.65rem;
-		background-color: var(--color-bg-bright);
+		background-color: var(--color-bg-brighter);
 		padding: 0.25rem 0.5rem;
 		border-radius: 0.25rem;
 
@@ -80,14 +82,6 @@
 		& > li {
 			border-radius: 0.25rem;
 			padding: 0 0.25rem;
-			background-color: var(--color-bg);
-			color: var(--color-text-dark);
-
-			&:hover {
-				color: var(--color-bg);
-				background-color: var(--color-blue);
-				cursor: pointer;
-			}
 		}
 	}
 
@@ -104,7 +98,7 @@
 	/* .review-info {
 		display: flex;
 		justify-content: space-between;
-		background-color: var(--color-bg-bright);
+		background-color: var(--color-bg-brighter);
 		border-bottom-left-radius: 0.25rem;
 		border-bottom-right-radius: 0.25rem;
 		padding: 0.25rem;

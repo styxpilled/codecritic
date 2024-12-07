@@ -17,7 +17,7 @@
 
 <style>
 	footer {
-		background-color: var(--color-bg-bright);
+		background-color: var(--color-bg-brighter);
 		width: 100%;
 	}
 

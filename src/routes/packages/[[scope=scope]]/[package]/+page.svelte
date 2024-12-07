@@ -33,13 +33,15 @@
 						</button>
 					</div>
 					{#if data.package.author}
-						<p class="author">By {data.package.author}</p>
+						<p class="author fg-darker">By {data.package.author}</p>
 					{/if}
 					<p class="description">{data.package.description}</p>
 					{#if data.package.keywords}
 						<ul class="keywords">
 							{#each data.package.keywords as keyword}
-								<li class="bg-light fg-dark">{keyword}</li>
+								<li class="fg-dark bg-bright hov-link hov-invert">
+									<a href="/search?text=keywords:{keyword}">{keyword}</a>
+								</li>
 							{/each}
 						</ul>
 					{/if}
@@ -151,7 +153,7 @@
 
 	.package-head {
 		padding-bottom: 0.5rem;
-		border-bottom: 1px solid var(--color-bg-bright);
+		border-bottom: 1px solid var(--color-bg-brighter);
 	}
 
 	.package-body {
@@ -198,7 +200,7 @@
 	}
 
 	.manager-selection > label {
-		background-color: var(--color-bg-bright);
+		background-color: var(--color-bg-brighter);
 		padding: 0 0.5rem;
 		text-align: center;
 		border-radius: 0.25rem;
@@ -231,7 +233,7 @@
 	.command {
 		display: flex;
 		justify-content: space-between;
-		background-color: var(--color-bg-bright);
+		background-color: var(--color-bg-brighter);
 		border-radius: 0.25rem;
 		padding: 0.25rem 0.5rem;
 		user-select: all;
@@ -246,7 +248,7 @@
 	form {
 		display: flex;
 		flex-direction: column;
-		background-color: var(--color-bg-bright);
+		background-color: var(--color-bg-brighter);
 		padding: 1rem;
 		gap: 1rem;
 	}

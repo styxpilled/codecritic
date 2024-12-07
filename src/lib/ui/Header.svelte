@@ -75,7 +75,7 @@
 
 <style>
 	header {
-		background-color: var(--color-bg-bright);
+		background-color: var(--color-bg-brighter);
 		width: 100%;
 	}
 
@@ -134,7 +134,7 @@
 		display: none;
 		position: absolute;
 		top: 3rem;
-		background-color: var(--color-bg-bright);
+		background-color: var(--color-bg-brighter);
 		padding: 0.5rem;
 		width: 9rem;
 	}
