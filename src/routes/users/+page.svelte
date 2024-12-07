@@ -14,17 +14,13 @@
 	<h2 class="fg-dark">10x developers, funny little guys and friends - find popular members.</h2>
 	<List direction="col" wrap={false} align="start" width="full">
 		{#snippet head()}
-			
-				<span>users todo replace this</span>
-				<span>more</span>
-			
-			{/snippet}
+			<span>users todo replace this</span>
+			<span>more</span>
+		{/snippet}
 		{#snippet body()}
-			
-				{#each data.users as user}
-					<User {user} />
-				{/each}
-			
-			{/snippet}
+			{#each data.users as user}
+				<User {user} />
+			{/each}
+		{/snippet}
 	</List>
 </SimplePage>
