@@ -17,6 +17,7 @@
 	}
 
 	let { data, children }: Props = $props();
+	$user = data.auth.user;
 
 	$effect(() => {
 		$user = data.auth.user;

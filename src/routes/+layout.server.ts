@@ -3,7 +3,5 @@ export const load = async ({ locals }) => {
 	// 	throw redirect(302, `/error?message=${locals.error.message}&code=${locals.error.code}`);
 	// }
 
-	console.log(locals);
-
 	return { auth: { session: locals.session, user: locals.user } };
 };

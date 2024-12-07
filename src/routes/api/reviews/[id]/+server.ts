@@ -30,8 +30,8 @@ export const PUT: RequestHandler = async ({ request, locals, params }) => {
 	try {
 		const [currentReview] = (await locals.sql`
       SELECT * FROM reviews
-        WHERE id = ${params.id};
-    `) as [(Review & { author: string })?];
+        WHERE id = extensions.id_decode_once(${params.id}, ${reviewSalt}, 4)
+    `) as [(Review & { author: number })?];
 
 		if (!currentReview) throw notFound();
 		if (currentReview.author !== locals.user.id) throw unauthorized();
@@ -42,11 +42,12 @@ export const PUT: RequestHandler = async ({ request, locals, params }) => {
       UPDATE reviews
         SET review = ${editedReview.review},
             rating = ${editedReview.rating}
-        WHERE id = ${params.id}
+        WHERE id = extensions.id_decode_once(${params.id}, ${reviewSalt}, 4)
       RETURNING *
     `) as [Review];
 		return ok(review);
 	} catch (e) {
+		console.error(e);
 		throw serverError();
 	}
 };
@@ -54,20 +55,21 @@ export const PUT: RequestHandler = async ({ request, locals, params }) => {
 export const DELETE: RequestHandler = async ({ locals, params }) => {
 	if (!locals.user) throw unauthorized();
 	try {
-		const [currentReview] = (await locals.sql`
+		const [currentReview]: [(Review & { author: number })?] = await locals.sql`
       SELECT * FROM reviews
-        WHERE id = ${params.id};
-    `) as [(Review & { author: string })?];
+        WHERE id = extensions.id_decode_once(${params.id}, ${reviewSalt}, 4);
+    `;
 
 		if (!currentReview) throw notFound();
 		if (currentReview.author !== locals.user.id) throw unauthorized();
 
 		await locals.sql`
       DELETE FROM reviews
-        WHERE id = ${params.id} AND author = ${locals.user.id}
+        WHERE id = extensions.id_decode_once(${params.id}, ${reviewSalt}, 4) AND author = ${locals.user.id}
     `;
 		return ok();
 	} catch (e) {
+		console.error(e);
 		throw serverError();
 	}
 };

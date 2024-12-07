@@ -23,17 +23,17 @@ export const GET: RequestHandler = async ({ locals, params }) => {
     GROUP BY reviews.id, users.*
   `) as Review[];
 
-	return ok(reviews);
+	return ok(reviews, 'short');
 };
 
 export const POST: RequestHandler = async ({ request, locals, params }) => {
 	if (!locals.user) throw unauthorized();
 	try {
-		const r: Review = await request.json();
+		const r: Review & { rating: string | number } = await request.json();
 		const author = locals.user.id;
 		r.package = getPackage(params);
 		r.created_at = new Date().toLocaleString('en-US');
-		r.rating = Number.isInteger(r.rating) ? r.rating : 0;
+		r.rating = typeof r.rating === 'number' ? r.rating : parseInt(r.rating);
 		r.rating = Math.min(Math.max(r.rating, 1), 10);
 		await locals.sql`
       INSERT INTO reviews
@@ -43,7 +43,7 @@ export const POST: RequestHandler = async ({ request, locals, params }) => {
     `;
 		return ok();
 	} catch (e) {
-		console.log(e);
+		console.error(e);
 		throw serverError();
 	}
 };

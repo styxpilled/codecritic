@@ -19,7 +19,7 @@ export const GET: RequestHandler = async ({ fetch, params, locals }) => {
 		else return ok(newPackage);
 	}
 
-	return ok(pkg);
+	return ok(pkg, 'short');
 };
 
 export const POST: RequestHandler = async ({ fetch, params, locals }) => {

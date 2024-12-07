@@ -1,7 +1,7 @@
 import type { Actions, PageServerLoad } from './$types';
 import type { Package, Review } from '$lib/types';
-import { Buffer } from 'node:buffer';
-import { fetchOr } from '$lib';
+import { fetchOr, getPackage } from '$lib';
+import type { Readme } from '$db/schema';
 
 export const actions: Actions = {
 	default: async ({ request, fetch, params }) => {
@@ -18,42 +18,20 @@ export const actions: Actions = {
 	}
 };
 
-export const load: PageServerLoad = async ({ fetch, params, cookies }) => {
-	const packageName = params.scope ? `${params.scope}/${params.package}` : params.package;
+export const load: PageServerLoad = async ({ fetch, params }) => {
+	const packageName = getPackage(params);
 
-	const pkg = await fetchOr<Package>(`/api/package/${packageName}`, undefined, fetch);
-	let readme = null;
+	// const pkg = await fetchOr<Package>(`/api/package/${packageName}`, undefined, fetch);
+	// const readme = await fetchOr<Readme>(`/api/package/${packageName}/readme`, undefined, fetch);
 
-	if (pkg?.repository) {
-		const ghAuth = cookies.get('github_access_token');
-		const auth = ghAuth ? { Authorization: `Bearer ${ghAuth}` } : {};
-		const repo = pkg.repository.endsWith('.git')
-			? pkg.repository.substring(0, pkg.repository.length - 4)
-			: pkg.repository;
-
-		// TODO: cache readme
-		const readmeData = await fetchOr<{ content: string }>(
-			`https://api.github.com/repos/${repo.substring(
-				repo.indexOf('github.com') + 11
-			)}/contents/README.md`,
-			undefined,
-			fetch,
-			{
-				// @ts-expect-error ts is mad again
-				headers: {
-					...auth,
-					'User-Agent': 'codecritic'
-				}
-			}
-		);
-		if (readmeData !== undefined && readmeData.content) {
-			const buff = Buffer.from(readmeData.content, 'base64');
-			readme = buff.toString();
-		}
-	}
+	const [pkg, readme, reviews] = await Promise.all([
+		fetchOr<Package>(`/api/package/${packageName}`, undefined, fetch),
+		fetchOr<Readme>(`/api/package/${packageName}/readme`, undefined, fetch),
+		fetchOr<Review[]>(`/api/package/${packageName}/reviews`, [], fetch)
+	]);
 
 	// TODO: age & cache-control headers
 
-	const reviews = await fetchOr<Review[]>(`/api/package/${packageName}/reviews`, [], fetch);
+	// const reviews = await fetchOr<Review[]>(`/api/package/${packageName}/reviews`, [], fetch);
 	return { packageName, package: pkg, readme, reviews: reviews };
 };
