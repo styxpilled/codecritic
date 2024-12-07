@@ -36,67 +36,80 @@
 {/if}
 
 <style>
-	:global(.readme img) {
-		display: inline-block;
-	}
+	:global(.readme) {
+		& img {
+			display: inline-block;
+		}
 
-	:global(.readme > h1),
-	:global(.readme > h2),
-	:global(.readme > h3),
-	:global(.readme > p) {
-		margin: 1rem 0rem;
-	}
+		& > h1,
+		& > h2,
+		& > h3,
+		& > p {
+			margin: 1rem 0rem;
+		}
 
-	:global(.readme > h1),
-	:global(.readme > h2) {
-		border-bottom: 1px solid var(--color-bg-bright);
-		padding-bottom: 0.5rem;
-	}
+		& > h1,
+		& > h2 {
+			border-bottom: 1px solid var(--color-bg-brighter);
+			padding-bottom: 0.5rem;
+		}
 
-	:global(.readme > h1),
-	:global(.readme > h2),
-	:global(.readme > h3) {
-		font-weight: 600;
-		white-space: pre;
-	}
+		& > h1,
+		& > h2,
+		& > h3 {
+			font-weight: 600;
+			white-space: pre;
+		}
 
-	:global(.readme a) {
-		text-decoration: underline;
-		text-underline-offset: 0.2rem;
-		color: var(--color-blue);
-	}
+		& a {
+			text-decoration: underline;
+			text-underline-offset: 0.2rem;
+			color: var(--color-blue);
+		}
 
-	:global(.readme code[class^='language-']) {
-		display: block;
-		padding: 0.25rem 0.5rem 0;
-		background-color: var(--color-bg-bright);
-		border-radius: 0.25rem;
-		overflow: scroll;
-	}
+		& a:hover {
+			text-decoration-style: dashed;
+		}
 
-	:global(.readme code:not([class^='language-'])) {
-		padding: 0.2rem 0.4rem;
-		background-color: var(--color-bg-bright);
-		border-radius: 0.25rem;
-		color: #abb2bf;
-	}
+		& code[class^='language-'] {
+			display: block;
+			padding: 0.25rem 0.5rem 0;
+			background-color: var(--color-bg-brighter);
+			border-radius: 0.25rem;
+			overflow: scroll;
+		}
 
-	:global(.readme ul) {
-		list-style: disc;
-		margin-left: 2rem;
-		display: flex;
-		flex-direction: column;
-		gap: 0.5rem;
-		margin-top: 0.5rem;
-		margin-bottom: 0.5rem;
-	}
+		& code:not([class^='language-']) {
+			padding: 0.2rem 0.4rem;
+			background-color: var(--color-bg-brighter);
+			border-radius: 0.25rem;
+			color: #abb2bf;
+		}
 
-	:global(.readme .language-bash) {
-		margin: 0.25rem 0;
-	}
+		& ul {
+			list-style: disc;
+			margin-left: 2rem;
+			display: flex;
+			flex-direction: column;
+			gap: 0.5rem;
+			margin-top: 0.5rem;
+			margin-bottom: 0.5rem;
+		}
 
-	:global(.readme hr) {
-		height: 0.25rem;
-		margin: 1.5rem 0;
+		& .language-bash {
+			margin: 0.25rem 0;
+		}
+
+		& hr {
+			height: 0.25rem;
+			margin: 1.5rem 0;
+		}
+
+		@media (prefers-color-scheme: dark) {
+			& [href$='#gh-light-mode-only'],
+			& [src$='#gh-light-mode-only'] {
+				display: none;
+			}
+		}
 	}
 </style>
