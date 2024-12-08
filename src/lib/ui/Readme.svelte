@@ -30,8 +30,11 @@
 </script>
 
 {#if readme}
-	{#await marked.parse(readme.replaceAll('src="./', `src="${url}/raw/main/`)) then r}
-		{@html r}
+	{#await marked.parse(readme
+			.replaceAll('src="./', `src="${url}/raw/main/`)
+			.replaceAll(/src="(?!https:\/\/)/g, `src="${url}/raw/main/`)) then parsed}
+		<!-- {@const fixed = parsed.replaceAll(/src="(?!https:\/\/)/, `src="${url}/raw/main/`)} -->
+		{@html parsed}
 	{/await}
 {/if}
 
@@ -39,6 +42,8 @@
 	:global(.readme) {
 		& img {
 			display: inline-block;
+			max-width: 720px;
+			/* height: 100%; */
 		}
 
 		& > h1,
@@ -71,19 +76,19 @@
 			text-decoration-style: dashed;
 		}
 
+		& code {
+			padding: 0.1rem 0.375rem;
+			background-color: var(--color-bg-brighter);
+			border-radius: 0.25rem;
+			color: #abb2bf;
+		}
+
 		& code[class^='language-'] {
 			display: block;
 			padding: 0.25rem 0.5rem 0;
 			background-color: var(--color-bg-brighter);
 			border-radius: 0.25rem;
 			overflow: scroll;
-		}
-
-		& code:not([class^='language-']) {
-			padding: 0.2rem 0.4rem;
-			background-color: var(--color-bg-brighter);
-			border-radius: 0.25rem;
-			color: #abb2bf;
 		}
 
 		& ul {
