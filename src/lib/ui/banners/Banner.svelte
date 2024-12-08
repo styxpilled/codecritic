@@ -1,13 +1,15 @@
 <script lang="ts">
-	import type { BannerGenerator } from '$lib/client/ads';
+	import type { Banner, BannerGenerator } from '$lib/client/ads';
 
 	let {
-		rand
+		rand,
+		banner = null
 	}: {
 		rand: BannerGenerator;
+		banner?: Banner | null;
 	} = $props();
 
-	const banner = rand.getAd();
+	banner = banner || rand.getAd();
 </script>
 
 <div class="banner bg-light">

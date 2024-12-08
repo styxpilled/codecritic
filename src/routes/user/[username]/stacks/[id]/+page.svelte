@@ -37,7 +37,7 @@
 		margin-top: 1rem;
 		border-top: 1px solid var(--color-text-dark);
 		border-bottom: 1px solid var(--color-text-dark);
-		/* background-color: var(--color-bg-bright); */
+		/* background-color: var(--color-bg-brighter); */
 		padding: 0.5rem;
 		padding-left: 1rem;
 		/* border-radius: 0.5rem; */

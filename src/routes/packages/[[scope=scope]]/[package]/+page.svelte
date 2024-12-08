@@ -19,40 +19,6 @@
 
 <div class="package-container">
 	<div class="package">
-		<div class="package-body">
-			{#if data.package}
-				<div class="package-head">
-					<div class="row align">
-						<h2>{data.packageName}</h2>
-						<button title="Hide README">
-							<label class="collapse">
-								<span class="show"><LucideEye /></span>
-								<span class="hide"><LucideEyeOff /></span>
-								<input class="collapser" type="checkbox" />
-							</label>
-						</button>
-					</div>
-					{#if data.package.author}
-						<p class="author fg-darker">By {data.package.author}</p>
-					{/if}
-					<p class="description">{data.package.description}</p>
-					{#if data.package.keywords}
-						<ul class="keywords">
-							{#each data.package.keywords as keyword}
-								<li class="fg-dark bg-bright hov-link hov-invert">
-									<a href="/search?text=keywords:{keyword}">{keyword}</a>
-								</li>
-							{/each}
-						</ul>
-					{/if}
-				</div>
-				<div class="readme">
-					{#if data.readme}
-						<Readme readme={data.readme.value} url={data.package.repository || ''} />
-					{/if}
-				</div>
-			{/if}
-		</div>
 		<div class="package-sidebar">
 			<div class="manager">
 				<p class="manager-selection row">
@@ -122,6 +88,40 @@
 				{/each}
 			</div>
 		</div>
+		<div class="package-body">
+			{#if data.package}
+				<div class="package-head">
+					<div class="row align">
+						<h2>{data.packageName}</h2>
+						<button title="Hide README">
+							<label class="collapse">
+								<span class="show"><LucideEye /></span>
+								<span class="hide"><LucideEyeOff /></span>
+								<input class="collapser" type="checkbox" />
+							</label>
+						</button>
+					</div>
+					{#if data.package.author}
+						<p class="author fg-darker">By {data.package.author}</p>
+					{/if}
+					<p class="description">{data.package.description}</p>
+					{#if data.package.keywords}
+						<ul class="keywords">
+							{#each data.package.keywords as keyword}
+								<li class="fg-dark bg-bright hov-link hov-invert">
+									<a href="/search?text=keywords:{keyword}">{keyword}</a>
+								</li>
+							{/each}
+						</ul>
+					{/if}
+				</div>
+				<div class="readme">
+					{#if data.readme}
+						<Readme readme={data.readme.value} url={data.package.repository || ''} />
+					{/if}
+				</div>
+			{/if}
+		</div>
 	</div>
 </div>
 
@@ -133,33 +133,22 @@
 	}
 
 	.package {
-		display: grid;
-		grid-template-columns: 3fr 2fr;
-		grid-template-rows: 1fr;
 		flex-shrink: 0;
+		overflow: auto;
 		width: 1200px;
-		gap: 0px 0px;
-		grid-template-areas: 'body sidebar';
 
 		@media (width <= 1200px) {
 			& {
 				width: 100vw;
 				display: flex;
-				flex-direction: column;
+				flex-direction: column-reverse;
 				padding: 0 1rem;
 			}
 		}
 	}
 
-	.package-head {
-		padding-bottom: 0.5rem;
-		border-bottom: 1px solid var(--color-bg-brighter);
-	}
-
 	.package-body {
-		grid-area: body;
 		padding: 0.5rem;
-		max-width: 720px;
 
 		&:has(input.collapser:checked) > .readme {
 			display: none;
@@ -190,9 +179,12 @@
 		}
 	}
 
-	.package-sidebar {
-		grid-area: sidebar;
-		margin-left: 0.5rem;
+	@media (width >= 1200px) {
+		.package-sidebar {
+			float: right;
+			margin-left: 0.5rem;
+			max-width: calc(480px - 1rem);
+		}
 	}
 
 	.manager-selection {
@@ -269,10 +261,20 @@
 		height: 12rem;
 	}
 
+	.reviews {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+		max-height: 22.5rem;
+		overflow: scroll;
+	}
+
 	.keywords {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 0.5rem;
+		border-bottom: 1px solid var(--color-bg-brighter);
+		padding-bottom: 0.25rem;
 	}
 
 	.keywords > li {

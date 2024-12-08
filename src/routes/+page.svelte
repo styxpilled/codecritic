@@ -1,14 +1,11 @@
 <script lang="ts">
+	import Banner from '$ui/banners/Banner.svelte';
 	import Card from '$ui/Card.svelte';
 	import List from '$ui/List.svelte';
 	import Review from '$ui/Review.svelte';
 	import SimplePage from '$ui/SimplePage.svelte';
 
-	interface Props {
-		data: any;
-	}
-
-	let { data }: Props = $props();
+	let { data } = $props();
 </script>
 
 <SimplePage>
@@ -52,6 +49,7 @@
 			{/each}
 		{/snippet}
 	</List>
+	<Banner rand={data.rand} banner={data.ad} />
 	<List>
 		{#snippet head()}
 			<span>Recommended</span>

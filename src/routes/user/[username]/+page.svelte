@@ -2,7 +2,6 @@
 	import List from '$ui/List.svelte';
 	import Review from '$ui/Review.svelte';
 	import Banner from '$ui/banners/Banner.svelte';
-	import Banner1 from '$ui/banners/Banner1.svelte';
 
 	let { data } = $props();
 </script>

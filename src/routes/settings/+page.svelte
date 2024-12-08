@@ -22,7 +22,7 @@
 		</label>
 		<label>
 			<span class="fg-dark">GitHub ID:</span>
-			<input type="text" value={$user?.githubId} disabled />
+			<input type="text" value={$user?.github_id} disabled />
 		</label>
 		<h3>Profile</h3>
 		<form use:enhance action="/settings?/updateProfile" method="post">

@@ -33,7 +33,7 @@
 		cursor: pointer;
 		user-select: none;
 		text-transform: uppercase;
-		background-color: var(--color-bg-bright);
+		background-color: var(--color-bg-brighter);
 	}
 
 	p {
