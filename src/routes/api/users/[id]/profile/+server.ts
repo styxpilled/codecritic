@@ -29,17 +29,17 @@ export const PUT: RequestHandler = async ({ request, locals }) => {
 	const user = locals.user;
 	if (!user) throw unauthorized();
 	const changes: Profile = await request.json();
-	const [profile] = (await locals.sql`
+	const [profile]: [Profile] = await locals.sql`
     INSERT INTO profiles
       (id, bio, url, links)
     VALUES
       (${user.id}, ${changes.bio}, ${changes.url}, ${changes.links})
     ON CONFLICT (id) DO UPDATE
-      SET bio = ${changes.bio?.slice(0, 512)},
-          url = ${changes.url?.slice(0, 512)},
+      SET bio = ${changes.bio?.slice(0, 512) || ''},
+          url = ${changes.url?.slice(0, 512) || ''},
           links = ${changes.links?.slice(0, 2).map((link) => link.slice(0, 512))}
     RETURNING *
-  `) as [Profile];
+  `;
 
 	return ok(profile);
 };

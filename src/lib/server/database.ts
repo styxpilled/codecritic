@@ -1,5 +1,5 @@
 import { STACK_SALT, REVIEW_SALT } from '$env/static/private';
-import { examplePackage, type NPMPackage, type Package } from '$lib/types';
+import { examplePackage, type NPMPackage, type NPMSearchPackage, type Package } from '$lib/types';
 import type postgres from 'postgres';
 // import postgres from 'postgres';
 // import type { ReservedSql } from 'postgres';
@@ -13,33 +13,22 @@ export const reviewSalt = REVIEW_SALT;
 export const getRepoURL = (url?: string) => {
 	return url
 		? 'https://github.com' + url.substring(url.indexOf('github.com') + 10, url.length - 4)
-		: undefined;
+		: '';
 };
 
-export const addPackage = async (
-	sql: ReturnType<typeof postgres>,
-	npmPackage: NPMPackage,
-	repository?: string
-): Promise<Package[]> => {
-	return sql`
-    INSERT INTO packages
-      (name, description, keywords, latest, next, license, repository, homepage, author, public)
-    VALUES
-      (
-      ${npmPackage.name},
-      ${npmPackage?.description || ''},
-      ${npmPackage?.keywords},
-      ${npmPackage['dist-tags']?.latest},
-      ${npmPackage['dist-tags']?.next},
-      ${npmPackage?.license},
-      ${repository},
-      ${npmPackage?.homepage},
-      ${npmPackage?.author?.name},
-      ${npmPackage?.public}
-      )
-    ON CONFLICT DO NOTHING
-    RETURNING *
-  `;
+export const npmToDB = (pkg: NPMSearchPackage) => {
+	return {
+		name: pkg.name,
+		description: pkg.description || '',
+		keywords: pkg.keywords || [],
+		latest: pkg.version || '0.0.1',
+		next: '',
+		license: pkg.license || '',
+		repository: pkg?.links?.repository || pkg?.repository?.url || '',
+		homepage: pkg?.links?.homepage || '',
+		author: pkg.publisher?.username || pkg?.maintainers?.[0].username || '',
+		public: true
+	};
 };
 
 export const addPackages = async (sql: ReturnType<typeof postgres>, pkgs: Package[]) => {

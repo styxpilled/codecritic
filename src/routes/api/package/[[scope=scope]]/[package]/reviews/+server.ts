@@ -7,8 +7,8 @@ import type { RequestHandler } from './$types';
 export const GET: RequestHandler = async ({ locals, params }) => {
 	const packageName = params.scope ? `${params.scope}/${params.package}` : params.package;
 	const userID = locals.user?.id || '';
-	const reviews = (await locals.sql`
-  SELECT
+	const reviews: Review[] = await locals.sql`
+    SELECT
       reviews.*,
       extensions.id_encode(reviews.id, ${reviewSalt}, 4) id,
       ${userID} = ANY(ARRAY_AGG(likes_reviews.user_id)) liked,
@@ -21,7 +21,7 @@ export const GET: RequestHandler = async ({ locals, params }) => {
         ON reviews.id = review_id
       WHERE package = ${packageName}
     GROUP BY reviews.id, users.*
-  `) as Review[];
+  `;
 
 	return ok(reviews, 'short');
 };

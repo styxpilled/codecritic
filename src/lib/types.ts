@@ -86,6 +86,9 @@ export type NPMSearchPackage = {
 		repository?: string;
 		bugs?: string;
 	};
+	repository?: {
+		url: string;
+	};
 	author?: { name: string };
 	publisher?: { username: string; email: string };
 	maintainers?: { username: string; email: string }[];

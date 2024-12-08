@@ -1,8 +1,8 @@
 import type { RequestHandler } from './$types';
 import { fetchOr, getPackage } from '$lib';
 import { notFound, ok } from '$lib/server';
-import { addPackage, getRepoURL } from '$lib/server/database';
-import type { NPMPackage } from '$lib/types';
+import { addPackages, npmToDB } from '$lib/server/database';
+import type { NPMSearchPackage } from '$lib/types';
 
 export const GET: RequestHandler = async ({ fetch, params, locals }) => {
 	const packageName = getPackage(params);
@@ -25,7 +25,7 @@ export const GET: RequestHandler = async ({ fetch, params, locals }) => {
 export const POST: RequestHandler = async ({ fetch, params, locals }) => {
 	const packageName = getPackage(params);
 
-	const npmPackage = await fetchOr<NPMPackage>(
+	const npmPackage = await fetchOr<NPMSearchPackage>(
 		`https://registry.npmjs.org/${packageName}`,
 		undefined,
 		fetch
@@ -37,7 +37,9 @@ export const POST: RequestHandler = async ({ fetch, params, locals }) => {
       WHERE name = ${npmPackage.name}
   `;
 
-	const [pkg] = await addPackage(locals.sql, npmPackage, getRepoURL(npmPackage?.repository?.url));
+	const pkg = npmToDB(npmPackage);
+	await addPackages(locals.sql, [pkg]);
+	// const [pkg] = await addPackage(locals.sql, npmPackage, getRepoURL(npmPackage?.repository?.url));
 
 	return ok(pkg);
 };
