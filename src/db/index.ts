@@ -1,12 +1,10 @@
 import { drizzle } from 'drizzle-orm/neon-http';
 import { neon } from '@neondatabase/serverless';
-import { config } from 'dotenv';
 import * as schema from './schema';
 import { packages, profiles, sessions, users, reviews, likesReviews } from './schema';
+import { DATABASE_URL } from '$env/static/private';
 
-config({ path: '.env' }); // or .env.local
-
-const sql = neon(process.env.DATABASE_URL!);
+const sql = neon(DATABASE_URL);
 export const db = drizzle({ client: sql, schema });
 
 export const $pg = {
