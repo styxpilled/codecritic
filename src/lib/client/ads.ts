@@ -34,10 +34,12 @@ export class BannerGenerator {
 	}
 }
 
-export const ads: {
+export type Banner = {
 	title: string;
 	text: string;
-}[] = [
+};
+
+export const ads: Banner[] = [
 	{
 		title: 'Tired of replacing the oil in your V8 engine?',
 		text: 'The New AWS Edge Oil lasts twice as long as other oils!'

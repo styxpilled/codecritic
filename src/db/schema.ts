@@ -7,7 +7,8 @@ import {
 	timestamp,
 	smallint,
 	primaryKey,
-	check
+	check,
+	index
 } from 'drizzle-orm/pg-core';
 
 export type User = InferSelectModel<typeof users>;
@@ -15,12 +16,18 @@ export type Session = InferSelectModel<typeof sessions>;
 export type Package = InferSelectModel<typeof packages>;
 export type Readme = InferSelectModel<typeof readmes>;
 
-export const users = pgTable('users', {
-	id: integer().primaryKey().generatedAlwaysAsIdentity(),
-	username: text().notNull(),
-	nickname: text(),
-	github_id: integer().notNull().unique()
-});
+export const users = pgTable(
+	'users',
+	{
+		id: integer().primaryKey().generatedAlwaysAsIdentity(),
+		username: text().notNull(),
+		nickname: text(),
+		github_id: integer().notNull().unique()
+	},
+	(t) => ({
+		nameIndex: index('name_index').using('btree', t.username.desc())
+	})
+);
 
 export const usersRelations = relations(users, ({ one, many }) => ({
 	profile: one(profiles),

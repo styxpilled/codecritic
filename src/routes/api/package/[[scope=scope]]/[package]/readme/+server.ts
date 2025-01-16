@@ -1,6 +1,6 @@
 import type { RequestHandler } from './$types';
 import type { Package, Readme } from '$db/schema';
-import { fetchOr, getPackage } from '$lib';
+import { fetchOr, getPackage, stripGit } from '$lib';
 import { notFound, ok } from '$lib/server';
 
 export const GET: RequestHandler = async ({ locals, params, cookies, fetch }) => {
@@ -27,14 +27,14 @@ export const GET: RequestHandler = async ({ locals, params, cookies, fetch }) =>
 
 	const ghAuth = cookies.get('github_access_token');
 	const auth = ghAuth ? { Authorization: `Bearer ${ghAuth}` } : {};
-	const repo = pkg.repository.endsWith('.git')
-		? pkg.repository.substring(0, pkg.repository.length - 4)
-		: pkg.repository;
+	const repo = stripGit(pkg.repository);
+	if (!repo.includes('github')) {
+		readme.value = 'Non GitHub repositories are not supported at this time!';
+		return ok();
+	}
 
 	const readmeData = await fetchOr<{ content: string }>(
-		`https://api.github.com/repos/${repo.substring(
-			repo.indexOf('github.com') + 11
-		)}/contents/README.md`,
+		`https://api.github.com/repos/${repo.substring(repo.indexOf('github.com') + 11)}/readme`,
 		undefined,
 		fetch,
 		{

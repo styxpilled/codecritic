@@ -13,7 +13,6 @@
 	let index = 0;
 	let selectedPackages: string[] = $state([]);
 
-
 	const search = async () => {
 		if (searchString === previousQuery) return;
 		const query = searchString;
@@ -149,7 +148,7 @@
 			max-height: 12rem;
 			overflow-y: scroll;
 			border-radius: 0.5rem;
-			background-color: var(--color-bg-bright);
+			background-color: var(--color-bg-brighter);
 			padding: 0.25rem 0.5rem;
 		}
 

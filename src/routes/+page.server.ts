@@ -1,3 +1,4 @@
+import { ads } from '$lib/client/ads';
 import type { PageServerLoad } from './$types';
 
 const greetOptions = [
@@ -14,6 +15,7 @@ const greetOptions = [
 
 export const load: PageServerLoad = async () => {
 	const message = greetOptions[Math.floor(Math.random() * greetOptions.length)];
+	const ad = ads[Math.floor(Math.random() * ads.length)];
 
-	return { greetMessage: message };
+	return { greetMessage: message, ad };
 };
