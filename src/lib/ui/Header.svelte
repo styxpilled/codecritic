@@ -33,18 +33,23 @@
 							<p>{$user.username}</p>
 						</a>
 						<div class="user-dropdown-content">
-							<a href="/settings">Settings</a>
-							<form method="post" action="/logout" use:enhance>
-								<button>Sign out</button>
+							<a href="/" class="hov-link">Home</a>
+							<a href="/user/{$user.username}" class="hov-link">Profile</a>
+							<a href="/user/{$user.username}/reviews" class="hov-link">Reviews</a>
+							<a href="/user/{$user.username}/stacks" class="hov-link">Stacks</a>
+							<hr />
+							<a href="/settings" class="hov-link">Settings</a>
+							<form class="logout" method="post" action="/logout" use:enhance>
+								<button class="btn lg bg-red">Sign out</button>
 							</form>
 						</div>
 					</li>
 				{:else}
 					<li><a href="/login/github">Sign in with GitHub</a></li>
 				{/if}
-				<li class="hov-link"><a href="/packages">packages</a></li>
-				<li class="hov-link"><a href="/users">members</a></li>
-				<li class="hov-link"><a href="/stacks">stacks</a></li>
+				<li><a class="hov-link" href="/packages">packages</a></li>
+				<li><a class="hov-link" href="/users">members</a></li>
+				<li><a class="hov-link" href="/stacks">stacks</a></li>
 				<li class="search-container">
 					<label class="search-button hov-link">
 						<LucideSearch />
@@ -124,18 +129,21 @@
 		position: relative;
 	}
 
-	.user-dropdown:hover > .user-dropdown-content {
+	.user-dropdown:hover > .user-dropdown-content,
+	.user-dropdown:focus-within > .user-dropdown-content {
 		display: flex;
-		flex-direction: column;
-		align-items: center;
 	}
 
 	.user-dropdown-content {
 		display: none;
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 0.25rem;
 		position: absolute;
 		top: 3rem;
 		background-color: var(--color-bg-brighter);
 		padding: 0.5rem;
+		padding-left: 1rem;
 		width: 9rem;
 	}
 
@@ -158,7 +166,9 @@
 	}
 
 	/* Doesn't work in Chrome for some reason! We love browsers! */
+	.site-logo > a:focus-visible,
 	.logo:hover {
+		outline: none;
 		animation: animate-logo 5s linear infinite forwards;
 		--color-logo-1: var(--color-red);
 		--color-logo-2: var(--color-orange);
@@ -227,19 +237,25 @@
 		overflow: hidden;
 		text-align: center;
 		padding: 0 0.5rem;
+		margin: 2px;
 		border-radius: 0.25rem;
+		transition:
+			margin 150ms ease-in-out,
+			padding 150ms ease-in-out;
 	}
 
-	/* Thank you firefox */
-	/* "baseline" yeah right except that one thing */
 	@supports (color: hsl(from white h s l)) {
 		.log-button {
 			animation: shift 10s linear infinite forwards;
 			animation-play-state: paused;
 		}
 
-		.log-button:hover {
+		.log-button:hover,
+		.log-button:focus-visible {
 			animation-play-state: running;
+			outline: none;
+			padding: 2px calc(0.5rem + 2px);
+			margin: 0;
 		}
 
 		@keyframes shift {

@@ -52,7 +52,10 @@ a.link {
 	color: var(--color-blue);
 }
 
-.hov-link:hover {
+.hov-link:hover,
+.hov-link:focus-visible,
+.hov-link > a:focus-visible {
+	outline: none;
 	--fg: var(--color-blue);
 }
 
@@ -150,6 +153,20 @@ textarea:focus-visible {
 	align-items: center;
 	justify-content: center;
 	font-weight: 500;
+	transition: outline-offset 150ms linear;
+}
+
+.btn:hover {
+	filter: brightness(1.1);
+}
+
+.btn:focus-visible {
+	outline: 2px solid var(--color-blue);
+	outline-offset: 2px;
+}
+
+.btn.lg {
+	font-size: 1rem;
 }
 
 .box {
@@ -164,4 +181,13 @@ input:disabled,
 textarea:disabled {
 	cursor: not-allowed;
 	filter: brightness(0.75);
+}
+
+hr {
+	--fg: var(--color-text-dark);
+
+	height: 1px;
+	width: 100%;
+	margin: 0.25rem 0;
+	border-color: var(--fg);
 }

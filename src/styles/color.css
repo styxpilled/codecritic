@@ -34,7 +34,9 @@
 }
 
 *[class*='fg-'].hov-invert:hover,
-*[class*='bg-'].hov-invert:hover {
+*[class*='bg-'].hov-invert:hover,
+*[class*='fg-'].hov-invert:focus-visible,
+*[class*='bg-'].hov-invert:focus-visible {
 	color: var(--bg);
 	background-color: var(--fg);
 }
