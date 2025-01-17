@@ -14,13 +14,16 @@
 	<h3><a class="fg-blue hov-line" href="/packages/{pkg.name}">{pkg.name}</a></h3>
 	<div class="details">
 		<p class="description">
-			<a href="/packages/{pkg.name}">{pkg.description}</a>
+			<a tabindex="-1" href="/packages/{pkg.name}">{pkg.description}</a>
 		</p>
 		{#if pkg.keywords}
 			<ul>
 				{#each pkg.keywords as keyword}
-					<li class="keyword fg-dark bg-bright hov-link hov-invert">
-						<a href="/search?text=keywords:{keyword}">{keyword}</a>
+					<li>
+						<a
+							class="keyword fg-dark bg-bright hov-link hov-invert"
+							href="/search?text=keywords:{keyword}">{keyword}</a
+						>
 					</li>
 				{/each}
 			</ul>
@@ -48,15 +51,26 @@
 		background-color: var(--color-bg-brighter);
 		padding: 0.25rem 0.5rem;
 		border-radius: 0.25rem;
+		transition: outline-offset 250ms ease-in-out;
 
 		&.wide {
 			width: 35rem;
+		}
+
+		&:has(h3 > a:focus-visible),
+		&:has(.description > a:focus-visible) {
+			outline-offset: 2px;
+			outline: 2px solid var(--color-blue);
 		}
 	}
 
 	h3 {
 		font-size: 1.25rem;
 		font-weight: 600;
+
+		& > a:focus-visible {
+			outline: none;
+		}
 	}
 
 	.details {
@@ -69,6 +83,10 @@
 		text-overflow: ellipsis;
 		text-overflow: '…';
 
+		& > a:focus-visible {
+			outline: none;
+		}
+
 		&:has(+ ul) {
 			max-height: 3rem;
 		}
@@ -79,7 +97,7 @@
 		gap: 0.25rem;
 		overflow: hidden;
 		flex-flow: wrap;
-		& > li {
+		& > li > a {
 			border-radius: 0.25rem;
 			padding: 0 0.25rem;
 		}
