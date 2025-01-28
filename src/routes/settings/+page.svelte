@@ -51,10 +51,39 @@
 			<div class="row end"><button type="submit" class="btn bg-green">Save</button></div>
 		</form>
 	</div>
-	<div class="col box">Favourite packages:</div>
+	<div class="col box">
+		<h2>Interface settings</h2>
+		<div>
+			<p>Theme:</p>
+			<p class="test"></p>
+		</div>
+	</div>
+	<!-- <div class="col box">Favourite packages:</div> -->
 </div>
 
 <style>
+	.test::before {
+		content: var(--color-bg);
+	}
+	/* --color-bg: #181a1b;
+	--color-bg-bright: #21252b;
+	--color-bg-brighter: #282c34;
+	--color-bg-brightest: #404859;
+
+	--color-text: #dcdfe4;
+	--color-text-darker: hsl(220, 13%, 80%);
+	--color-text-dark: hsl(220, 13%, 55%);
+
+	--fg: var(--color-text);
+
+	--color-red: #e06c75;
+	--color-orange: #d19a66;
+	--color-yellow: #e5c07b;
+	--color-green: #98c379;
+	--color-cyan: #56b6c2;
+	--color-blue: #61afef;
+	--color-purple: #c678dd; */
+
 	.col {
 		align-items: flex-start;
 	}

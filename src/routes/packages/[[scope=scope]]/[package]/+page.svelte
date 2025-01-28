@@ -202,7 +202,7 @@
 
 	.manager-selection > label:has(input:checked) {
 		/* TODO */
-		background-color: #383d45;
+		background-color: var(--color-bg-brightest);
 	}
 
 	/* Figure out something nicer */
@@ -266,7 +266,7 @@
 		flex-direction: column;
 		gap: 0.5rem;
 		max-height: 22.5rem;
-		overflow: scroll;
+		overflow-y: scroll;
 	}
 
 	.keywords {

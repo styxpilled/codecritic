@@ -34,13 +34,23 @@
 </div>
 
 <style>
+	:global(a:focus-visible:has(div.avatar)) {
+		outline: none;
+	}
+
+	:global(a:focus-visible) div.avatar {
+		outline: 2px solid var(--color-blue);
+		outline-offset: 2px;
+	}
+
 	.avatar {
 		display: inline-block;
 		height: 1.75rem;
 		width: 1.75rem;
 		background-color: whitesmoke;
 		border-radius: 999px;
-		/* outline: #383d45bb solid 2px; */
+		transition: outline-offset 250ms ease-in-out;
+		outline-offset: 0px;
 	}
 
 	img {

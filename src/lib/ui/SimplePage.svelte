@@ -9,7 +9,7 @@
 
 <style>
 	.simple-page.col {
-		gap: 2rem;
+		gap: 1.5rem;
 	}
 
 	.simple-page > :global(h2),

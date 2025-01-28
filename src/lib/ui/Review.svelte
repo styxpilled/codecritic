@@ -161,7 +161,8 @@
 		display: none;
 	}
 
-	.review:hover .edit-btn {
+	.review:hover .edit-btn,
+	.review:has(*:focus-visible) .edit-btn {
 		display: block;
 	}
 
@@ -209,5 +210,13 @@
 		display: -webkit-box;
 		overflow: hidden;
 		-webkit-box-orient: vertical;
+	}
+
+	.review:has(a:not(.avatar):focus-visible) {
+		outline: 2px solid var(--color-blue);
+	}
+
+	a:focus-visible {
+		outline: none;
 	}
 </style>

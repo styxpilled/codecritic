@@ -22,7 +22,7 @@
 			<List width="auto">
 				{#snippet head()}
 					<span>Popular packages this week</span>
-					<a href="/">TODO MORE</a>
+					<a class="hov-link" href="/">TODO MORE</a>
 				{/snippet}
 				{#snippet body()}
 					{#each data.packages as pkg}
