@@ -14,9 +14,7 @@
 </script>
 
 <SimplePage>
-	<h2 class="fg-dark">
-		React state management, Typescript types and slow npm installs - it's all here.
-	</h2>
+	<h2 class="fg-dark">VDOM implementation #44, Typescript types and Rust WASM - it's all here.</h2>
 	<div>
 		<ul class="packages">
 			<List width="auto">

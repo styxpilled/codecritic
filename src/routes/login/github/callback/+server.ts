@@ -52,8 +52,6 @@ export async function GET({ cookies, url, fetch }): Promise<Response> {
 			setSessionTokenCookie(cookies, session);
 		}
 
-		console.log(cookies.get('session'));
-
 		cookies.set('github_access_token', tokens.accessToken, {
 			path: '/',
 			secure: !dev,

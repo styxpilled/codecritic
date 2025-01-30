@@ -32,3 +32,7 @@ export const parseIntSafe = (
 	if (isNaN(maybeNumber)) return fallback;
 	else return maybeNumber;
 };
+
+export const typedKeys = <T extends object>(obj: T): [keyof T] => {
+	return Object.keys(obj) as [keyof T];
+};

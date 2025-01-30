@@ -4,5 +4,9 @@
 	let { data } = $props();
 </script>
 
-<h1>{data.pkg.name}</h1>
+<h1>
+	<a href="/packages/{data.pkg.name}" class="hov-link">
+		{data.pkg.name}
+	</a>
+</h1>
 <Review review={data.review} redirectToPackage />

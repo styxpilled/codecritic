@@ -136,6 +136,11 @@ textarea {
 	}
 }
 
+input[type='checkbox'] {
+	display: inline;
+	width: min-content;
+}
+
 input:not([type='range'], [type='radio'], [type='checkbox']):focus-visible,
 textarea:focus-visible {
 	outline: #40bcf4 solid 2px;

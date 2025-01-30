@@ -1,5 +1,8 @@
 <script lang="ts">
+	import { browser } from '$app/environment';
 	import { enhance } from '$app/forms';
+	import { typedKeys } from '$lib';
+	import { defaultDarkTheme, localState, theme } from '$lib/client/state.svelte';
 	import { user } from '$lib/client/stores';
 
 	interface Props {
@@ -54,35 +57,55 @@
 	<div class="col box">
 		<h2>Interface settings</h2>
 		<div>
-			<p>Theme:</p>
-			<p class="test"></p>
+			<label class="row">
+				Enable custom theme:
+				<input type="checkbox" bind:checked={localState.useCustomTheme} />
+			</label>
+			<button
+				class="btn bg-red"
+				disabled={!browser}
+				onclick={() => {
+					for (const key of typedKeys(defaultDarkTheme)) {
+						theme[key] = defaultDarkTheme[key];
+					}
+				}}
+			>
+				Clear theme
+			</button>
+			{#snippet renderTheme()}
+				{#each typedKeys(theme) as k}
+					<label>
+						<span class="row">
+							<span class="theme-picker" style="background: {theme[k]};"> </span>
+							<span class="key-name">{k}</span>
+						</span>
+						<input
+							type="text"
+							disabled={!localState.useCustomTheme || !browser}
+							bind:value={theme[k]}
+						/>
+					</label>
+				{/each}
+			{/snippet}
+			<noscript><p>This feature requires Javascript! Sorry!</p></noscript>
+			{@render renderTheme()}
 		</div>
 	</div>
 	<!-- <div class="col box">Favourite packages:</div> -->
 </div>
 
 <style>
-	.test::before {
-		content: var(--color-bg);
+	.theme-picker {
+		width: 1rem;
+		height: 1rem;
+		margin: 2px;
+		border: 1px solid black;
+		padding-left: 0.5rem;
 	}
-	/* --color-bg: #181a1b;
-	--color-bg-bright: #21252b;
-	--color-bg-brighter: #282c34;
-	--color-bg-brightest: #404859;
 
-	--color-text: #dcdfe4;
-	--color-text-darker: hsl(220, 13%, 80%);
-	--color-text-dark: hsl(220, 13%, 55%);
-
-	--fg: var(--color-text);
-
-	--color-red: #e06c75;
-	--color-orange: #d19a66;
-	--color-yellow: #e5c07b;
-	--color-green: #98c379;
-	--color-cyan: #56b6c2;
-	--color-blue: #61afef;
-	--color-purple: #c678dd; */
+	span.row {
+		align-items: center;
+	}
 
 	.col {
 		align-items: flex-start;
@@ -95,6 +118,11 @@
 	label {
 		display: flex;
 		flex-direction: column;
+
+		&.row {
+			align-items: center;
+			flex-direction: row;
+		}
 	}
 
 	textarea {

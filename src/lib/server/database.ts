@@ -35,9 +35,14 @@ export const addPackages = async (sql: ReturnType<typeof postgres>, pkgs: Packag
 	return sql`
     INSERT INTO packages
       ${sql(pkgs, examplePackage)}
-    ON CONFLICT (name) DO UPDATE
-    SET ${Object.keys(pkgs[0]).map(
-			(x, i) => sql`${i ? sql`,` : sql``}${sql(x)} = excluded.${sql(x)}`
-		)}
+    ON CONFLICT (name) DO NOTHING
   `;
+	// return sql`
+	//   INSERT INTO packages
+	//     ${sql(pkgs, examplePackage)}
+	//   ON CONFLICT (name) DO UPDATE
+	//   SET ${Object.keys(pkgs[0]).map(
+	// 		(x, i) => sql`${i ? sql`,` : sql``}${sql(x)} = excluded.${sql(x)}`
+	// 	)}
+	// `;
 };

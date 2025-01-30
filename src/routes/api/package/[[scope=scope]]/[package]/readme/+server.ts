@@ -49,6 +49,10 @@ export const GET: RequestHandler = async ({ locals, params, cookies, fetch }) =>
 		const buff = Buffer.from(readmeData.content, 'base64');
 		readme.value = buff.toString();
 		await locals.sql`
+      DELETE FROM readmes
+        WHERE expires < NOW();
+    `;
+		await locals.sql`
       INSERT INTO readmes
         ${locals.sql(readme)}
       ON CONFLICT(name)

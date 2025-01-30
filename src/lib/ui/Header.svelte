@@ -6,6 +6,7 @@
 	import { user } from '$lib/client/stores';
 	import { browser, dev } from '$app/environment';
 	import LiveSearchbar from './LiveSearchbar.svelte';
+	import { localState } from '$lib/client/state.svelte';
 
 	let showLiveSearch = $state(false);
 </script>
