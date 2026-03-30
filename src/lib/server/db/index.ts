@@ -14,3 +14,4 @@ export function getDb(db?: D1Database, databaseUrl?: string) {
 }
 
 export type DrizzleClient = ReturnType<typeof getDb>;
+export const $db = schema;
