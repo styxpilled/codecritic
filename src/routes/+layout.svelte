@@ -3,6 +3,7 @@
 	import favicon from '$lib/assets/favicon.png';
 	import Footer from '$lib/ui/Footer.svelte';
 	import Header from '$lib/ui/Header.svelte';
+	import '@fontsource-variable/inter';
 	import '$styles/remedy.css';
 	import '$styles/app.css';
 	import '$styles/colors.css';
@@ -27,6 +28,10 @@
 <style>
 	#root {
 		background-color: var(--color-bg);
+		background: linear-gradient(
+			oklab(from var(--color-bg) calc(l * 0.9) a b),
+			var(--color-bg) 400px
+		);
 	}
 
 	#main {
@@ -35,6 +40,7 @@
 		width: 950px;
 		min-height: calc(100dvh - 4.5rem);
 
+		/* background-color: red; */
 		@media (width <= 950px) {
 			& {
 				width: 100dvw;

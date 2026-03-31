@@ -3,7 +3,7 @@
 </script>
 
 <footer>
-	<section>
+	<section class="fg-dark">
 		<p>
 			Made with <a href="https://svelte.dev/" class="svelte hov-line">Svelte</a>/<a
 				href="https://kit.svelte.dev/"
@@ -14,21 +14,17 @@
 		<p>
 			<a class="nojs hov-line" href="https://www.kryogenix.org/code/browser/everyonehasjs.html"
 				>NoJS</a
-			> compatible (hopefully)
+			> compatible
 		</p>
 		<p>
-			build hash <a class="version hov-line" href="https://github.com/styxpilled/codecritic"
-				>{version}</a
-			>
+			<a class="hov-line" href="https://github.com/styxpilled/codecritic"> build hash {version}</a>
 		</p>
-		<p><a class="version hov-line" href="/privacy-notice">Privacy policy</a></p>
+		<p><a class=" hov-line" href="/privacy-notice">Privacy policy</a></p>
 	</section>
 </footer>
 
 <style>
 	footer {
-		/* position: absolute; */
-		/* bottom: 0; */
 		background-color: var(--color-bg-brighter);
 		width: 100dvw;
 		max-width: 100%;
@@ -39,10 +35,22 @@
 		display: flex;
 		justify-content: space-between;
 		width: 950px;
-
 		@media (width <= 950px) {
 			& {
 				width: 100dvw;
+				flex-wrap: wrap;
+				justify-content: space-around;
+				padding: 0 10px;
+				gap: 0.5rem;
+			}
+			& > * {
+				white-space: pre;
+				text-align: center;
+				min-width: 40vw;
+			}
+			& > *:nth-child(3) {
+				min-width: 60vw;
+				flex: 1;
 			}
 		}
 	}
