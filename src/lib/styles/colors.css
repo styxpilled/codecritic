@@ -1,0 +1,178 @@
+:root {
+	--color-bg: #181a1b;
+	--color-bg-bright: #21252b;
+	--color-bg-brighter: #282c34;
+	--color-bg-brightest: #404859;
+
+	--color-text: #dcdfe4;
+	--color-text-darker: hsl(220, 13%, 80%);
+	--color-text-dark: hsl(220, 13%, 55%);
+
+	--fg: var(--color-text);
+	/* --bg: var(--color-bg-brighter); */
+
+	--color-red: #e06c75;
+	--color-orange: #d19a66;
+	--color-yellow: #e5c07b;
+	--color-green: #98c379;
+	--color-cyan: #56b6c2;
+	--color-blue: #61afef;
+	--color-purple: #c678dd;
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		--color-bg: hsl(200, 6%, 10%);
+		--color-bg: hsl(0, 0%, 98%);
+		--color-bg-bright: hsl(216, 13%, 15%);
+		--color-bg-bright: hsl(0, 0%, 95%);
+		--color-bg-brighter: hsl(220, 13%, 18%);
+		--color-bg-brighter: hsl(0, 0%, 92%);
+		--color-bg-brightest: hsl(221, 16%, 30%);
+		--color-bg-brightest: hsl(0, 0%, 85%);
+
+		--color-text: hsl(228, 8%, 24%);
+		--color-text-darker: hsl(228, 8%, 30%);
+		--color-text-dark: hsl(228, 8%, 40%);
+
+		--fg: var(--color-text);
+		/* --bg: var(--color-bg-brighter); */
+
+		--color-red: rgb(228, 86, 73);
+		--color-orange: rgb(152, 104, 1);
+		--color-yellow: rgb(193, 132, 1);
+		--color-green: rgb(80, 161, 79);
+		--color-cyan: rgb(1, 132, 187);
+		--color-blue: rgb(64, 120, 242);
+		--color-purple: #a626a4;
+		--c: #c18401;
+	}
+}
+
+*::selection {
+	background-color: var(--color-bg-brightest);
+}
+
+*[class*='fg-'],
+*[class*='bg-'],
+.hov-link {
+	color: var(--fg);
+	background-color: var(--bg);
+}
+
+*[class*='fg-'].hov-invert:hover,
+*[class*='bg-'].hov-invert:hover,
+*[class*='fg-'].hov-invert:focus-visible,
+*[class*='bg-'].hov-invert:focus-visible {
+	color: var(--bg);
+	background-color: var(--fg);
+}
+
+.fg-text {
+	--fg: var(--color-text);
+}
+
+.fg-dark {
+	--fg: var(--color-text-dark);
+}
+
+.fg-darker {
+	--fg: var(--color-text-darker);
+}
+
+.bg-bright {
+	--bg: var(--color-bg-bright);
+}
+
+.bg-light {
+	--bg: var(--color-bg-brighter);
+}
+
+.bg-red {
+	--fg: var(--color-bg-brighter);
+	--bg: var(--color-red);
+}
+
+.bg-orange {
+	--fg: var(--color-bg-brighter);
+	--bg: var(--color-orange);
+}
+
+.bg-yellow {
+	--fg: var(--color-bg-brighter);
+	--bg: var(--color-yellow);
+}
+
+.bg-green {
+	--fg: var(--color-bg-brighter);
+	--bg: var(--color-green);
+}
+
+.bg-cyan {
+	--fg: var(--color-bg-brighter);
+	--bg: var(--color-cyan);
+}
+
+.bg-blue {
+	--fg: var(--color-bg-brighter);
+	--bg: var(--color-blue);
+}
+
+.bg-purple {
+	--fg: var(--color-bg-brighter);
+	--bg: var(--color-purple);
+}
+
+.fg-red {
+	--fg: var(--color-red);
+}
+
+.fg-orange {
+	--fg: var(--color-orange);
+}
+
+.fg-yellow {
+	--fg: var(--color-yellow);
+}
+
+.fg-green {
+	--fg: var(--color-green);
+}
+
+.fg-cyan {
+	--fg: var(--color-cyan);
+}
+
+.fg-blue {
+	--fg: var(--color-blue);
+}
+
+.fg-purple {
+	--fg: var(--color-purple);
+}
+
+.fg-bg {
+	--fg: var(--color-bg);
+}
+
+/* "background": "#282C34",
+"black": "#282C34",
+"blue": "#61AFEF",
+"brightBlack": "#5A6374",
+"brightBlue": "#61AFEF",
+"brightCyan": "#56B6C2",
+"brightGreen": "#98C379",
+"brightPurple": "#C678DD",
+"brightRed": "#E06C75",
+"brightWhite": "#DCDFE4",
+"brightYellow": "#E5C07B",
+"cursorColor": "#FFFFFF",
+"cyan": "#56B6C2",
+"foreground": "#DCDFE4",
+"green": "#98C379",
+"name": "One Half Dark",
+"purple": "#C678DD",
+"red": "#E06C75",
+"selectionBackground": "#FFFFFF",
+"white": "#DCDFE4",
+"yellow": "#E5C07B" */

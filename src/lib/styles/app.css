@@ -1,0 +1,228 @@
+html,
+body {
+	margin: 0;
+	min-height: 100dvh;
+	color-scheme: dark;
+}
+
+html {
+	height: 100%;
+}
+
+/* Sourced from https://github.com/twitter/twemoji */
+/* It uses COLRv0 because Safari doesn't support COLRv1 because why do anything */
+/* @font-face {
+	font-family: 'Twemoji';
+	src: url('/Twemoji.Mozilla.ttf') format('truetype');
+} */
+
+body {
+	font-family: 'Inter Variable', sans-serif;
+	scrollbar-width: thin;
+	color: var(--color-text);
+	background-color: #181a1b;
+	position: relative;
+}
+
+* {
+	scrollbar-width: thin;
+	scrollbar-color: #707070ff #f0f0f000;
+}
+
+a.link {
+	color: var(--color-blue);
+}
+
+.hov-link:hover,
+.hov-link:focus-visible,
+.hov-link > a:focus-visible {
+	outline: none;
+	--fg: var(--color-blue);
+}
+
+.hov-line:hover {
+	text-decoration: underline;
+}
+
+.hov-light:hover {
+	filter: brightness(1.1);
+}
+
+.row {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.col {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.5rem;
+}
+
+.start {
+	display: flex;
+	align-items: flex-start;
+}
+
+.end {
+	display: flex;
+	justify-content: flex-end;
+}
+
+.space {
+	justify-content: space-between;
+}
+
+.wrap {
+	flex-wrap: wrap;
+}
+
+.mono {
+	font-family: monospace;
+}
+
+.hoverable {
+	position: relative;
+	z-index: 3;
+	cursor: pointer;
+
+	&:hover > .hoverable-content {
+		display: block;
+		word-break: keep-all;
+		white-space: nowrap;
+	}
+}
+
+.hoverable-content {
+	position: absolute;
+	top: -1.5rem;
+	transform: translate(-50%, 0);
+	left: 50%;
+	display: none;
+	background-color: var(--color-bg);
+	padding: 0 0.25rem;
+	border-radius: 0.25rem;
+	z-index: 3;
+}
+
+select,
+input,
+textarea {
+	padding: 0.5rem;
+	background-color: var(--color-bg);
+	color: var(--color-text);
+	border-radius: 0.5rem;
+
+	&::placeholder {
+		color: var(--color-text-dark);
+	}
+}
+
+input[type='checkbox'] {
+	display: inline;
+	width: min-content;
+}
+
+input:not([type='range'], [type='radio'], [type='checkbox']):focus-visible,
+textarea:focus-visible {
+	outline: #40bcf4 solid 2px;
+}
+
+.hidden {
+	display: none;
+}
+
+.btn {
+	padding: 0 0.5rem;
+	border-radius: 0.25rem;
+	background-color: var(--color-bg-brighter);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	font-weight: 500;
+	transition: outline-offset 150ms linear;
+}
+
+.btn:hover {
+	filter: brightness(1.1);
+}
+
+.btn:focus-visible {
+	outline: 2px solid var(--color-blue);
+	outline-offset: 2px;
+}
+
+.btn.lg {
+	font-size: 1rem;
+}
+
+.collapse {
+	cursor: pointer;
+
+	& > .show {
+		display: none;
+	}
+
+	& > .hide {
+		display: block;
+	}
+
+	&:has(> input:checked) {
+		& > .hide {
+			display: none;
+		}
+
+		& > .show {
+			display: block;
+		}
+	}
+
+	& input {
+		display: none;
+	}
+}
+
+.box {
+	background-color: var(--color-bg-brighter);
+	border-radius: 0.5rem;
+	padding: 0.5rem;
+}
+
+.btn:disabled,
+button:disabled,
+input:disabled,
+textarea:disabled {
+	cursor: not-allowed;
+	filter: brightness(0.75);
+}
+
+hr {
+	--fg: var(--color-text-dark);
+
+	height: 1px;
+	width: 100%;
+	margin: 0.25rem 0;
+	border-color: var(--fg);
+}
+
+ol {
+	list-style-type: upper-roman;
+}
+
+.spinner {
+	transform-origin: center;
+	animation: spinner 1.2s linear infinite;
+}
+
+@keyframes spinner {
+	0% {
+		transform: rotate(0deg);
+	}
+
+	100% {
+		transform: rotate(360deg);
+	}
+}

@@ -3,7 +3,10 @@
 	import favicon from '$lib/assets/favicon.png';
 	import Footer from '$lib/ui/Footer.svelte';
 	import Header from '$lib/ui/Header.svelte';
-
+	import '$styles/remedy.css';
+	import '$styles/app.css';
+	import '$styles/colors.css';
+	import '$styles/static.css';
 	let { children } = $props();
 </script>
 
@@ -34,7 +37,7 @@
 
 		@media (width <= 950px) {
 			& {
-				width: 100vw;
+				width: 100dvw;
 			}
 		}
 	}
