@@ -8,7 +8,10 @@
 	import '$styles/app.css';
 	import '$styles/colors.css';
 	import '$styles/static.css';
-	let { children } = $props();
+	import { app } from '$lib/client/state.svelte';
+	let { children, data } = $props();
+	// svelte-ignore state_referenced_locally
+	app.user = data.auth.user;
 </script>
 
 <svelte:head>

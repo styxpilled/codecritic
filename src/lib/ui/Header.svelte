@@ -1,5 +1,8 @@
 <script lang="ts">
 	import { dev } from '$app/environment';
+	import { enhance } from '$app/forms';
+	import { app } from '$lib/client/state.svelte';
+	import Avatar from './Avatar.svelte';
 	import Icon from './Icon.svelte';
 </script>
 
@@ -13,23 +16,56 @@
 				<span class="desktop" class:fg-red={dev}>codecritic</span>
 			</a>
 		</h3>
-		<nav class="row" style:--gap="1rem">
-			<a href="/login/github">
-				<Icon class="mobile" id="user-lock" />
-				<span>Sign in with GitHub</span>
-			</a>
-			<label class="nav-button hov-link mobile">
-				<Icon id="list" />
-				<input type="checkbox" name="nav-links-checkbox" />
-			</label>
-			<div class="nav-links row bg-light">
-				<a class="hov-link" href="/packages"> packages </a>
-				<a class="hov-link" href="/users">members</a>
-				<a class="hov-link" href="/stacks">stacks</a>
+		<nav class="row nogap" style:gap="1rem">
+			{#if app.user}
+				<div class="user-button col" style:gap="0">
+					<a class="row hov-link desktop" href="/user/{app.user.username}">
+						<Avatar size="xs" username={app.user.username} />
+						<span>{app.user.username}</span>
+					</a>
+					<button class="mobile" popovertarget="user-links">
+						<Avatar size="xs" username={app.user.username} />
+					</button>
+					<div class="user-links bg-light col start" id="user-links" popover>
+						<a href="/" class="hov-link">Home</a>
+						<a href="/user/{app.user.username}" class="hov-link">Profile</a>
+						<a href="/user/{app.user.username}/reviews" class="hov-link">Reviews</a>
+						<a href="/user/{app.user.username}/stacks" class="hov-link">Stacks</a>
+						<hr />
+						<a href="/settings" class="hov-link">Settings</a>
+						<form class="logout" method="post" action="/logout" use:enhance>
+							<button class="btn lg bg-red">Sign out</button>
+						</form>
+					</div>
+				</div>
+			{:else}
+				<a href="/login/github">
+					<Icon class="mobile" id="user-lock" />
+					<span>Sign in with GitHub</span>
+				</a>
+			{/if}
+			<button id="nav-button" popovertarget="nav-links" class="nav-button hov-link mobile">
+				<Icon id="list" class="closed" />
+				<Icon id="x" class="open" />
+			</button>
+			<div class="nav-links row bg-light" id="nav-links" popover style:gap="1rem">
+				<p class="row">
+					<Icon size="1.25em" id="package" class="mobile" />
+					<a class="hov-link" href="/packages">packages</a>
+				</p>
+				<p class="row">
+					<Icon size="1.25em" id="user" class="mobile" />
+					<a class="hov-link" href="/users">members</a>
+				</p>
+				<p class="row">
+					<Icon size="1.25em" id="layers" class="mobile" />
+					<a class="hov-link" href="/stacks">stacks</a>
+				</p>
 			</div>
-			<div class="search-container row" style:--gap="0">
+			<div class="search-container row" style:gap="0">
 				<label class="search-button hov-link">
-					<Icon size="1.25em" id="search" />
+					<Icon size="1.25em" id="search" class="closed" />
+					<Icon size="1.25em" id="x" class="open" />
 					<input type="checkbox" name="search-checkbox" />
 				</label>
 				<form class="search-box" action="/search?/search">
@@ -37,7 +73,7 @@
 				</form>
 			</div>
 			<div class="log-btn-box">
-				<button class="log-button bg-green row" style:--gap="0.25rem">
+				<button class="log-button bg-green row" style:gap="0.25rem">
 					<span class="">Log</span>
 				</button>
 			</div>
@@ -73,6 +109,24 @@
 			letter-spacing: 0.15em;
 		}
 
+		& > #nav-links[popover] {
+			position: static;
+		}
+
+		& > #nav-button {
+			& > :global(.open) {
+				display: none;
+			}
+			&:has(+ [popover]:popover-open) {
+				& > :global(.open) {
+					display: block;
+				}
+				& > :global(.closed) {
+					display: none;
+				}
+			}
+		}
+
 		@media (width <= 950px) {
 			& span {
 				display: none;
@@ -82,25 +136,70 @@
 				display: inline-flex;
 			}
 
-			& > .nav-links {
-				position: absolute;
-				position-anchor: --nav-anchor;
-				position-area: bottom center;
-				position-visibility: always;
+			& > #nav-links[popover] {
 				width: 100%;
 				flex-direction: column;
-				align-items: flex-end;
+				align-items: flex-start;
 				max-height: 0;
+				padding: 0 1rem;
+				position-anchor: --nav-anchor;
+				position: absolute;
+				position-area: bottom center;
+				position-area: y-end span-all;
+				box-shadow: 0 2rem 2rem #0008;
+				font-size: 1rem;
+				position-visibility: always;
 				overflow: hidden;
-				padding: 0 0.5rem;
 				transition:
 					max-height 150ms ease-in-out,
 					padding 150ms ease-in-out;
 			}
-			&:has(> .nav-button > input:checked) > .nav-links {
-				max-height: 8rem;
-				padding: 0.5rem;
+			& > #nav-links:popover-open {
+				display: flex;
+				max-height: 10rem;
+				padding: 1rem;
 			}
+		}
+	}
+
+	.user-button {
+		anchor-name: --user-anchor;
+		position: relative;
+		z-index: 10;
+	}
+
+	.user-button:has(> a:focus) > .user-links,
+	.user-button:has(> a:hover) > .user-links,
+	.user-links[popover]:hover,
+	.user-links:focus-within,
+	.user-links:popover-open {
+		display: flex;
+		padding: 1rem;
+		max-height: 100%;
+		pointer-events: all;
+	}
+
+	.user-links {
+		position-visibility: always;
+		position-anchor: --user-anchor;
+		z-index: -1;
+		overflow: hidden;
+		max-height: 0;
+		pointer-events: none;
+		width: calc(100% + 2rem);
+		padding: 0 1rem;
+		position-area: block-end center;
+		transition:
+			max-height 150ms ease-in-out,
+			padding 150ms ease-in-out;
+		@media (width <= 950px) {
+			position-area: block-end span-inline-end;
+			margin-left: -1rem;
+			width: max-content;
+		}
+
+		& > * {
+			white-space: pre;
 		}
 	}
 
@@ -110,7 +209,10 @@
 		user-select: none;
 	}
 
-	.site-logo > a:focus-visible,
+	.site-logo > a:focus {
+		outline: none;
+	}
+	.site-logo > a:focus-visible > .logo,
 	.logo:hover {
 		outline: none;
 		& > span {
@@ -156,12 +258,51 @@
 	}
 
 	.search-box > input {
-		width: 0;
+		width: 4rem;
+		visibility: hidden;
 		padding: 0;
+		transition:
+			width 150ms,
+			padding 150ms;
+		margin-right: -4rem;
+	}
+
+	.search-button {
+		cursor: pointer;
+		& :global(.open) {
+			display: none;
+		}
+	}
+
+	.search-button:has(> input:checked) {
+		& :global(.closed) {
+			display: none;
+		}
+		& :global(.open) {
+			display: block;
+		}
+		& + .search-box > input {
+			margin-left: 0.25rem;
+			padding: 0 0.5rem;
+			visibility: visible;
+			margin-right: 0;
+			width: 10rem;
+			height: auto;
+		}
+	}
+
+	.search-container:has(> .search-button > input:checked) {
+		margin-right: -1rem;
+		& + * {
+			max-width: 0;
+		}
 	}
 
 	.log-btn-box {
 		position: relative;
+		overflow: hidden;
+		transition: max-width 150ms;
+		max-width: 4rem;
 	}
 	button.log-button {
 		padding: 0 0.5rem 0 1.5rem;
@@ -200,6 +341,7 @@
 			animation-play-state: paused;
 			background-color: currentColor;
 			span {
+				display: inline-flex;
 				color: var(--color-bg-brighter);
 			}
 		}

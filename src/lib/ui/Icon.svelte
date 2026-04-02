@@ -3,6 +3,7 @@
 		'search',
 		'layers',
 		'user-lock',
+		'package',
 		'list',
 		'user',
 		'plus',

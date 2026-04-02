@@ -62,8 +62,4 @@
 	.nojs {
 		color: #ebd64d;
 	}
-
-	.version {
-		color: var(--color-text-dark);
-	}
 </style>

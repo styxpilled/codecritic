@@ -101,15 +101,17 @@
 	main {
 		margin-top: 2rem;
 		margin-bottom: 5rem;
+		width: 46rem;
+		@media (width <= 950px) {
+			width: 100vw;
+			padding: 0 3rem;
+		}
 	}
 	main > *,
 	.detailed-info * {
 		margin-bottom: 0.5rem;
 	}
 
-	ol {
-		width: 40rem;
-	}
 	ol {
 		margin-bottom: 1rem;
 	}
