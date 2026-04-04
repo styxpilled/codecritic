@@ -9,7 +9,8 @@
 		'plus',
 		'x',
 		'sun',
-		'moon'
+		'moon',
+		'scale'
 	]);
 </script>
 

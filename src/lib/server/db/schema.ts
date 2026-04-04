@@ -3,6 +3,12 @@ import { relations, sql, type InferSelectModel } from 'drizzle-orm';
 
 export type User = InferSelectModel<typeof users>;
 export type Session = InferSelectModel<typeof sessions>;
+export type _PackageDB = InferSelectModel<typeof packages>;
+export type Package = Expand<
+	Omit<_PackageDB, 'expires'> & {
+		keywords: string[];
+	}
+>;
 export type GuestBookMessage = InferSelectModel<typeof guestbookMessages>;
 
 export const guestbookMessages = sqliteTable('guestbook_messages', {
@@ -47,4 +53,18 @@ export const sessionsRelations = relations(sessions, ({ one }) => ({
 	})
 }));
 
-// platform.env.DB;
+export const packages = sqliteTable('packages', {
+	name: text().primaryKey(),
+	description: text().notNull(),
+	// keywords: text().array(),
+	latest: text().notNull(),
+	next: text(),
+	license: text(),
+	repository: text(),
+	homepage: text(),
+	author: text(),
+	expires: integer({ mode: 'timestamp' }).notNull()
+	// timestamp('expires', { withTimezone: true, mode: 'date' })
+	// 	.notNull()
+	// 	.default(sql`now() + INTERVAL '1 WEEK'`)
+});

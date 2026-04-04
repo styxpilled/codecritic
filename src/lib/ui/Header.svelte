@@ -68,8 +68,8 @@
 					<Icon size="1.25em" id="x" class="open" />
 					<input type="checkbox" name="search-checkbox" />
 				</label>
-				<form class="search-box" action="/search?/search">
-					<input type="search" name="text" />
+				<form class="search-box" action="/search">
+					<input type="search" name="query" />
 				</form>
 			</div>
 			<div class="log-btn-box">

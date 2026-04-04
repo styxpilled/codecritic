@@ -51,6 +51,14 @@ a.link {
 	filter: brightness(1.1);
 }
 
+.semibold {
+	font-weight: 600;
+}
+
+.bold {
+	font-weight: 700;
+}
+
 .row {
 	display: flex;
 	flex-direction: row;
