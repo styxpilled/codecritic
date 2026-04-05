@@ -5,11 +5,11 @@ export const npmToDB = (pkg: NPMSearchPackage) => {
 		name: pkg.name,
 		description: pkg.description || '',
 		keywords: pkg.keywords || [],
-		latest: pkg.version || '0.0.1',
-		next: '',
+		latest: pkg['dist-tags']?.latest,
+		next: pkg['dist-tags']?.next,
 		license: pkg.license || '',
-		repository: pkg?.links?.repository || pkg?.repository?.url || '',
-		homepage: pkg?.links?.homepage || '',
-		author: pkg.publisher?.username || pkg?.maintainers?.[0].username || ''
+		repository: pkg?.repository?.url || '',
+		homepage: pkg?.homepage,
+		modified: pkg?.time?.modified
 	};
 };

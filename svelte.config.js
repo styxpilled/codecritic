@@ -13,6 +13,9 @@ const config = {
 			const isExternalLibrary = pathSegments.includes('node_modules');
 
 			return isExternalLibrary ? undefined : true;
+		},
+		experimental: {
+			async: true
 		}
 	},
 	kit: {
@@ -23,9 +26,13 @@ const config = {
 		version: {
 			name: gitDescribeSync().hash
 		},
+		experimental: {
+			remoteFunctions: true
+		},
 		alias: {
 			$ui: './src/lib/ui',
-			$styles: './src/lib/styles'
+			$styles: './src/lib/styles',
+			$api: './src/routes/api'
 		}
 	}
 };

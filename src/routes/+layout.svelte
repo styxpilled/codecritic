@@ -42,6 +42,8 @@
 		padding: 1rem 0;
 		width: 950px;
 		min-height: calc(100dvh - 4.5rem);
+		/* outline: 1px solid red;
+		outline-offset: 0; */
 
 		/* background-color: red; */
 		@media (width <= 950px) {

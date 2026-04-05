@@ -7,14 +7,17 @@ export type NPMSearchPackage = {
 	description?: string;
 	keywords?: string[];
 	date: string;
-	links: {
-		npm: string;
-		homepage?: string;
-		repository?: string;
-		bugs?: string;
-	};
 	repository?: {
 		url: string;
+	};
+	homepage?: string;
+	time: {
+		created: string;
+		modified: string;
+	};
+	'dist-tags': {
+		next: string;
+		latest: string;
 	};
 	author?: { name: string };
 	publisher?: { username: string; email: string };

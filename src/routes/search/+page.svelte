@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { searchNPM } from '$api/npm.remote';
 	import { page } from '$app/state';
-	import Default from '$ui/Package/Default.svelte';
+	import Package from '$ui/Package';
 	// let query = page.url.searchParams.get('query');
 </script>
 
@@ -15,7 +15,7 @@
 			{:then I}
 				{#each I as pkg (pkg.name)}
 					<li>
-						<Default {pkg} />
+						<Package {pkg} />
 					</li>
 				{/each}
 			{/await}

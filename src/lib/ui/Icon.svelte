@@ -10,7 +10,8 @@
 		'x',
 		'sun',
 		'moon',
-		'scale'
+		'scale',
+		'copy'
 	]);
 </script>
 
