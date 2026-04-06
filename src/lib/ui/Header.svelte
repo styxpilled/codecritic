@@ -66,10 +66,16 @@
 				<label class="search-button hov-link">
 					<Icon size="1.25em" id="search" class="closed" />
 					<Icon size="1.25em" id="x" class="open" />
-					<input type="checkbox" name="search-checkbox" />
+					<input
+						type="checkbox"
+						name="search-checkbox"
+						oninput={() => {
+							document.getElementById('search-input')?.focus();
+						}}
+					/>
 				</label>
 				<form class="search-box" action="/search">
-					<input type="search" name="query" />
+					<input type="search" name="query" id="search-input" />
 				</form>
 			</div>
 			<div class="log-btn-box">
@@ -302,7 +308,8 @@
 		position: relative;
 		overflow: hidden;
 		transition: max-width 150ms;
-		max-width: 4rem;
+		padding-right: 2px;
+		max-width: 4.125rem;
 	}
 	button.log-button {
 		padding: 0 0.5rem 0 1.5rem;
