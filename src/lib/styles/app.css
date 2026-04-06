@@ -127,7 +127,7 @@ textarea {
 	background-color: var(--color-bg);
 	color: var(--color-text);
 	border-radius: 0.5rem;
-
+	resize: none;
 	&::placeholder {
 		color: var(--color-text-dark);
 	}

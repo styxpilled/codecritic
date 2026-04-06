@@ -27,8 +27,16 @@
 		{/each}
 	</div>
 	<p class="btn lg fg-dark bg-light row space">
-		{selectedManager} add {pkg.name}
-		<button class="">
+		{#each managers as manager (manager)}
+			<span class="command" data-manager={manager}>{manager} add {pkg.name}</span>
+		{/each}
+		<span class="copy-feedback btn bg-green">Copied!</span>
+		<button
+			class="copy-btn hov-light js-only"
+			onclick={async () => {
+				await navigator.clipboard.writeText(`${selectedManager} add ${pkg.name}`);
+			}}
+		>
 			<Icon size="1.25em" id="copy" />
 		</button>
 	</p>
@@ -46,12 +54,24 @@
 <style>
 	.sidebar {
 		display: flex;
+		margin-bottom: 1rem;
 	}
 
 	.sidebar p,
 	.sidebar div {
-		/* background: var(--color-bg-bright); */
 		width: 100%;
+	}
+
+	.command {
+		display: none;
+	}
+
+	.sidebar:has([value='npm']:checked) [data-manager='npm'],
+	.sidebar:has([value='pnpm']:checked) [data-manager='pnpm'],
+	.sidebar:has([value='bun']:checked) [data-manager='bun'],
+	.sidebar:has([value='deno']:checked) [data-manager='deno'],
+	.sidebar:has([value='yarn']:checked) [data-manager='yarn'] {
+		display: block;
 	}
 
 	label:has(input:checked) {
@@ -59,11 +79,26 @@
 		--fg: var(--color-text-darker);
 	}
 
+	.copy-feedback {
+		position-anchor: --copy-anchor;
+		position-area: top center;
+		position: absolute;
+		margin-bottom: 0.25rem;
+		display: none;
+		transition: display 0.5s allow-discrete;
+		&:has(+ button:active) {
+			display: block;
+		}
+	}
+
+	.copy-btn {
+		anchor-name: --copy-anchor;
+	}
+
 	@media (width >= 1200px) {
 		.sidebar {
 			float: right;
-			/* margin-top: -3rem; */
-			/* margin-left: 0.5rem; */
+			margin-top: -5rem;
 			max-width: calc(480px - 1rem);
 		}
 	}

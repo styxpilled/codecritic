@@ -13,11 +13,11 @@
 
 <div class="package col center">
 	<div class="content">
-		<Sidebar {pkg} />
 		<div class="metadata">
 			<h1>{pkg.name}</h1>
 			<div class="row">
 				{#if pkg.latest}
+					<p class="fg-yellow">@latest</p>
 					<p class="fg-green">
 						{pkg.latest}
 					</p>
@@ -38,24 +38,18 @@
 				{/each}
 			</ul>
 		</div>
+		<Sidebar {pkg} />
 		<Readme readme={readme.value} url={readme.url} />
 	</div>
 </div>
 
 <style>
-	.content,
-	.content > :global(*) {
-		/* width: 100%; */
-		/* float: left; */
-	}
-
 	.package {
-		margin-top: 2rem;
+		margin: 2rem 0;
+		height: 100%;
 		& > div {
-			flex-shrink: 0;
-
 			width: 1200px;
-
+			height: max-content;
 			@media (width <=1200px) {
 				padding: 0 1rem;
 				width: 100vw;
