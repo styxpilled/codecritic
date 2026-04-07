@@ -1,7 +1,8 @@
 .readme {
-	max-height: 200rem;
-	transition: max-height 250ms ease-in-out;
 	@media (width <=950px) {
+		max-height: 300rem;
+		max-height: calc-size(max-content, size);
+		transition: max-height 250ms ease-in-out;
 		overflow: hidden;
 		&:has(+ .hide-readme > input:not(:checked)) {
 			max-height: 40rem;

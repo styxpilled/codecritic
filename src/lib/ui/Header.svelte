@@ -20,11 +20,11 @@
 			{#if app.user}
 				<div class="user-button col" style:gap="0">
 					<a class="row hov-link desktop" href="/user/{app.user.username}">
-						<Avatar size="xs" username={app.user.username} />
+						<Avatar size="xs" user={app.user} />
 						<span>{app.user.username}</span>
 					</a>
 					<button class="mobile" popovertarget="user-links">
-						<Avatar size="xs" username={app.user.username} />
+						<Avatar size="xs" user={app.user} />
 					</button>
 					<div class="user-links bg-light col start" id="user-links" popover>
 						<a href="/" class="hov-link">Home</a>

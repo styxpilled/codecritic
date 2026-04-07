@@ -59,6 +59,10 @@ a.link {
 	font-weight: 700;
 }
 
+.upcase {
+	text-transform: uppercase;
+}
+
 .btn,
 .round {
 	border-radius: 0.25rem;

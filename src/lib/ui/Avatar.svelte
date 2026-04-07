@@ -1,10 +1,19 @@
 <script lang="ts">
-	interface Props {
-		size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
-		username: string | undefined;
-	}
+	import type { User } from '$lib/server/db/schema';
 
-	let { size = 'md', username }: Props = $props();
+	type Props = Expand<
+		{
+			size?: 'xs' | 'sm' | 'md' | 'lg' | 'xl';
+		} & (
+			| {
+					user: User;
+					username?: undefined;
+			  }
+			| { username: string; user?: undefined }
+		)
+	>;
+
+	let { size = 'md', username, user }: Props = $props();
 
 	// svelte-ignore state_referenced_locally
 	let pxSize = {
@@ -17,16 +26,16 @@
 </script>
 
 <div class="avatar {size}">
-	{#if username}
-		<img
-			draggable="false"
-			class={size}
-			height={pxSize}
-			width={pxSize}
-			src="https://github.com/{username}.png?size={pxSize}"
-			alt="avatar"
-		/>
-	{/if}
+	<img
+		draggable="false"
+		class={size}
+		height={pxSize}
+		width={pxSize}
+		src={user
+			? `https://avatars.githubusercontent.com/u/${user.githubID}?size=${pxSize}`
+			: `https://github.com/${username}.png?size=${pxSize}`}
+		alt="avatar"
+	/>
 </div>
 
 <style>
