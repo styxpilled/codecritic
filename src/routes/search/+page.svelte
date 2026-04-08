@@ -1,24 +1,23 @@
 <script lang="ts">
+	import { hydratable } from 'svelte';
 	import { searchNPM } from '$api/npm.remote';
 	import { page } from '$app/state';
 	import Package from '$ui/Package';
-	// let query = page.url.searchParams.get('query');
+
+	let query = $state(page.url.searchParams.get('query'));
+	const results = await hydratable('package-search-results', () => (query ? searchNPM(query) : []));
 </script>
 
 <svelte:boundary>
-	{@const query = page.url.searchParams.get('query')}
+	<!-- {@const query = page.url.searchParams.get('query')} -->
 	<h3>Showing matches for "{query}":</h3>
 	<ul class="">
 		{#if query}
-			{#await searchNPM(query || '')}
-				loading
-			{:then I}
-				{#each I as pkg (pkg.name)}
-					<li>
-						<Package {pkg} />
-					</li>
-				{/each}
-			{/await}
+			{#each results as pkg (pkg.name)}
+				<li>
+					<Package {pkg} />
+				</li>
+			{/each}
 		{:else}
 			<h3>Nothing here but chickens!</h3>
 		{/if}

@@ -11,7 +11,9 @@
 		'sun',
 		'moon',
 		'scale',
-		'copy'
+		'copy',
+		'notebook',
+		'globe',
 	]);
 </script>
 

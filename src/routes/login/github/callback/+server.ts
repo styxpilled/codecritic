@@ -1,9 +1,9 @@
 // routes/login/github/callback/+server.ts
 import { OAuth2RequestError } from 'arctic';
-import { github } from '$lib/server/auth';
-import { dev } from '$app/environment';
 // import { $db, db } from '$db';
 import { eq } from 'drizzle-orm';
+import { dev } from '$app/environment';
+import { github } from '$lib/server/auth';
 import { createSession, setSessionTokenCookie } from '$lib/server/auth';
 import { $db } from '$lib/server/db';
 
@@ -15,7 +15,7 @@ export async function GET({ cookies, url, fetch, locals }): Promise<Response> {
 
 	if (!code || !state || !storedState || state !== storedState) {
 		return new Response(null, {
-			status: 400
+			status: 400,
 		});
 	}
 
@@ -25,8 +25,8 @@ export async function GET({ cookies, url, fetch, locals }): Promise<Response> {
 		const githubUserResponse = await fetch('https://api.github.com/user', {
 			headers: {
 				Authorization: `Bearer ${tokens.accessToken()}`,
-				'User-Agent': 'codecritic'
-			}
+				'User-Agent': 'codecritic',
+			},
 		});
 		const githubUser: GitHubUser = await githubUserResponse.json();
 
@@ -44,9 +44,12 @@ export async function GET({ cookies, url, fetch, locals }): Promise<Response> {
 				.values({
 					githubID: githubUser.id,
 					username: githubUser.login,
-					nickname: githubUser.name
+					nickname: githubUser.name,
 				})
 				.returning();
+			await db.insert($db.profiles).values({
+				id: user.id,
+			});
 			const session = await createSession(db, user);
 			setSessionTokenCookie(cookies, session);
 		}
@@ -56,24 +59,24 @@ export async function GET({ cookies, url, fetch, locals }): Promise<Response> {
 			secure: !dev,
 			httpOnly: true,
 			maxAge: 60 * 10000,
-			sameSite: 'lax'
+			sameSite: 'lax',
 		});
 
 		return new Response(null, {
 			status: 302,
 			headers: {
-				Location: '/'
-			}
+				Location: '/',
+			},
 		});
 	} catch (e) {
 		if (e instanceof OAuth2RequestError) {
 			return new Response(null, {
-				status: 400
+				status: 400,
 			});
 		}
 		console.error(e);
 		return new Response(null, {
-			status: 500
+			status: 500,
 		});
 	}
 }

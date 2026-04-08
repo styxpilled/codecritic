@@ -27,6 +27,7 @@ export const toPackageName = (params: { scope?: string; package: string }) => {
 };
 
 export const stripGit = (url: string) => {
+	if (url === null) return '';
 	const plusGit = url.startsWith('git+');
 	const dotGit = url.endsWith('.git');
 	return url.substring(plusGit ? 4 : 0, dotGit ? url.length - 4 : url.length);

@@ -1,9 +1,10 @@
 <script lang="ts">
+	import type { Package } from '$lib/server/db/schema';
 	import Icon from '$ui/Icon.svelte';
 	import ReviewEditor from '$ui/Review/Editor.svelte';
 
 	type Props = {
-		pkg: any;
+		pkg: Package;
 	};
 
 	let { pkg }: Props = $props();

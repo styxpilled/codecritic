@@ -1,9 +1,9 @@
 <script lang="ts">
+	import { hydratable } from 'svelte';
 	import { getNPMPackage } from '$api/npm.remote.js';
 	import { getReadme } from '$api/readme.remote';
 	import { relativeTimeFromDates } from '$lib/helpers';
 	import Readme from '$ui/Readme.svelte';
-	import { hydratable } from 'svelte';
 	import Sidebar from './Sidebar.svelte';
 
 	let { params } = $props();

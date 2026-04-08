@@ -1,18 +1,18 @@
 <script lang="ts">
-	import { Marked } from 'marked';
-	import { markedHighlight } from 'marked-highlight';
+	import DOMPurify from 'dompurify';
 	import hljs from 'highlight.js/lib/core';
+	import css from 'highlight.js/lib/languages/css';
 	import js from 'highlight.js/lib/languages/javascript';
 	import ts from 'highlight.js/lib/languages/typescript';
 	import xml from 'highlight.js/lib/languages/xml';
-	import css from 'highlight.js/lib/languages/css';
-	import DOMPurify from 'dompurify';
-	import '$styles/readme.css';
-	import '$styles/github.css';
-	import { stripGit } from '$lib';
+	import { Marked } from 'marked';
+	import { markedHighlight } from 'marked-highlight';
 	import { browser } from '$app/environment';
-	import Icon from './Icon.svelte';
+	import { stripGit } from '$lib';
 	import { hljsDefineSvelte } from '$lib/client/highlight';
+	import '$styles/github.css';
+	import '$styles/readme.css';
+	import Icon from './Icon.svelte';
 
 	interface Props {
 		readme: string;
@@ -35,7 +35,7 @@
 			highlight(code, lang) {
 				let language = hljs.getLanguage(lang) ? lang : 'plaintext';
 				return hljs.highlight(code, { language }).value;
-			}
+			},
 		}),
 		{ gfm: true }
 	);
