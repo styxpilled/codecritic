@@ -1,12 +1,11 @@
 <script lang="ts">
 	import { error } from '@sveltejs/kit';
-	import { hydratable } from 'svelte';
 	import { updateProfileSchema } from '$api/schemas';
 	import { getProfile, updateProfile } from '$api/user.remote';
 	import { app } from '$lib/client/state.svelte';
 
 	if (!app.user) error(401);
-	let user = await hydratable('user', () => getProfile(app?.user?.username || ''));
+	let user = $state(await getProfile(app?.user?.username || ''));
 </script>
 
 <form

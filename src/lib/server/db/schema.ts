@@ -1,5 +1,5 @@
 import { relations, sql, type InferSelectModel } from 'drizzle-orm';
-import { sqliteTable, text, integer, blob } from 'drizzle-orm/sqlite-core';
+import { sqliteTable, text, integer, blob, primaryKey } from 'drizzle-orm/sqlite-core';
 
 export type User = InferSelectModel<typeof users>;
 export type Profile = InferSelectModel<typeof profiles>;
@@ -34,9 +34,22 @@ export const usersRelations = relations(users, ({ many, one }) => ({
 	sessions: many(sessions),
 	// likes: many(likesReviews),
 	// reviews: many(reviews),
-	// follows: many(usersFollows),
-	// following: many(usersFollows)
+	follows: many(usersFollows),
+	following: many(usersFollows),
 }));
+
+export const usersFollows = sqliteTable(
+	'users_follows',
+	{
+		userID: integer('user_id')
+			.notNull()
+			.references(() => users.id),
+		following: integer()
+			.notNull()
+			.references(() => users.id),
+	},
+	(t) => [primaryKey({ columns: [t.userID, t.following] })]
+);
 
 export const sessions = sqliteTable('sessions', {
 	id: text().primaryKey().notNull(),
@@ -80,17 +93,6 @@ export const packagesKeywords = sqliteTable('packages_keywords', {
 		}),
 	keyword: text().notNull(),
 });
-
-// export const packageView = sqliteView('packages_full').as((qb) => {
-// 	return qb
-// 		.select({
-// 			...getTableColumns(packages),
-// 			keywords: sql<string[]>`json_group_array(packages_keywords.keyword)`.as('keywords'),
-// 		})
-// 		.from(packages)
-// 		.leftJoin(packagesKeywords, eq(packages.name, packagesKeywords.name))
-// 		.groupBy(packages.name);
-// });
 
 export const profiles = sqliteTable('profiles', {
 	id: integer()

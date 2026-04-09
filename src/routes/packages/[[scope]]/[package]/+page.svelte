@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { hydratable } from 'svelte';
 	import { getNPMPackage } from '$api/npm.remote.js';
 	import { getReadme } from '$api/readme.remote';
 	import { relativeTimeFromDates } from '$lib/helpers';
@@ -7,8 +6,8 @@
 	import Sidebar from './Sidebar.svelte';
 
 	let { params } = $props();
-	const readme = await hydratable('readme', () => getReadme(params));
-	const pkg = await hydratable('pkg', () => getNPMPackage(params));
+	const readme = $derived(await getReadme(params));
+	const pkg = $derived(await getNPMPackage(params));
 </script>
 
 <div class="package col center">

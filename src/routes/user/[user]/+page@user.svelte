@@ -1,16 +1,21 @@
 <script lang="ts">
-	import { hydratable } from 'svelte';
-	import { getProfile } from '$api/user.remote.js';
+	import { follow, getProfile, unfollow } from '$api/user.remote.js';
 	import { app } from '$lib/client/state.svelte.js';
 	import Avatar from '$ui/Avatar.svelte';
 	import Icon from '$ui/Icon.svelte';
 
 	let { params } = $props();
-	const user = await hydratable('user', () => getProfile(params.user));
+	// svelte-ignore state_referenced_locally
+	let user = $state(await getProfile(params.user));
+	$effect(() => {
+		getProfile(params.user).then((v) => {
+			user = v;
+		});
+	});
 </script>
 
 {#snippet profile(c: 'mobile' | 'desktop')}
-	{#if user.profile}
+	{#if user.profile && (user.profile.bio || user.profile.url)}
 		<div class="col start profile {c}">
 			{#if user.profile.bio}
 				<p class="fg-dark bio">
@@ -47,8 +52,40 @@
 						<a href="/user" class="btn bg-light fg-dark hov-link hov-invert">Edit profile</a>
 					{:else if !app.user}
 						<a href="/login/github" class="fg-dark hov-link">Sign in to follow</a>
-					{:else if user}
-						<button>Follow</button>
+					{:else}
+						<form
+							{...(user.userFollows ? unfollow : follow).enhance(async ({ submit }) => {
+								user.userFollows = !user.userFollows;
+								await submit();
+							})}
+						>
+							<input
+								{...(user.userFollows ? unfollow : follow).fields.username.as('text')}
+								value={user.username}
+								class="hidden"
+							/>
+							<button
+								class="follow-btn semibold upcase"
+								class:following={user.userFollows}
+								class:not-following={!user.userFollows}
+							>
+								<span class="follow btn bg-blue">
+									{#if user.followsUser}
+										Follows you
+									{:else}
+										Follow
+									{/if}
+								</span>
+								<span class="following btn bg-green">
+									{#if user.followsUser}
+										Mutuals
+									{:else}
+										Following
+									{/if}
+								</span>
+								<span class="unfollow btn bg-red">Unfollow</span>
+							</button>
+						</form>
 					{/if}
 				</div>
 				{@render profile('desktop')}
@@ -57,11 +94,11 @@
 		{@render profile('mobile')}
 		<div class="info row">
 			<a href="/user/{user.username}/following" class="col hov-link">
-				<span class="mono">000</span>
+				<span class="mono">{user.following.toString().padStart(3, '0')}</span>
 				<span>FOLLOWING</span>
 			</a>
 			<a href="/user/{user.username}/followers" class="col hov-link">
-				<span class="mono">000</span>
+				<span class="mono">{user.followers.toString().padStart(3, '0')}</span>
 				<span>FOLLOWERS</span>
 			</a>
 			<a href="/user/{user.username}/reviews" class="col hov-link">
@@ -119,6 +156,54 @@
 		letter-spacing: 0.075em;
 		.mono {
 			font-size: 1.125rem;
+		}
+	}
+
+	.header-fields form {
+		height: 1.5rem;
+	}
+
+	.follow-btn {
+		height: 1.5rem;
+		width: 8rem;
+		overflow: hidden;
+		position: relative;
+
+		span {
+			left: 0;
+			position: absolute;
+			transition: top 250ms ease-in-out;
+			width: 100%;
+			display: block;
+		}
+
+		.follow {
+			top: -1.5rem;
+		}
+		.following {
+			top: 0;
+		}
+		.unfollow {
+			top: 1.5rem;
+		}
+		&.not-following {
+			.follow {
+				top: 0;
+			}
+			.following {
+				top: 1.5rem;
+			}
+		}
+		&.following {
+			&:hover {
+				.following {
+					top: -1.5rem;
+				}
+
+				.unfollow {
+					top: 0rem;
+				}
+			}
 		}
 	}
 </style>

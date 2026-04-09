@@ -11,7 +11,7 @@ Because this is not a durable project, migrations are not included in the repo.
 ```bash
 pnpm install
 pnpm prepare
-pnpm db:make-migrations
+pnpm db:generate
 ```
 
 ### dev

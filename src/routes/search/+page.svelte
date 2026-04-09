@@ -1,11 +1,10 @@
 <script lang="ts">
-	import { hydratable } from 'svelte';
 	import { searchNPM } from '$api/npm.remote';
 	import { page } from '$app/state';
 	import Package from '$ui/Package';
 
 	let query = $state(page.url.searchParams.get('query'));
-	const results = await hydratable('package-search-results', () => (query ? searchNPM(query) : []));
+	const results = $derived(query ? await searchNPM(query) : []);
 </script>
 
 <svelte:boundary>
