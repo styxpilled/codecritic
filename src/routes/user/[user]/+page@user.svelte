@@ -1,12 +1,16 @@
 <script lang="ts">
+	import { getUserReviews } from '$api/reviews.remote.js';
 	import { follow, getProfile, unfollow } from '$api/user.remote.js';
 	import { app } from '$lib/client/state.svelte.js';
 	import Avatar from '$ui/Avatar.svelte';
 	import Icon from '$ui/Icon.svelte';
+	import Reviews from '$ui/Reviews.svelte';
 
 	let { params } = $props();
 	// svelte-ignore state_referenced_locally
 	let user = $state(await getProfile(params.user));
+	let reviewsPromise = $derived(getUserReviews({ username: params.user }));
+	let reviews = $derived(await reviewsPromise);
 	$effect(() => {
 		getProfile(params.user).then((v) => {
 			user = v;
@@ -107,12 +111,19 @@
 			</a>
 		</div>
 	</div>
-	<ul class="row space">
-		<li><a class="hov-link" href="/user/{user.username}/reviews">Reviews</a></li>
-		<li><a class="hov-link" href="/user/{user.username}/stacks">Stacks</a></li>
-		<li><a class="hov-link" href="/user/{user.username}/followers">Network</a></li>
-		<li><a class="hov-link" href="/user/{user.username}/likes">Likes</a></li>
-		<li><a class="hov-link" href="/user/{user.username}/stats">Stats</a></li>
+	<nav>
+		<ul class="row space">
+			<li><a class="hov-link" href="/user/{user.username}/reviews">Reviews</a></li>
+			<li><a class="hov-link" href="/user/{user.username}/stacks">Stacks</a></li>
+			<li><a class="hov-link" href="/user/{user.username}/followers">Network</a></li>
+			<li><a class="hov-link" href="/user/{user.username}/likes">Likes</a></li>
+			<li><a class="hov-link" href="/user/{user.username}/stats">Stats</a></li>
+		</ul>
+	</nav>
+	<ul class="col gap-lg">
+		{#each reviews as review (review.id)}
+			<Reviews {review} {user} />
+		{/each}
 	</ul>
 </div>
 
@@ -141,7 +152,7 @@
 		}
 	}
 
-	ul {
+	nav > ul {
 		margin: 1rem 0;
 		padding: 0.5rem;
 		border-top: 1px solid var(--color-text-dark);

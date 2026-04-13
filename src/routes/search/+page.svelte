@@ -10,7 +10,7 @@
 <svelte:boundary>
 	<!-- {@const query = page.url.searchParams.get('query')} -->
 	<h3>Showing matches for "{query}":</h3>
-	<ul class="">
+	<ul class="gap-lg">
 		{#if query}
 			{#each results as pkg (pkg.name)}
 				<li>
@@ -40,7 +40,6 @@
 		display: grid;
 		/* width: 1040px; */
 		grid-template-columns: 1fr 1fr 1fr;
-		gap: 1rem;
 		width: min-content;
 
 		@media (width <=950px) {

@@ -1,25 +1,47 @@
 <script lang="ts">
+	import { createReview } from '$api/reviews.remote';
+	import { createReviewSchema } from '$api/schemas';
+	import type { Package } from '$lib/server/db/schema';
 	import RatingInput from './RatingInput.svelte';
 
-	let { pkg } = $props();
+	let { pkg }: { pkg: Package } = $props();
 </script>
 
-<form class="review-editor fg-dark bg-light col start">
+<form
+	class="review-editor fg-dark bg-light col start"
+	{...createReview.preflight(createReviewSchema).enhance(async ({ data, form, submit }) => {
+		console.log(data);
+		await submit();
+	})}
+	onsubmit={(e) => {
+		console.log(new FormData(e.currentTarget));
+	}}
+>
+	<input
+		type="text"
+		{...createReview.fields.pkg.as('text')}
+		class="hidden"
+		tabindex="-1"
+		value={pkg.name}
+	/>
 	<div class="row space">
-		<RatingInput />
-		<input type="date" value={new Date().toISOString().slice(0, 10)} />
+		<RatingInput t={createReview.fields.rating} />
+		<!-- <input type="date" value={new Date().toISOString().slice(0, 10)} /> -->
 	</div>
-	<textarea placeholder="Add a review..." name="review"></textarea>
+	<textarea placeholder="Add a review..." {...createReview.fields.content.as('text')}></textarea>
 	<div class="row space">
 		<label class="row">
 			<span>Version</span>
-			<select name="version">
+			<select {...createReview.fields.version.as('select')}>
 				<option value={pkg.latest}>{pkg.latest}</option>
 			</select>
 			<span>-- TODO</span>
 		</label>
 		<button class="btn bg-green bold" type="submit">SAVE</button>
 	</div>
+	{#each createReview.fields.allIssues() as issue (issue)}
+		<p class="issue">{issue.message}</p>
+	{/each}
 </form>
 
 <style>

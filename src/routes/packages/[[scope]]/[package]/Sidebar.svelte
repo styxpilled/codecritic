@@ -1,7 +1,10 @@
 <script lang="ts">
+	import { getPopularReviews, getRecentReview } from '$api/reviews.remote';
 	import type { Package } from '$lib/server/db/schema';
 	import Icon from '$ui/Icon.svelte';
 	import ReviewEditor from '$ui/Review/Editor.svelte';
+	import Recent from '$ui/Review/Recent.svelte';
+	import Reviews from '$ui/Reviews.svelte';
 
 	type Props = {
 		pkg: Package;
@@ -10,6 +13,16 @@
 	let { pkg }: Props = $props();
 	const managers = ['npm', 'pnpm', 'bun', 'deno', 'yarn'];
 	let selectedManager = $state('npm');
+	const reviews = $derived(
+		await getPopularReviews({
+			packageID: pkg.name,
+		})
+	);
+	const yourReview = $derived(
+		await getRecentReview({
+			pkg: pkg.name,
+		})
+	);
 </script>
 
 <div class="sidebar col start">
@@ -49,13 +62,27 @@
 			<a class="hov-link" href={pkg.homepage}>{pkg.homepage}</a>
 		</p>
 	</div>
-	<ReviewEditor {pkg} />
+	{#if yourReview}
+		<Recent review={yourReview} packageID={pkg.name} small />
+	{:else}
+		<ReviewEditor {pkg} />
+	{/if}
+	<div class="col">
+		{#each reviews as review (review.id)}
+			<Reviews {review} user={review.author} showUser small />
+		{/each}
+	</div>
 </div>
 
 <style>
 	.sidebar {
 		display: flex;
 		margin-bottom: 1rem;
+		width: calc(480px - 1rem);
+
+		@media (width <=950px) {
+			width: 100%;
+		}
 	}
 
 	.sidebar p,

@@ -1,14 +1,16 @@
 <script lang="ts">
+	import '@fontsource-variable/inter';
 	import { dev } from '$app/environment';
 	import favicon from '$lib/assets/favicon.png';
+	import { app } from '$lib/client/state.svelte';
 	import Footer from '$lib/ui/Footer.svelte';
 	import Header from '$lib/ui/Header.svelte';
-	import '@fontsource-variable/inter';
+	// sort-imports-ignore
 	import '$styles/remedy.css';
 	import '$styles/app.css';
 	import '$styles/colors.css';
 	import '$styles/static.css';
-	import { app } from '$lib/client/state.svelte';
+
 	let { children, data } = $props();
 	// svelte-ignore state_referenced_locally
 	app.user = data.auth.user;

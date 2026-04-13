@@ -98,6 +98,10 @@ a.link {
 	gap: 0.25rem;
 }
 
+.gap-lg {
+	gap: 1rem;
+}
+
 .start {
 	display: flex;
 	align-items: flex-start;
@@ -171,6 +175,14 @@ textarea:focus-visible {
 
 .hidden {
 	display: none;
+}
+
+.hidden[tabindex='-1'] {
+	display: block;
+	position: absolute;
+	width: 0;
+	height: 0;
+	visibility: hidden;
 }
 
 .btn:disabled,

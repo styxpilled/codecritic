@@ -21,8 +21,7 @@
 
 	let { readme, url }: Props = $props();
 
-	url = stripGit(url).replace('github', 'raw.githubusercontent');
-
+	const _url = $derived(stripGit(url).replace('github', 'raw.githubusercontent'));
 	hljs.registerLanguage('javascript', js);
 	hljs.registerLanguage('typescript', ts);
 	hljs.registerLanguage('xml', xml);
@@ -44,9 +43,9 @@
 {#if readme}
 	<div class="readme">
 		{#await marked.parse(readme
-				.replaceAll('src="./', `src="${url}/HEAD/`)
-				.replaceAll(/srcset="(?!https:\/\/)/g, `srcset="${url}/HEAD/`)
-				.replaceAll(/src="(?!https:\/\/)/g, `src="${url}/HEAD/`)) then parsed}
+				.replaceAll('src="./', `src="${_url}/HEAD/`)
+				.replaceAll(/srcset="(?!https:\/\/)/g, `srcset="${_url}/HEAD/`)
+				.replaceAll(/src="(?!https:\/\/)/g, `src="${_url}/HEAD/`)) then parsed}
 			<!-- eslint-disable-next-line svelte/no-at-html-tags -->
 			{@html DOMPurify(
 				browser ? window : (await import('linkedom')).parseHTML('<!DOCTYPE html><body>')

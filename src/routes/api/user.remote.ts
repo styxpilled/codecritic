@@ -32,7 +32,7 @@ export const getProfile = query(v.string(), async (username) => {
 		.leftJoin(followers, eq($db.users.id, followers.following))
 		.where(eq($db.users.username, username))
 		.groupBy($db.users.id);
-	console.log(req);
+	// console.log(req);
 	if (!req) error(404);
 	return req[0];
 });

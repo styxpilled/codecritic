@@ -308,7 +308,7 @@
 		position: relative;
 		overflow: hidden;
 		transition: max-width 150ms;
-		padding-right: 2px;
+		/* padding-right: 2px; */
 		max-width: 4.125rem;
 	}
 	button.log-button {

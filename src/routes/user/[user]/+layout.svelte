@@ -21,7 +21,7 @@
 <div id="user-header" class="row btn bg-light space">
 	<div class="row">
 		<Avatar {user} size="sm" />
-		<a href="/user/{user.username}" class="hov-link">
+		<a href="/user/{user.username}" class="hov-line fg-red">
 			{#if user.nickname}
 				{user.nickname} ({user.username})
 			{:else}
@@ -29,7 +29,7 @@
 			{/if}
 		</a>
 	</div>
-	<ul class="row" style="gap: 2rem">
+	<ul class="row desktop" style="gap: 2rem">
 		{@render link('reviews')}
 		{@render link('stacks')}
 		{@render link('network')}
@@ -38,12 +38,21 @@
 	</ul>
 	<div></div>
 </div>
-{@render children?.()}
+<div class="user-subpage">{@render children?.()}</div>
 
 <style>
 	#user-header {
 		padding: 0.5rem 1rem;
-		margin-bottom: 2rem;
+		margin-bottom: 1rem;
+		@media (width <=950px) {
+			margin: 0 1rem 1rem;
+		}
+	}
+
+	.user-subpage {
+		@media (width <=950px) {
+			margin: 0 1rem;
+		}
 	}
 
 	li a {

@@ -21,7 +21,7 @@
 		sm: 32,
 		md: 64,
 		lg: 128,
-		xl: 256
+		xl: 256,
 	}[size];
 </script>
 
@@ -46,6 +46,10 @@
 	:global(a:focus-visible) div.avatar {
 		outline: 2px solid var(--color-blue);
 		outline-offset: 2px;
+	}
+
+	:global(a:has(> div.avatar.sm)) {
+		height: 2rem;
 	}
 
 	.avatar {

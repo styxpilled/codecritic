@@ -14,6 +14,7 @@
 		'copy',
 		'notebook',
 		'globe',
+		'corner-down-left',
 	]);
 </script>
 

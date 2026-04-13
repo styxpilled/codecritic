@@ -3,6 +3,7 @@
 	import { updateProfileSchema } from '$api/schemas';
 	import { getProfile, updateProfile } from '$api/user.remote';
 	import { app } from '$lib/client/state.svelte';
+	import Avatar from '$ui/Avatar.svelte';
 
 	if (!app.user) error(401);
 	let user = $state(await getProfile(app?.user?.username || ''));
@@ -21,7 +22,12 @@
 	})}
 	class="col start bg-light"
 >
-	<h2>User settings</h2>
+	<h2 class="row">
+		<a href="/user/{user.username}" class="col">
+			<Avatar size="sm" {user} />
+		</a>
+		User settings
+	</h2>
 	<label class="col start">
 		<span class="fg-dark">username</span>
 		<input value={user.username} disabled />
@@ -69,7 +75,7 @@
 		height: 4lh;
 	}
 
-	button {
+	form button {
 		align-self: flex-end;
 		font-size: 0.9rem;
 		transition:
@@ -80,5 +86,9 @@
 			padding: 2px calc(0.25rem + 2px);
 			margin: -2px;
 		}
+	}
+
+	.back {
+		padding: 0.25rem;
 	}
 </style>
