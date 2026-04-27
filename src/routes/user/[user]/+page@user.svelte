@@ -4,6 +4,7 @@
 	import { app } from '$lib/client/state.svelte.js';
 	import Avatar from '$ui/Avatar.svelte';
 	import Icon from '$ui/Icon.svelte';
+	import List from '$ui/List.svelte';
 	import Reviews from '$ui/Reviews.svelte';
 
 	let { params } = $props();
@@ -38,6 +39,10 @@
 		</div>
 	{/if}
 {/snippet}
+
+<svelte:head>
+	<title>{user.username}'s profile · Codecritic</title>
+</svelte:head>
 
 <div id="user-profile">
 	<div class="row space header">
@@ -121,9 +126,15 @@
 		</ul>
 	</nav>
 	<ul class="col gap-lg">
-		{#each reviews as review (review.id)}
-			<Reviews {review} {user} />
-		{/each}
+		<List columns={1}>
+			{#snippet head()}
+				<a href="/user/{params.user}/reviews/recent">recent reviews</a>
+				<a href="/user/{params.user}/reviews/recent">more</a>
+			{/snippet}
+			{#each reviews as review (review.id)}
+				<Reviews {review} {user} />
+			{/each}
+		</List>
 	</ul>
 </div>
 

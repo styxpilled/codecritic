@@ -1,0 +1,23 @@
+<script lang="ts">
+	import { getNPMPackage } from '$api/npm.remote.js';
+	import { getPopularReviews } from '$api/reviews.remote';
+	import { toPackageName } from '$lib';
+	import Reviews from '$ui/Reviews.svelte';
+
+	let { params } = $props();
+	const pkg = $derived(await getNPMPackage(params));
+	const reviews = $derived(
+		await getPopularReviews({
+			packageID: toPackageName(params),
+		})
+	);
+</script>
+
+<div>
+	<h3 class="fg-orange">{pkg.name}</h3>
+</div>
+<div class="col">
+	{#each reviews as review (review.id)}
+		<Reviews {review} user={review.author} showUser small />
+	{/each}
+</div>

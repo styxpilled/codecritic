@@ -1,5 +1,6 @@
 import { error } from '@sveltejs/kit';
 import { and, eq, getTableColumns, sql, desc, asc, count, gt } from 'drizzle-orm';
+import { alias } from 'drizzle-orm/sqlite-core';
 import * as v from 'valibot';
 import { form, getRequestEvent, query } from '$app/server';
 import { $db } from '$lib/server/db';
@@ -74,11 +75,8 @@ export const getRecentReview = query(
 			})
 			.from($db.reviews)
 			.leftJoin($db.likesReviews, eq($db.reviews.id, $db.likesReviews.reviewID))
-			.leftJoin(
-				$db.users,
-				and(eq($db.reviews.authorID, $db.users.id), eq($db.reviews.packageID, pkg))
-			)
-			.where(eq($db.reviews.authorID, author))
+			.leftJoin($db.users, eq($db.reviews.authorID, $db.users.id))
+			.where(and(eq($db.reviews.authorID, author), eq($db.reviews.packageID, pkg)))
 			.orderBy(desc($db.reviews.index))
 			.limit(1);
 		return review || null;
@@ -104,10 +102,33 @@ export const getPopularReviews = query(
 			.innerJoin($db.users, eq($db.reviews.authorID, $db.users.id))
 			.where(eq($db.reviews.packageID, packageID))
 			.groupBy($db.reviews.id)
-			.orderBy(desc($db.reviews.index));
+			.orderBy(sql`COUNT(${$db.likesReviews.reviewID}) DESC`);
 		return reviews;
 	}
 );
+
+export const getReviewLikes = query(getReviewSchema, async (obj) => {
+	const { db } = getRequestEvent().locals;
+	let cond;
+	const author = alias($db.users, 'author');
+	if (obj.type === 'id') {
+		cond = eq($db.reviews.id, obj.id);
+	} else {
+		cond = and(
+			eq(author.username, obj.author),
+			eq($db.reviews.packageID, obj.package),
+			eq($db.reviews.index, obj.index)
+		);
+	}
+	const users = await db
+		.select({ ...getTableColumns($db.users) })
+		.from($db.likesReviews)
+		.innerJoin($db.reviews, eq($db.likesReviews.reviewID, $db.reviews.id))
+		.innerJoin(author, eq($db.reviews.authorID, author.id))
+		.innerJoin($db.users, eq($db.likesReviews.userID, $db.users.id))
+		.where(cond);
+	return users;
+});
 
 export const likeReview = form(
 	v.object({
@@ -144,6 +165,7 @@ export const createReview = form(
 	async ({ pkg, rating, content, version, id }) => {
 		const { db, user } = getRequestEvent().locals;
 		if (!user) error(401);
+		console.log(id);
 		if (id) {
 			return await db
 				.update($db.reviews)

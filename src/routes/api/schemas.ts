@@ -6,6 +6,11 @@ export const updateProfileSchema = v.object({
 	url: v.union([v.literal(''), v.pipe(v.string(), v.nonEmpty(), v.url())]),
 });
 
+export const genericSchema = v.object({
+	limit: v.optional(v.pipe(v.number(), v.minValue(1), v.maxValue(18))),
+	page: v.optional(v.number(), 0),
+});
+
 export const getReviewSchema = v.variant('type', [
 	v.object({
 		type: v.literal('id'),

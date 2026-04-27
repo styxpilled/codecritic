@@ -32,8 +32,11 @@
 		markedHighlight({
 			langPrefix: 'hljs language-',
 			highlight(code, lang) {
-				let language = hljs.getLanguage(lang) ? lang : 'plaintext';
-				return hljs.highlight(code, { language }).value;
+				if (hljs.getLanguage(lang)) {
+					return hljs.highlight(code, { language: lang }).value;
+				} else {
+					return code;
+				}
 			},
 		}),
 		{ gfm: true }

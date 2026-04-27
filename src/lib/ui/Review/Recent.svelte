@@ -37,14 +37,14 @@
 	.recent {
 		padding: 1rem 0;
 		float: right;
-		align-self: flex-end;
+		/* align-self: flex-end; */
 		border-radius: 0.5rem;
 		text-align: center;
 		width: 18.25rem;
 
 		&.small {
 			align-self: center;
-			/* width: 100%; */
+			width: 100%;
 		}
 
 		& > * {

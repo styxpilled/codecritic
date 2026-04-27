@@ -3,8 +3,8 @@ import { eq, getTableColumns, sql } from 'drizzle-orm';
 import * as v from 'valibot';
 import { query, getRequestEvent } from '$app/server';
 import { $fetch, toPackageName } from '$lib';
-import { $db } from '$lib/server/db';
-import { npmToDB, parseColumn } from '$lib/server/helpers';
+import { $db, toStringArr } from '$lib/server/db';
+import { npmToDB } from '$lib/server/helpers';
 import type { NPMSearchPackage } from '$lib/types';
 
 type NPMSearchResults = { objects: { package: NPMSearchPackage; score: { final: number } }[] };
@@ -32,14 +32,16 @@ export const getNPMPackage = query(
 		const [possiblePkg] = await db
 			.select({
 				...getTableColumns($db.packages),
-				keywords: sql<string>`json_group_array(packages_keywords.keyword)`.as('keywords'),
+				keywords: sql`json_group_array(packages_keywords.keyword)`
+					.mapWith(toStringArr)
+					.as('keywords'),
 			})
 			.from($db.packages)
 			.leftJoin($db.packagesKeywords, eq($db.packages.name, $db.packagesKeywords.name))
 			.where(eq($db.packages.name, name))
 			.groupBy($db.packages.name);
 		if (possiblePkg) {
-			return parseColumn<{ keywords: string[] }, typeof possiblePkg>(possiblePkg, 'keywords');
+			return possiblePkg;
 		}
 		const fetchFn = getRequestEvent().fetch;
 		const npmPackage = await $fetch<NPMSearchPackage>(

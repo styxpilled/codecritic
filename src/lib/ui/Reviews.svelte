@@ -9,33 +9,43 @@
 		review,
 		user,
 		showUser,
+		showUsername,
 		small,
 		full,
+		truncate = true,
+		headingFontSize,
+		size = 'sm',
 	}: {
 		review: Review & { liked?: boolean; likes?: number };
 		user?: User;
 		showUser?: boolean;
+		showUsername?: boolean;
 		small?: boolean;
 		full?: boolean;
+		truncate?: boolean;
+		headingFontSize?: number;
+		size?: 'sm' | 'xs';
 	} = $props();
 </script>
 
-<div class="review btn bg-light" class:small>
-	<h4 class="fg-orange row">
-		{#if showUser && user}
-			<a href="/user/{user.username}" class="row">
-				<Avatar {user} size="sm" />
+<div class="review btn bg-light" class:small class:truncate>
+	<h4 class="fg-orange row" style:font-size={headingFontSize ? `${headingFontSize}rem` : undefined}>
+		{#if (showUser || showUsername) && user}
+			<a href="/user/{user.username}" class="row" title={user.username}>
+				<Avatar {user} {size} />
 			</a>
-			<a
-				href="/user/{user.username}/package/{review.packageID}/{review.index}"
-				class="fg-red hov-line"
-			>
-				{#if user.nickname}
-					{user.nickname} ({user.username})
-				{:else}
-					{user.username}
-				{/if}
-			</a>
+			{#if showUsername}
+				<a
+					href="/user/{user.username}/package/{review.packageID}/{review.index}"
+					class="fg-red hov-line"
+				>
+					{#if user.nickname}
+						{user.nickname} ({user.username})
+					{:else}
+						{user.username}
+					{/if}
+				</a>
+			{/if}
 		{/if}
 		{#if !small}
 			{#if full}
@@ -63,10 +73,12 @@
 			<a href="/login/github" class="fg-dark">Log in to like</a>
 		{:else if app.user.id !== review.authorID}
 			<form
-				{...(review.liked ? unlikeReview : likeReview).enhance(async ({ submit }) => {
-					await submit();
-					review.liked = !review.liked;
-				})}
+				{...(review.liked ? unlikeReview : likeReview)
+					.for(review.id)
+					.enhance(async ({ submit }) => {
+						await submit();
+						review.liked = !review.liked;
+					})}
 			>
 				<input
 					class="hidden"
@@ -74,29 +86,35 @@
 					value={review.id}
 				/>
 				{#if review.liked}
-					<button class="fg-dark" type="submit">
+					<button class="fg-dark hov-light" type="submit">
 						<span class="fg-red">❤︎</span> Liked
 					</button>
 				{:else}
-					<button class="fg-dark" type="submit">
+					<button class="fg-dark hov-light" type="submit">
 						<span>❤︎</span> Like
 					</button>
 				{/if}
 			</form>
 		{/if}
 		{#if review.likes}
-			<span class="fg-dark">
+			{@const url = user
+				? `/user/${user.username}/package/${review.packageID}/${review.index}/likes`
+				: `"/review/${review.id}"`}
+			<a href={url} class="fg-dark hov-line">
 				{review.likes}
 				{#if review.likes === 1}
 					like
 				{:else}
 					likes
 				{/if}
-			</span>
+			</a>
 		{/if}
 	</div>
 	{#if app.user && app.user.id === review.authorID}
-		<a href="/packages/{review.packageID}/review/{review.index}/edit" class="fg-dark edit-btn">
+		<a
+			href="/packages/{review.packageID}/review/{review.index}/edit"
+			class="fg-dark edit-btn hov-light"
+		>
 			Edit
 		</a>
 	{/if}
@@ -106,6 +124,7 @@
 	.review {
 		padding: 0.75rem 1rem;
 		width: 40rem;
+		width: 100%;
 		position: relative;
 		/* margin-bottom: 1rem; */
 
@@ -114,6 +133,9 @@
 		}
 		&.small {
 			width: 100%;
+			& h4 {
+				font-size: 1.25rem;
+			}
 		}
 	}
 
@@ -136,6 +158,15 @@
 		& .edit-btn {
 			visibility: visible;
 		}
+	}
+
+	.truncate .content {
+		width: 100%;
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 1;
+		line-clamp: 1;
+		overflow: hidden;
 	}
 
 	.content {

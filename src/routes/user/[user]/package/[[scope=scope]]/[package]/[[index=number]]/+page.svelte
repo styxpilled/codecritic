@@ -23,8 +23,12 @@
 	const user = $derived(await getProfile(params.user));
 </script>
 
+<svelte:head>
+	<title>'{review.packageID}' review by {user.username} · Codecritic</title>
+</svelte:head>
+
 <div class="row start space gap-lg">
-	<Reviews {review} {user} full />
+	<Reviews {review} {user} full truncate={false} />
 	<Recent review={yourReview} packageID={review.packageID} />
 </div>
 

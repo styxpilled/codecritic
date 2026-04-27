@@ -15,3 +15,11 @@ export function getDb(db?: D1Database, databaseUrl?: string): ReturnType<typeof 
 
 export type DrizzleClient = ReturnType<typeof getDb>;
 export const $db = schema;
+
+export const toStringArr = {
+	mapFromDriverValue: (value: string): string[] => {
+		const mappedValue = value;
+		// mapping you want to apply
+		return JSON.parse(mappedValue);
+	},
+};

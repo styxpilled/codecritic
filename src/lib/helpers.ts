@@ -4,7 +4,7 @@ const units: { unit: Intl.RelativeTimeFormatUnit; ms: number }[] = [
 	{ unit: 'day', ms: 86400000 },
 	{ unit: 'hour', ms: 3600000 },
 	{ unit: 'minute', ms: 60000 },
-	{ unit: 'second', ms: 1000 }
+	{ unit: 'second', ms: 1000 },
 ];
 const rtf = new Intl.RelativeTimeFormat('en', { numeric: 'auto' });
 
@@ -21,4 +21,9 @@ export function relativeTimeFromElapsed(elapsed: number): string {
 		}
 	}
 	return '';
+}
+
+export function sliceArrayToMultiple<T>(arr: T[], c: number, allowLess = true) {
+	if (allowLess && arr.length <= c) return arr;
+	return arr.slice(0, Math.floor(arr.length / c) * c);
 }

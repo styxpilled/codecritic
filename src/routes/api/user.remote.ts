@@ -32,7 +32,6 @@ export const getProfile = query(v.string(), async (username) => {
 		.leftJoin(followers, eq($db.users.id, followers.following))
 		.where(eq($db.users.username, username))
 		.groupBy($db.users.id);
-	// console.log(req);
 	if (!req) error(404);
 	return req[0];
 });
@@ -72,7 +71,6 @@ export const getFollowing = query(
 			.innerJoin($db.usersFollows, eq($db.users.id, $db.usersFollows.following))
 			.where(eq($db.usersFollows.userID, user.id))
 			.limit(count);
-		console.log(res);
 		return res;
 	}
 );
@@ -91,7 +89,6 @@ export const getFollowers = query(
 			.innerJoin($db.usersFollows, eq($db.users.id, $db.usersFollows.userID))
 			.where(eq($db.usersFollows.following, user.id))
 			.limit(count);
-		console.log(res);
 		return res;
 	}
 );

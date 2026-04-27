@@ -14,25 +14,3 @@ export const npmToDB = (pkg: NPMSearchPackage): Package => {
 		modified: pkg?.time?.modified,
 	};
 };
-
-type Merge<A, B> = Omit<A, keyof B> & B;
-
-export function parseColumn<Changes, T extends object>(
-	data: T[],
-	key: keyof T
-): Expand<Merge<typeof data, Changes>[]>;
-export function parseColumn<Changes, T extends object>(
-	data: T,
-	key: keyof T
-): Expand<Merge<typeof data, Changes>>;
-export function parseColumn<Changes, T>(data: T, key: keyof T) {
-	if (Array.isArray(data)) {
-		for (const el of data) {
-			el[key] = JSON.parse(el[key]);
-		}
-	} else {
-		// @ts-expect-error trust
-		data[key] = JSON.parse(data[key]);
-	}
-	return data as Expand<Merge<typeof data, Changes>>[];
-}

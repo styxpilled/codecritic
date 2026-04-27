@@ -1,7 +1,9 @@
 <script lang="ts">
 	import { getPopularReviews, getRecentReview } from '$api/reviews.remote';
+	import { stripGit } from '$lib';
 	import type { Package } from '$lib/server/db/schema';
 	import Icon from '$ui/Icon.svelte';
+	import List from '$ui/List.svelte';
 	import ReviewEditor from '$ui/Review/Editor.svelte';
 	import Recent from '$ui/Review/Recent.svelte';
 	import Reviews from '$ui/Reviews.svelte';
@@ -25,7 +27,7 @@
 	);
 </script>
 
-<div class="sidebar col start">
+<div class="sidebar col start" class:mini={yourReview}>
 	<div class="row">
 		{#each managers as manager (manager)}
 			<label class="btn pointer hov-light fg-dark bg-bright">
@@ -56,7 +58,7 @@
 	</p>
 	<div class="links col start gap-sm">
 		<p class="semibold fg-dark">Repository</p>
-		<p class="btn lg fg-dark bg-light hov-link">{pkg.repository}</p>
+		<p class="btn lg fg-dark bg-light hov-link">{stripGit(pkg.repository)}</p>
 		<p class="semibold fg-dark">Homepage</p>
 		<p class="btn lg fg-dark bg-light">
 			<a class="hov-link" href={pkg.homepage}>{pkg.homepage}</a>
@@ -67,11 +69,19 @@
 	{:else}
 		<ReviewEditor {pkg} />
 	{/if}
-	<div class="col">
-		{#each reviews as review (review.id)}
-			<Reviews {review} user={review.author} showUser small />
-		{/each}
-	</div>
+	{#if reviews.length}
+		<div class="col">
+			<List columns={1} style="width: 100%; --gap: .5rem">
+				{#each reviews as review (review.id)}
+					<Reviews {review} user={review.author} showUsername small />
+				{/each}
+				{#snippet foot()}
+					<span></span>
+					<a href="/packages/{pkg.name}/reviews/popular" class="hov-link">more</a>
+				{/snippet}
+			</List>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -79,6 +89,10 @@
 		display: flex;
 		margin-bottom: 1rem;
 		width: calc(480px - 1rem);
+
+		&.mini {
+			width: 20rem;
+		}
 
 		@media (width <=950px) {
 			width: 100%;

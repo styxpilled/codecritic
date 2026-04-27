@@ -38,17 +38,23 @@ a.link {
 
 .hov-link:hover,
 .hov-link:focus-visible,
-.hov-link > a:focus-visible {
+.hov-link > a:focus-visible,
+.foc-link:focus-visible {
 	outline: none;
 	--fg: var(--color-blue);
 }
 
-.hov-line:hover {
+.hov-line:hover,
+.hov-line:focus-visible {
+	outline: none;
 	text-decoration: underline;
 }
 
-.hov-light:hover {
-	filter: brightness(1.1);
+.hov-light:hover,
+.hov-light:focus-visible {
+	outline: none;
+	color: oklch(from var(--fg) calc(l * 1.2) c h);
+	/* filter: brightness(1.1); */
 }
 
 .semibold {
@@ -206,18 +212,20 @@ ol {
 	list-style-type: upper-roman;
 }
 
-.spinner {
-	transform-origin: center;
-	animation: spinner 1.2s linear infinite;
+.hoverable:hover {
+	anchor-name: --hoverable-anchor;
 }
 
-@keyframes spinner {
-	0% {
-		transform: rotate(0deg);
-	}
+.hoverable-content {
+	display: none;
+}
 
-	100% {
-		transform: rotate(360deg);
+.hoverable:hover + .hoverable-content {
+	display: block;
+	position-anchor: --hoverable-anchor;
+	position: absolute;
+	&.hoverable-top {
+		position-area: top center;
 	}
 }
 

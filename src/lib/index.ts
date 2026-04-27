@@ -26,7 +26,7 @@ export const toPackageName = (params: { scope?: string; package: string }) => {
 	return params.scope ? `${params.scope}/${params.package}` : params.package;
 };
 
-export const stripGit = (url: string) => {
+export const stripGit = (url: string | null) => {
 	if (url === null) return '';
 	const plusGit = url.startsWith('git+');
 	const dotGit = url.endsWith('.git');

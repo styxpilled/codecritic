@@ -1,9 +1,14 @@
 <script lang="ts">
-	import type { Package } from '$lib/server/db/schema';
 	import Icon from '$ui/Icon.svelte';
 
 	type Props = {
-		pkg: Package;
+		pkg: {
+			name: string;
+			keywords?: string[];
+			description: string;
+			latest?: string | null;
+			license?: string | null;
+		};
 	};
 
 	let { pkg }: Props = $props();
@@ -37,8 +42,8 @@
 		{#if pkg.license}
 			<span class="hoverable">
 				<Icon size="1em" id="scale" />
-				<span class="hoverable-content">{pkg.license}</span>
 			</span>
+			<span class="hoverable-content hoverable-top">{pkg.license}</span>
 		{/if}
 	</p>
 </div>
@@ -48,7 +53,7 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: flex-start;
-		width: 20rem;
+		width: 100%;
 		background-color: var(--color-bg-brighter);
 		padding: 0.25rem 0.5rem;
 		border-radius: 0.25rem;
