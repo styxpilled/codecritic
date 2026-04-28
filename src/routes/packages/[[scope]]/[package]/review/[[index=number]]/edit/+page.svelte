@@ -28,9 +28,9 @@
 />
 
 <style>
-	:global(.content) {
-		max-width: 900px;
-		justify-content: center;
+	:global(.content:has(.review-editor)) {
+		max-width: 950px;
+		/* justify-content: center; */
 
 		@media (width >= 950px) {
 			& > .review-editor {

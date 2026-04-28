@@ -1,17 +1,14 @@
 <script lang="ts">
-	import { getNPMPackage } from '$api/npm.remote.js';
 	import { getReadme } from '$api/readme.remote';
+	import { toPackageName } from '$lib';
 	import Readme from '$ui/Readme.svelte';
-	import Sidebar from './Sidebar.svelte';
 
 	let { params } = $props();
-	const readme = $derived(await getReadme(params));
-	const pkg = $derived(await getNPMPackage(params));
+	const readme = $derived(await getReadme(toPackageName(params)));
 </script>
 
 <svelte:head>
-	<title>{pkg.name} · Codecritic</title>
+	<title>{toPackageName(params)} · Codecritic</title>
 </svelte:head>
 
-<Sidebar {pkg} />
 <Readme readme={readme.value} url={readme.url} />

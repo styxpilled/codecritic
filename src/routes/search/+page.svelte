@@ -1,50 +1,28 @@
 <script lang="ts">
 	import { searchNPM } from '$api/npm.remote';
 	import { page } from '$app/state';
+	import List from '$ui/List.svelte';
 	import Package from '$ui/Package';
 
-	let query = $state(page.url.searchParams.get('query'));
+	let query = $derived(page.url.searchParams.get('query'));
 	const results = $derived(query ? await searchNPM(query) : []);
 </script>
 
 <svelte:boundary>
-	<!-- {@const query = page.url.searchParams.get('query')} -->
-	<h3>Showing matches for "{query}":</h3>
-	<ul class="gap-lg">
-		{#if query}
-			{#each results as pkg (pkg.name)}
-				<li>
-					<Package {pkg} />
-				</li>
-			{/each}
-		{:else}
-			<h3>Nothing here but chickens!</h3>
-		{/if}
-	</ul>
-	<button class="bg-light">Load more results</button>
+	<List>
+		{#snippet head()}
+			{#if results}
+				<h3>Showing matches for "{query}":</h3>
+			{:else}
+				<h3>Nothing here but chickens!</h3>
+			{/if}
+		{/snippet}
+		{#each results as pkg (pkg.name)}
+			<Package {pkg} />
+		{/each}
+		{#snippet foot()}
+			<span></span>
+			<a href="/search?{page.url.searchParams}" class="hov-link">Load more results</a>
+		{/snippet}
+	</List>
 </svelte:boundary>
-
-<style>
-	h3 {
-		text-transform: uppercase;
-		margin: 2rem 0.5rem 3rem;
-		font-size: 1rem;
-		@media (width <=950px) {
-			margin: 2rem 3rem;
-		}
-	}
-
-	ul {
-		/* margin: 0 auto; */
-		margin: 1rem -1.5rem;
-		display: grid;
-		/* width: 1040px; */
-		grid-template-columns: 1fr 1fr 1fr;
-		width: min-content;
-
-		@media (width <=950px) {
-			margin: 0 auto;
-			grid-template-columns: 1fr;
-		}
-	}
-</style>

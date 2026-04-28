@@ -57,6 +57,7 @@
 		background-color: var(--color-bg-brighter);
 		border-radius: 0.25rem;
 		color: #abb2bf;
+		white-space: pre-wrap;
 	}
 
 	& code[class^='language-'] {

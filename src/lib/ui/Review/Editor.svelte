@@ -30,7 +30,7 @@
 	/>
 	<div class="row space">
 		<RatingInput t={createReview.fields.rating} value={review?.rating} />
-		<!-- <input type="date" value={new Date().toISOString().slice(0, 10)} /> -->
+		<input type="date" value={new Date().toISOString().slice(0, 10)} />
 	</div>
 	{#if review}
 		<input

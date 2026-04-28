@@ -147,7 +147,8 @@ textarea {
 	}
 }
 
-input[type='checkbox'] {
+input[type='checkbox'],
+input[type='radio'] {
 	display: inline;
 	width: min-content;
 }
@@ -155,14 +156,21 @@ label {
 	display: inline-flex;
 	align-items: center;
 }
-label:not(.show-checkbox) > input[type='checkbox'] {
+label:not(.show-checkbox) > input[type='checkbox'],
+input[type='radio'] {
 	width: 0;
 	height: 0;
+	&:focus-visible {
+		outline: none;
+	}
 }
 
 label {
 	.open {
 		display: none;
+	}
+	&:has(input:focus-visible) {
+		outline: #40bcf4 solid 2px;
 	}
 	&:has(input:checked) {
 		.closed {
@@ -174,9 +182,16 @@ label {
 		}
 	}
 }
+
+.btn:focus-visible,
 input:not([type='range'], [type='radio'], [type='checkbox']):focus-visible,
+select:focus-visible,
 textarea:focus-visible {
 	outline: #40bcf4 solid 2px;
+}
+
+.btn {
+	outline-offset: 2px;
 }
 
 .hidden {

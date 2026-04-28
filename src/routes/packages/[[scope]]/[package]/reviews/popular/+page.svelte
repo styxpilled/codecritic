@@ -5,7 +5,7 @@
 	import Reviews from '$ui/Reviews.svelte';
 
 	let { params } = $props();
-	const pkg = $derived(await getNPMPackage(params));
+	const pkg = $derived(await getNPMPackage(toPackageName(params)));
 	const reviews = $derived(
 		await getPopularReviews({
 			packageID: toPackageName(params),

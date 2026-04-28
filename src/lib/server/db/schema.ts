@@ -127,6 +127,18 @@ export const packagesKeywords = sqliteTable('packages_keywords', {
 	keyword: text().notNull(),
 });
 
+export const readmes = sqliteTable('readmes', {
+	name: text()
+		.notNull()
+		.references(() => packages.name, {
+			onDelete: 'cascade',
+			onUpdate: 'cascade',
+		}),
+	value: text(),
+	expires: integer('expires', { mode: 'timestamp' }),
+	url: text(),
+});
+
 export const reviews = sqliteTable('reviews', {
 	id: integer().primaryKey(),
 	authorID: integer()

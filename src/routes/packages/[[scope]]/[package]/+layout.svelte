@@ -1,13 +1,16 @@
 <script lang="ts">
 	import { getNPMPackage } from '$api/npm.remote';
+	import { toPackageName } from '$lib';
 	import { relativeTimeFromDates } from '$lib/helpers';
+	import Sidebar from './Sidebar.svelte';
 
 	let { children, params } = $props();
-	const pkg = $derived(await getNPMPackage(params));
+	const pkg = $derived(await getNPMPackage(toPackageName(params)));
 </script>
 
 <div class="package col center">
 	<div class="content">
+		<Sidebar {pkg} name={toPackageName(params)} />
 		<div class="metadata">
 			<h1 class="fg-orange">{pkg.name}</h1>
 			<div class="row">

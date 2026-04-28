@@ -33,6 +33,7 @@ export const createReviewSchema = v.object({
 		v.minValue(1),
 		v.maxValue(10)
 	),
+	// createdAt: v.pipe(v.number(), v.toMaxValue(new Date().getTime())),
 	// rating: v.pipe(v.number(), v.minValue(1), v.maxValue(10)),
 	content: v.pipe(v.string(), v.maxLength(2048)),
 	version: v.union([v.picklist(['']), v.string()]),

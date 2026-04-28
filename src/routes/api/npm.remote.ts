@@ -2,59 +2,69 @@ import { error } from '@sveltejs/kit';
 import { eq, getTableColumns, sql } from 'drizzle-orm';
 import * as v from 'valibot';
 import { query, getRequestEvent } from '$app/server';
-import { $fetch, toPackageName } from '$lib';
+import { $fetch } from '$lib';
 import { $db, toStringArr } from '$lib/server/db';
 import { npmToDB } from '$lib/server/helpers';
-import type { NPMSearchPackage } from '$lib/types';
-
-type NPMSearchResults = { objects: { package: NPMSearchPackage; score: { final: number } }[] };
+import type { NPMDirectPackage, NPMSearchResult } from '$lib/types';
 
 export const searchNPM = query(v.string(), async (query) => {
-	const res = await $fetch<NPMSearchResults>(
-		`https://registry.npmjs.org/-/v1/search?text=${query}&size=50`,
+	const res = await $fetch<NPMSearchResult>(
+		`https://registry.npmjs.org/-/v1/search?text=${query}&size=18`,
 		null,
 		fetch
 	);
 	if (res === null) error(500);
 	res.objects.sort((a, b) => b.score.final - a.score.final);
-	const fetchedPackages = res.objects.map((pkg) => npmToDB(pkg.package));
+	const fetchedPackages = res.objects.map((pkg) =>
+		npmToDB(pkg.package as unknown as NPMDirectPackage)
+	);
 	return fetchedPackages;
 });
 
-export const getNPMPackage = query(
-	v.object({
-		scope: v.optional(v.string()),
-		package: v.string(),
-	}),
-	async (nameObject) => {
-		const name = toPackageName(nameObject);
-		const { db } = getRequestEvent().locals;
-		const [possiblePkg] = await db
-			.select({
-				...getTableColumns($db.packages),
-				keywords: sql`json_group_array(packages_keywords.keyword)`
-					.mapWith(toStringArr)
-					.as('keywords'),
-			})
-			.from($db.packages)
-			.leftJoin($db.packagesKeywords, eq($db.packages.name, $db.packagesKeywords.name))
-			.where(eq($db.packages.name, name))
-			.groupBy($db.packages.name);
-		if (possiblePkg) {
-			return possiblePkg;
-		}
-		const fetchFn = getRequestEvent().fetch;
-		const npmPackage = await $fetch<NPMSearchPackage>(
-			`https://registry.npmjs.org/${name}`,
-			null,
-			fetchFn
-		);
-		if (npmPackage === null) throw error(404);
-		const pkg = npmToDB(npmPackage);
-		await db.insert($db.packages).values([{ ...pkg, expires: new Date() }]);
+export const getNPMPackage = query(v.string(), async (name) => {
+	const { db } = getRequestEvent().locals;
+	const [possiblePkg] = await db
+		.select({
+			...getTableColumns($db.packages),
+			keywords: sql`json_group_array(packages_keywords.keyword)`
+				.mapWith(toStringArr)
+				.as('keywords'),
+		})
+		.from($db.packages)
+		.leftJoin($db.packagesKeywords, eq($db.packages.name, $db.packagesKeywords.name))
+		.where(eq($db.packages.name, name))
+		.groupBy($db.packages.name);
+	if (possiblePkg) {
+		return possiblePkg;
+	}
+	const fetchFn = getRequestEvent().fetch;
+	const npmPackage = await $fetch<NPMDirectPackage>(
+		`https://registry.npmjs.org/${name}`,
+		null,
+		fetchFn
+	);
+	if (npmPackage === null) throw error(404);
+	const pkg = npmToDB(npmPackage);
+	await db
+		.insert($db.packages)
+		.values([{ ...pkg, expires: new Date() }])
+		.onConflictDoNothing();
+	if (npmPackage.keywords)
 		await db
 			.insert($db.packagesKeywords)
-			.values((npmPackage.keywords || []).map((v) => ({ name: npmPackage.name, keyword: v })));
-		return pkg;
+			.values(npmPackage.keywords.map((v) => ({ name: npmPackage.name, keyword: v })));
+
+	if (npmPackage.readme) {
+		await db
+			.insert($db.readmes)
+			.values([
+				{
+					name: pkg.name,
+					url: pkg.repository,
+					value: npmPackage.readme,
+				},
+			])
+			.onConflictDoNothing();
 	}
-);
+	return pkg;
+});

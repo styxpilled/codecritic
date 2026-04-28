@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getPopularReviews, getRecentReview } from '$api/reviews.remote';
+	import { page } from '$app/state';
 	import { stripGit } from '$lib';
 	import type { Package } from '$lib/server/db/schema';
 	import Icon from '$ui/Icon.svelte';
@@ -10,21 +11,24 @@
 
 	type Props = {
 		pkg: Package;
+		name: string;
 	};
 
-	let { pkg }: Props = $props();
+	let { pkg, name }: Props = $props();
 	const managers = ['npm', 'pnpm', 'bun', 'deno', 'yarn'];
 	let selectedManager = $state('npm');
-	const reviews = $derived(
-		await getPopularReviews({
-			packageID: pkg.name,
+	let reviewsPromise = $derived(
+		getPopularReviews({
+			packageID: name,
 		})
 	);
-	const yourReview = $derived(
-		await getRecentReview({
-			pkg: pkg.name,
+	const yourReviewPromise = $derived(
+		getRecentReview({
+			pkg: name,
 		})
 	);
+	const yourReview = $derived(await yourReviewPromise);
+	const reviews = $derived(await reviewsPromise);
 </script>
 
 <div class="sidebar col start" class:mini={yourReview}>
@@ -32,13 +36,7 @@
 		{#each managers as manager (manager)}
 			<label class="btn pointer hov-light fg-dark bg-bright">
 				{manager}
-				<input
-					class="hidden"
-					type="radio"
-					name="install"
-					value={manager}
-					bind:group={selectedManager}
-				/>
+				<input class="" type="radio" name="install" value={manager} bind:group={selectedManager} />
 			</label>
 		{/each}
 	</div>
@@ -61,15 +59,15 @@
 		<p class="btn lg fg-dark bg-light hov-link">{stripGit(pkg.repository)}</p>
 		<p class="semibold fg-dark">Homepage</p>
 		<p class="btn lg fg-dark bg-light">
-			<a class="hov-link" href={pkg.homepage}>{pkg.homepage}</a>
+			<a class="hov-link" style="word-break:break-all;" href={pkg.homepage}>{pkg.homepage}</a>
 		</p>
 	</div>
 	{#if yourReview}
-		<Recent review={yourReview} packageID={pkg.name} small />
+		<Recent review={yourReview} packageID={name} small />
 	{:else}
 		<ReviewEditor {pkg} />
 	{/if}
-	{#if reviews.length}
+	{#if reviews.length && page.url.pathname === `/packages/${name}`}
 		<div class="col">
 			<List columns={1} style="width: 100%; --gap: .5rem">
 				{#each reviews as review (review.id)}
@@ -77,7 +75,7 @@
 				{/each}
 				{#snippet foot()}
 					<span></span>
-					<a href="/packages/{pkg.name}/reviews/popular" class="hov-link">more</a>
+					<a href="/packages/{name}/reviews/popular" class="hov-link">more</a>
 				{/snippet}
 			</List>
 		</div>
@@ -91,7 +89,7 @@
 		width: calc(480px - 1rem);
 
 		&.mini {
-			width: 20rem;
+			/* width: 25rem; */
 		}
 
 		@media (width <=950px) {
@@ -140,7 +138,6 @@
 	@media (width >= 1200px) {
 		.sidebar {
 			float: right;
-			margin-top: -5rem;
 			max-width: calc(480px - 1rem);
 		}
 	}
