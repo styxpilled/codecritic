@@ -8,6 +8,7 @@ import { npmToDB } from '$lib/server/helpers';
 import type { NPMDirectPackage, NPMSearchResult } from '$lib/types';
 
 export const searchNPM = query(v.string(), async (query) => {
+	if (query.length < 2) return [];
 	const res = await $fetch<NPMSearchResult>(
 		`https://registry.npmjs.org/-/v1/search?text=${query}&size=18`,
 		null,

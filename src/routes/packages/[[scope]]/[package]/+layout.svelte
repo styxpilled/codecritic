@@ -36,7 +36,7 @@
 				{/each}
 			</ul>
 		</div>
-		{@render children()}
+		<div>{@render children()}</div>
 	</div>
 </div>
 
@@ -51,6 +51,14 @@
 				padding: 0 1rem;
 				width: 100vw;
 			}
+		}
+	}
+
+	@media (width <= 1200px) {
+		.content {
+			display: grid;
+			grid-template-columns: 1fr;
+			grid-template-rows: auto auto auto;
 		}
 	}
 

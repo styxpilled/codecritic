@@ -2,6 +2,7 @@
 	import { createReview, deleteReview } from '$api/reviews.remote';
 	import { createReviewSchema } from '$api/schemas';
 	import { goto } from '$app/navigation';
+	import { app } from '$lib/client/state.svelte';
 	import type { Package, Review } from '$lib/server/db/schema';
 	import RatingInput from './RatingInput.svelte';
 
@@ -59,7 +60,7 @@
 					>DELETE</button
 				>
 			{/if}
-			<button class="btn bg-green bold" type="submit">SAVE</button>
+			<button class="btn bg-green bold" type="submit" disabled={!app.user}>SAVE</button>
 		</div>
 	</div>
 	{#each createReview.fields.allIssues() as issue (issue)}
@@ -88,7 +89,7 @@
 	.review-editor {
 		padding: 0.75rem 1rem 0.5rem;
 		border-radius: 0.5rem;
-		width: calc(480px - 1rem);
+		width: calc(480px - 6rem);
 
 		@media (width <= 950px) {
 			width: 100%;

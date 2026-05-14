@@ -1,8 +1,9 @@
 import { error } from '@sveltejs/kit';
-import { and, eq, getTableColumns, sql } from 'drizzle-orm';
+import { and, eq, getTableColumns, gt, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/sqlite-core';
 import * as v from 'valibot';
 import { query, getRequestEvent, form } from '$app/server';
+import { getDays } from '$lib/server/auth';
 import { $db } from '$lib/server/db';
 import { updateFollowSchema, updateProfileSchema } from './schemas';
 
@@ -119,3 +120,38 @@ export const unfollow = form(updateFollowSchema, async ({ username }) => {
 		.where(and(eq($db.usersFollows.userID, user.id), eq($db.usersFollows.following, req.id)));
 	return;
 });
+
+export const getPopularUsers = query(
+	v.object({
+		limit: v.optional(v.pipe(v.number(), v.minValue(1), v.maxValue(18))),
+		page: v.optional(v.number(), 0),
+		recent: v.optional(v.boolean()),
+	}),
+	async ({ limit = 6, page, recent }) => {
+		const { db, user } = getRequestEvent().locals;
+		const cond = recent
+			? gt($db.reviews.createdAt, new Date(new Date().getTime() - getDays(7)))
+			: undefined;
+		const following = alias($db.usersFollows, 'following');
+		const followers = alias($db.usersFollows, 'followers');
+		const users = await db
+			.select({
+				...getTableColumns($db.users),
+				likes: sql`COUNT(DISTINCT ${$db.likesReviews.reviewID})`.mapWith(Number),
+				reviews: sql`COUNT(DISTINCT ${$db.reviews.id})`.mapWith(Number),
+				followsUser: sql`${user?.id || -1} = ${following.following}`.mapWith(Boolean),
+				userFollows: sql`${user?.id || -1} = ${followers.userID}`.mapWith(Boolean),
+			})
+			.from($db.users)
+			.innerJoin($db.reviews, eq($db.users.id, $db.reviews.authorID))
+			.leftJoin($db.likesReviews, eq($db.reviews.id, $db.likesReviews.reviewID))
+			.leftJoin(following, eq($db.users.id, following.userID))
+			.leftJoin(followers, eq($db.users.id, followers.following))
+			.where(cond)
+			.groupBy($db.users.id)
+			.orderBy(sql`COUNT(${$db.likesReviews.reviewID}) DESC`)
+			.limit(limit)
+			.offset(page * limit);
+		return users;
+	}
+);

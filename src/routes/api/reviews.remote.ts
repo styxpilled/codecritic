@@ -4,16 +4,15 @@ import { alias } from 'drizzle-orm/sqlite-core';
 import * as v from 'valibot';
 import { form, getRequestEvent, query } from '$app/server';
 import { $db } from '$lib/server/db';
-import { createReviewSchema, getReviewSchema } from './schemas';
-import { getUser } from './user.remote';
+import { createReviewSchema, genericSchema, getReviewSchema } from './schemas';
 
 export const getUserReviews = query(
 	v.object({
 		username: v.string(),
+		pkg: v.optional(v.string()),
 	}),
-	async ({ username }) => {
+	async ({ username, pkg }) => {
 		const { db, user } = getRequestEvent().locals;
-		const author = await getUser(username);
 		const g = await db
 			.select({
 				...getTableColumns($db.reviews),
@@ -22,7 +21,10 @@ export const getUserReviews = query(
 			})
 			.from($db.reviews)
 			.leftJoin($db.likesReviews, eq($db.reviews.id, $db.likesReviews.reviewID))
-			.where(eq($db.reviews.authorID, author.id))
+			.innerJoin($db.users, eq($db.users.id, $db.reviews.authorID))
+			.where(
+				and(eq($db.users.username, username), pkg ? eq($db.reviews.packageID, pkg) : undefined)
+			)
 			.orderBy(desc($db.reviews.createdAt))
 			.groupBy($db.reviews.id);
 		return g;
@@ -107,6 +109,43 @@ export const getPopularReviews = query(
 	}
 );
 
+export const getGlobalPopularReviews = query(genericSchema, async ({ page, limit }) => {
+	const { db, user } = getRequestEvent().locals;
+	const reviews = await db
+		.select({
+			...getTableColumns($db.reviews),
+			liked: (user ? sql`${user.id} = ${$db.likesReviews.userID}` : sql`0`).mapWith(Boolean),
+			likes: sql`COUNT(${$db.likesReviews.reviewID})`.mapWith(Number),
+			author: $db.users,
+		})
+		.from($db.reviews)
+		.leftJoin($db.likesReviews, eq($db.reviews.id, $db.likesReviews.reviewID))
+		.innerJoin($db.users, eq($db.reviews.authorID, $db.users.id))
+		.groupBy($db.reviews.id)
+		.orderBy(sql`COUNT(${$db.likesReviews.reviewID}) DESC`);
+	return reviews;
+});
+
+export const getLikedReviews = query(v.string(), async (username) => {
+	const { db, user } = getRequestEvent().locals;
+	const author = alias($db.users, 'author');
+	const reviews = await db
+		.select({
+			...getTableColumns($db.reviews),
+			liked: (user ? sql`${user.id} = ${$db.likesReviews.userID}` : sql`0`).mapWith(Boolean),
+			likes: sql`COUNT(${$db.likesReviews.reviewID})`.mapWith(Number),
+			author: author,
+		})
+		.from($db.reviews)
+		.leftJoin($db.likesReviews, eq($db.reviews.id, $db.likesReviews.reviewID))
+		.innerJoin(author, eq(author.id, $db.reviews.authorID))
+		.innerJoin($db.users, eq($db.likesReviews.userID, $db.users.id))
+		.where(eq($db.users.username, username))
+		.groupBy($db.reviews.id)
+		.orderBy(sql`${$db.reviews.createdAt} DESC`);
+	return reviews;
+});
+
 export const getReviewLikes = query(getReviewSchema, async (obj) => {
 	const { db } = getRequestEvent().locals;
 	let cond;
@@ -165,7 +204,6 @@ export const createReview = form(
 	async ({ pkg, rating, content, version, id }) => {
 		const { db, user } = getRequestEvent().locals;
 		if (!user) error(401);
-		console.log(id);
 		if (id) {
 			return await db
 				.update($db.reviews)

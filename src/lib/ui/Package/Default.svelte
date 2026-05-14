@@ -22,7 +22,7 @@
 		</p>
 		{#if pkg.keywords}
 			<ul class="row">
-				{#each pkg.keywords.slice(0, 7) as keyword, i (i)}
+				{#each pkg.keywords.filter((k) => k).slice(0, 7) as keyword, i (i)}
 					<li>
 						<a
 							class="keyword fg-dark bg-bright hov-link hov-invert"

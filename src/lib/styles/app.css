@@ -115,7 +115,7 @@ a.link {
 
 .end {
 	display: flex;
-	justify-content: flex-end;
+	align-items: flex-end;
 }
 
 .space {
@@ -169,7 +169,7 @@ label {
 	.open {
 		display: none;
 	}
-	&:has(input:focus-visible) {
+	&:has(input:is([type='checkbox'], [type='radio'], [type='file']):focus-visible) {
 		outline: #40bcf4 solid 2px;
 	}
 	&:has(input:checked) {
@@ -258,6 +258,12 @@ ol {
 
 @media (scripting: none) {
 	.js-only {
+		display: none;
+	}
+}
+
+@media (scripting: enabled) {
+	.no-js {
 		display: none;
 	}
 }

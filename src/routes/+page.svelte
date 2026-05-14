@@ -9,18 +9,22 @@
 
 	const popularPackages = $derived(
 		await getPopularPackages({
-			limit: 4,
+			limit: 6,
 		})
 	);
 	const friendLiked = $derived(
-		await getFriendLikedReviews({
-			limit: 4,
-		})
+		app.user
+			? await getFriendLikedReviews({
+					limit: 4,
+				})
+			: []
 	);
 	const friendReviews = $derived(
-		await getFriendRecentReviews({
-			limit: 6,
-		})
+		app.user
+			? await getFriendRecentReviews({
+					limit: 6,
+				})
+			: []
 	);
 </script>
 
@@ -37,24 +41,28 @@
 	{/if}
 </h1>
 <p class="fg-dark">Here's what your friends have been using:</p>
-<List columns={2}>
-	{#snippet head()}
-		<a href="/popular" class="hov-link">new from friends</a>
-		<a href="/popular" class="hov-link">more</a>
-	{/snippet}
-	{#each sliceArrayToMultiple(friendReviews, 2) as review (review.id)}
-		<Reviews {review} user={review.author} showUser headingFontSize={1.5} size="xs" />
-	{/each}
-</List>
-<List columns={2}>
-	{#snippet head()}
-		<a href="/popular" class="hov-link">popular with friends</a>
-		<a href="/popular" class="hov-link">more</a>
-	{/snippet}
-	{#each sliceArrayToMultiple(friendLiked, 2) as review (review.id)}
-		<Reviews {review} user={review.author} showUser headingFontSize={1.5} size="xs" />
-	{/each}
-</List>
+{#if friendReviews.length}
+	<List columns={2}>
+		{#snippet head()}
+			<a href="/popular" class="hov-link">new from friends</a>
+			<a href="/popular" class="hov-link">more</a>
+		{/snippet}
+		{#each sliceArrayToMultiple(friendReviews, 2) as review (review.id)}
+			<Reviews {review} user={review.author} showUser headingFontSize={1.5} size="xs" />
+		{/each}
+	</List>
+{/if}
+{#if friendLiked.length}
+	<List columns={2}>
+		{#snippet head()}
+			<a href="/popular" class="hov-link">popular with friends</a>
+			<a href="/popular" class="hov-link">more</a>
+		{/snippet}
+		{#each sliceArrayToMultiple(friendLiked, 2) as review (review.id)}
+			<Reviews {review} user={review.author} showUser headingFontSize={1.5} size="xs" />
+		{/each}
+	</List>
+{/if}
 <List>
 	{#snippet head()}
 		<a href="/popular" class="hov-link">popular on codecritic</a>

@@ -1,5 +1,6 @@
 import { error, redirect } from '@sveltejs/kit';
 import { asc, eq, and, getTableColumns } from 'drizzle-orm';
+import { optSubpath } from '$lib';
 import { $db } from '$lib/server/db';
 import type { PageServerLoad } from './$types';
 
@@ -15,5 +16,5 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.where(eq($db.reviews.id, parseInt(params.id)));
 	if (!review) error(404);
 
-	redirect(303, `/user/${review.username}/package/${review.packageID}/${review.index}`);
+	redirect(303, `/user/${review.username}/package/${review.packageID}/${optSubpath(review.index)}`);
 };

@@ -40,6 +40,15 @@ export const createReviewSchema = v.object({
 	id: v.optional(v.number()),
 });
 
+export const createStackSchema = v.object({
+	name: v.string(),
+	description: v.string(),
+	tags: v.array(v.string()),
+	tagsString: v.optional(v.string(), ''),
+	packages: v.array(v.string()),
+	packagesString: v.optional(v.string(), ''),
+});
+
 export const updateFollowSchema = v.object({
 	username: v.string(),
 });

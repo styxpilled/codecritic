@@ -64,6 +64,7 @@
 	</div>
 	{#if yourReview}
 		<Recent review={yourReview} packageID={name} small />
+		<ReviewEditor {pkg} />
 	{:else}
 		<ReviewEditor {pkg} />
 	{/if}
@@ -86,13 +87,27 @@
 	.sidebar {
 		display: flex;
 		margin-bottom: 1rem;
-		width: calc(480px - 1rem);
+		margin-left: 0.5rem;
+		width: calc(480px - 6rem);
 
-		&.mini {
-			/* width: 25rem; */
+		:global(.recent) {
+			display: none;
 		}
 
-		@media (width <=950px) {
+		:global(.recent:has(.show-editor:not(:checked))) {
+			display: flex;
+
+			& + .review-editor {
+				display: none;
+			}
+		}
+
+		@media (width <= 1200px) {
+			grid-row-start: 2;
+		}
+
+		@media (width <= 950px) {
+			margin: 0;
 			width: 100%;
 		}
 	}

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { likeReview, unlikeReview } from '$api/reviews.remote';
+	import { optSubpath } from '$lib';
 	import { app } from '$lib/client/state.svelte';
 	import type { Review, User } from '$lib/server/db/schema';
 	import Avatar from './Avatar.svelte';
@@ -36,7 +37,7 @@
 			</a>
 			{#if showUsername}
 				<a
-					href="/user/{user.username}/package/{review.packageID}/{review.index}"
+					href="/user/{user.username}/package/{review.packageID}/{optSubpath(review.index)}"
 					class="fg-red hov-line"
 				>
 					{#if user.nickname}
@@ -53,7 +54,10 @@
 					{review.packageID}
 				</a>
 			{:else if user}
-				<a href="/user/{user.username}/package/{review.packageID}/{review.index}" class="hov-line">
+				<a
+					href="/user/{user.username}/package/{review.packageID}/{optSubpath(review.index)}"
+					class="hov-line"
+				>
 					{review.packageID}
 				</a>
 			{:else}
@@ -98,7 +102,7 @@
 		{/if}
 		{#if review.likes}
 			{@const url = user
-				? `/user/${user.username}/package/${review.packageID}/${review.index}/likes`
+				? `/user/${user.username}/package/${review.packageID}/${optSubpath(review.index)}likes`
 				: `"/review/${review.id}"`}
 			<a href={url} class="fg-dark hov-line">
 				{review.likes}

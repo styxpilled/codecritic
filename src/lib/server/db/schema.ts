@@ -185,11 +185,13 @@ export const stacks = sqliteTable('stacks', {
 	id: integer().primaryKey(),
 	author: integer().notNull(),
 	name: text().notNull(),
+	normalizedName: text().notNull(),
 	description: text().notNull(),
 	createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
 	updatedAt: integer('updated_at', { mode: 'timestamp' })
 		.notNull()
 		.$onUpdate(() => new Date()),
+	index: integer(),
 });
 
 export const stacksPackages = sqliteTable('stacks_packages', {
@@ -197,7 +199,21 @@ export const stacksPackages = sqliteTable('stacks_packages', {
 		onDelete: 'cascade',
 		onUpdate: 'cascade',
 	}),
-	package: text().references(() => packages.name, {
+	package: text(),
+	// .references(() => packages.name, {
+	// 	onDelete: 'cascade',
+	// 	onUpdate: 'cascade',
+	// }),
+});
+
+export const stacksLikes = sqliteTable('stacks_likes', {
+	userID: integer('user_id')
+		.notNull()
+		.references(() => users.id, {
+			onDelete: 'cascade',
+			onUpdate: 'cascade',
+		}),
+	stackID: integer('stack_id').references(() => stacks.id, {
 		onDelete: 'cascade',
 		onUpdate: 'cascade',
 	}),

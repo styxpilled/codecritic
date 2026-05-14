@@ -2,7 +2,7 @@
 	import { error } from '@sveltejs/kit';
 	import { getReview } from '$api/reviews.remote';
 	import { goto } from '$app/navigation';
-	import { toPackageName } from '$lib';
+	import { optSubpath, toPackageName } from '$lib';
 	import { app } from '$lib/client/state.svelte';
 	import Editor from '$ui/Review/Editor.svelte';
 
@@ -23,7 +23,7 @@
 <Editor
 	{review}
 	onSubmit={() => {
-		goto(`/user/${app.user?.username}/package/${review.packageID}/${review.index}`);
+		goto(`/user/${app.user?.username}/package/${review.packageID}/${optSubpath(review.index)}`);
 	}}
 />
 

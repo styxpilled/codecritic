@@ -15,6 +15,7 @@
 		'notebook',
 		'globe',
 		'corner-down-left',
+		'list-plus',
 	]);
 </script>
 
