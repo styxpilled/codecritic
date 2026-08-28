@@ -27,12 +27,15 @@ export const getNPMPackage = query(v.string(), async (name) => {
 	const [possiblePkg] = await db
 		.select({
 			...getTableColumns($db.packages),
-			keywords: sql`json_group_array(packages_keywords.keyword)`
+			keywords: sql`json_group_array(DISTINCT packages_keywords.keyword)`
 				.mapWith(toStringArr)
 				.as('keywords'),
 		})
 		.from($db.packages)
-		.leftJoin($db.packagesKeywords, eq($db.packages.name, $db.packagesKeywords.name))
+		.leftJoin(
+			$db.packagesKeywords,
+			eq($db.packages.name, $db.packagesKeywords.name)
+		)
 		.where(eq($db.packages.name, name))
 		.groupBy($db.packages.name);
 	if (possiblePkg) {
@@ -53,7 +56,9 @@ export const getNPMPackage = query(v.string(), async (name) => {
 	if (npmPackage.keywords)
 		await db
 			.insert($db.packagesKeywords)
-			.values(npmPackage.keywords.map((v) => ({ name: npmPackage.name, keyword: v })));
+			.values(
+				npmPackage.keywords.map((v) => ({ name: npmPackage.name, keyword: v }))
+			);
 
 	if (npmPackage.readme) {
 		await db

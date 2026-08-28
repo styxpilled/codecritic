@@ -26,3 +26,4 @@ worker-configuration.d.ts
 local.db
 
 migrations/
+old_schema.ts

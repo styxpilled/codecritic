@@ -21,17 +21,21 @@
 					</p>
 				{/if}
 				{#if pkg.modified}
-					<p class="fg-dark">Published {relativeTimeFromDates(new Date(pkg.modified))}</p>
+					<p class="fg-dark">
+						Published {relativeTimeFromDates(new Date(pkg.modified))}
+					</p>
 				{/if}
 			</div>
 			<p>{pkg.description}</p>
 			<ul class="row">
-				{#each pkg.keywords as keyword (keyword)}
+				{#each pkg.keywords as keyword}
 					<li class="">
 						<a
 							class="btn fg-dark bg-bright hov-link hov-invert"
-							href="/search?query=keywords:{keyword}">{keyword}</a
+							href="/search?query=keywords:{keyword}"
 						>
+							{keyword}
+						</a>
 					</li>
 				{/each}
 			</ul>

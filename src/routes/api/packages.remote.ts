@@ -29,7 +29,7 @@ export const getPopularPackages = query(
 				latest: sq.latest,
 				next: sq.next,
 				license: sq.license,
-				keywords: sql`json_group_array(packages_keywords.keyword)`
+				keywords: sql`json_group_array(DISTINCT packages_keywords.keyword)`
 					.mapWith(toStringArr)
 					.as('keywords'),
 				popularity: sq.popularity,
@@ -38,6 +38,7 @@ export const getPopularPackages = query(
 			.leftJoin($db.packagesKeywords, eq(sq.name, $db.packagesKeywords.name))
 			.groupBy(sq.name)
 			.orderBy(desc(sq.popularity));
+		console.log(packages);
 		return packages;
 	}
 );

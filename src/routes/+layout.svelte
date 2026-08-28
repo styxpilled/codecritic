@@ -1,8 +1,9 @@
 <script lang="ts">
+	// @ts-expect-error font
 	import '@fontsource-variable/inter';
+	import { app } from '$lib/client/state.svelte';
 	import { dev } from '$app/environment';
 	import favicon from '$lib/assets/favicon.png';
-	import { app } from '$lib/client/state.svelte';
 	import Footer from '$lib/ui/Footer.svelte';
 	import Header from '$lib/ui/Header.svelte';
 	// sort-imports-ignore

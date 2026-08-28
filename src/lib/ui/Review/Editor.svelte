@@ -10,7 +10,9 @@
 		pkg,
 		review,
 		onSubmit,
-	}: ({ pkg: Package; review?: undefined } | { pkg?: undefined; review: Review }) & {
+	}: (
+		{ pkg: Package; review?: undefined } | { pkg?: undefined; review: Review }
+	) & {
 		onSubmit?: () => void;
 	} = $props();
 </script>
@@ -44,23 +46,30 @@
 	<textarea
 		placeholder="Add a review..."
 		{...createReview.fields.content.as('text')}
-		value={review?.content}
-	></textarea>
+		value={review?.content}></textarea>
 	<div class="row space">
 		<label class="row">
 			<span>Version</span>
 			<select {...createReview.fields.version.as('select')}>
-				<option value={pkg?.latest || review?.version}>{pkg?.latest || review?.version}</option>
+				<option selected value={pkg?.latest || review?.version}>
+					{pkg?.latest || review?.version}
+				</option>
 			</select>
 			<span>-- TODO</span>
 		</label>
 		<div class="row">
 			{#if review}
-				<button class="btn bg-red bold" form="delete-review-{review.id}" type="submit"
-					>DELETE</button
+				<button
+					class="btn bg-red bold"
+					form="delete-review-{review.id}"
+					type="submit"
 				>
+					DELETE
+				</button>
 			{/if}
-			<button class="btn bg-green bold" type="submit" disabled={!app.user}>SAVE</button>
+			<button class="btn bg-green bold" type="submit" disabled={!app.user}>
+				SAVE
+			</button>
 		</div>
 	</div>
 	{#each createReview.fields.allIssues() as issue (issue)}
@@ -81,7 +90,13 @@
 		tabindex="-1"
 	>
 		<input {...deleteReview.fields.id.as('number')} value={review.id} />
-		<button class="btn bg-green bold" type="submit" id="delete-review-{review.id}"> SAVE </button>
+		<button
+			class="btn bg-green bold"
+			type="submit"
+			id="delete-review-{review.id}"
+		>
+			SAVE
+		</button>
 	</form>
 {/if}
 

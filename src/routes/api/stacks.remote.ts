@@ -43,31 +43,37 @@ export const getStack = query(
 			.select({
 				...getTableColumns($db.stacks),
 				author: getTableColumns($db.users),
-				packages: sql`json_group_array(stacks_packages.package)`
+				packages: sql`json_group_array(DISTINCT stacks_packages.package)`
 					.mapWith(toStringArr)
 					.as('packages'),
 			})
 			.from($db.stacks)
 			.innerJoin($db.users, eq($db.stacks.author, $db.users.id))
-			.leftJoin($db.stacksPackages, eq($db.stacks.id, $db.stacksPackages.stackID))
+			.leftJoin(
+				$db.stacksPackages,
+				eq($db.stacks.id, $db.stacksPackages.stackID)
+			)
 			.where(cond);
 		return stack;
 	}
 );
 
-export const getRecentStacks = query(genericSchema, async ({ page, limit = 10 }) => {
-	const { db, user } = getRequestEvent().locals;
-	const stacks = await db
-		.select({
-			...getTableColumns($db.stacks),
-			author: getTableColumns($db.users),
-		})
-		.from($db.stacks)
-		.innerJoin($db.users, eq($db.stacks.author, $db.users.id))
-		.orderBy(desc($db.stacks.createdAt))
-		.limit(limit);
-	return stacks;
-});
+export const getRecentStacks = query(
+	genericSchema,
+	async ({ page, limit = 10 }) => {
+		const { db, user } = getRequestEvent().locals;
+		const stacks = await db
+			.select({
+				...getTableColumns($db.stacks),
+				author: getTableColumns($db.users),
+			})
+			.from($db.stacks)
+			.innerJoin($db.users, eq($db.stacks.author, $db.users.id))
+			.orderBy(desc($db.stacks.createdAt))
+			.limit(limit);
+		return stacks;
+	}
+);
 
 export const createStack = form(
 	createStackSchema,
@@ -83,7 +89,12 @@ export const createStack = form(
 			const existing = await db
 				.select()
 				.from($db.stacks)
-				.where(and(eq($db.stacks.author, user.id), eq($db.stacks.normalizedName, normalized)));
+				.where(
+					and(
+						eq($db.stacks.author, user.id),
+						eq($db.stacks.normalizedName, normalized)
+					)
+				);
 			const [stack] = await db
 				.insert($db.stacks)
 				.values({
@@ -95,7 +106,9 @@ export const createStack = form(
 					index: existing.length,
 				})
 				.returning();
-			await db.delete($db.stacksPackages).where(eq($db.stacksPackages.stackID, stack.id));
+			await db
+				.delete($db.stacksPackages)
+				.where(eq($db.stacksPackages.stackID, stack.id));
 			if (packagesString !== '') {
 				packages = packagesString.split(',');
 			}

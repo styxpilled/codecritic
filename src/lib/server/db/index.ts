@@ -1,14 +1,9 @@
-import { createClient } from '@libsql/client';
-import { drizzle as drizzleD1 } from 'drizzle-orm/d1';
-import { drizzle as drizzleLibSql } from 'drizzle-orm/libsql';
+import { drizzle } from 'drizzle-orm/d1';
 import * as schema from './schema';
 
-export function getDb(db?: D1Database, databaseUrl?: string): ReturnType<typeof drizzleD1> {
+export function getDb(db?: D1Database): ReturnType<typeof drizzle> {
 	if (db) {
-		return drizzleD1(db, { schema });
-	} else if (databaseUrl) {
-		const client = createClient({ url: databaseUrl });
-		return drizzleLibSql(client, { schema }) as unknown as ReturnType<typeof drizzleD1>;
+		return drizzle(db, { schema });
 	}
 	throw new Error('No database configuration found');
 }

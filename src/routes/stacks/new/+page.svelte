@@ -84,8 +84,8 @@
 	<div class="desc col end">
 		<label>
 			<span>Description</span>
-			<textarea {...createStack.fields.description.as('text')} placeholder="Stack description:">
-			</textarea>
+			<textarea {...createStack.fields.description.as('text')} placeholder="Stack description:"
+			></textarea>
 		</label>
 	</div>
 	<div class="foot row space end">
@@ -154,12 +154,12 @@
 	<ul class="row wrap">
 		{#each items as pkg, i (i)}
 			{#if pkg}
-				{@const colorIndex =
+				{const colorIndex =
 					pkg
 						.split('')
 						.map((c) => c.charCodeAt(0))
 						.reduce((a, b) => a + b) % COLORS.length}
-				{@const color = COLORS[colorIndex]}
+				{const color = COLORS[colorIndex]}
 				<div>
 					<button
 						class="btn bg-{color} fg-bright hov-invert row"

@@ -2,8 +2,12 @@
 	"useTabs": true,
 	"singleQuote": true,
 	"trailingComma": "es5",
-	"printWidth": 100,
-	"plugins": ["prettier-plugin-svelte", "@trivago/prettier-plugin-sort-imports"],
+	"printWidth": 80,
+	"htmlWhitespaceSensitivity": "ignore",
+	"plugins": [
+		"prettier-plugin-svelte",
+		"@trivago/prettier-plugin-sort-imports"
+	],
 	"importOrder": ["<THIRD_PARTY_MODULES>", "^[$]", "^[./]"],
 	"overrides": [
 		{
