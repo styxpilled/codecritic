@@ -7,7 +7,7 @@ routes that do not exist.
 
 | Route                                        | State    |
 | -------------------------------------------- | -------- |
-| `/user`                                       | Done. Profile settings. |
+| `/user`                                       | Done. Redirects to `/settings`. |
 | `/user/[user]`                                | Mostly done. |
 | `/user/[user]/followers`                      | Done. |
 | `/user/[user]/following`                      | Done. |

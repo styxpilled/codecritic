@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { signOut } from '$api/auth.remote';
 	import { dev } from '$app/environment';
-	import { enhance } from '$app/forms';
 	import { app } from '$lib/client/state.svelte';
 	import Avatar from './Avatar.svelte';
 	import Icon from './Icon.svelte';
@@ -11,7 +11,9 @@
 		<h3 class="site-logo">
 			<a href="/">
 				<span class="logo">
-					<span>★</span><span>★</span><span>_</span>
+					<span>★</span>
+					<span>★</span>
+					<span>_</span>
 				</span>
 				<span class="desktop" class:fg-red={dev}>codecritic</span>
 			</a>
@@ -29,11 +31,15 @@
 					<div class="user-links bg-light col start" id="user-links" popover>
 						<a href="/" class="hov-link">Home</a>
 						<a href="/user/{app.user.username}" class="hov-link">Profile</a>
-						<a href="/user/{app.user.username}/reviews" class="hov-link">Reviews</a>
-						<a href="/user/{app.user.username}/stacks" class="hov-link">Stacks</a>
+						<a href="/user/{app.user.username}/reviews" class="hov-link">
+							Reviews
+						</a>
+						<a href="/user/{app.user.username}/stacks" class="hov-link">
+							Stacks
+						</a>
 						<hr />
 						<a href="/settings" class="hov-link">Settings</a>
-						<form class="logout" method="post" action="/logout" use:enhance>
+						<form {...signOut} class="logout">
 							<button class="btn lg bg-red">Sign out</button>
 						</form>
 					</div>
@@ -44,11 +50,20 @@
 					<span>Sign in with GitHub</span>
 				</a>
 			{/if}
-			<button id="nav-button" popovertarget="nav-links" class="nav-button hov-link mobile">
+			<button
+				id="nav-button"
+				popovertarget="nav-links"
+				class="nav-button hov-link mobile"
+			>
 				<Icon id="list" class="closed" />
 				<Icon id="x" class="open" />
 			</button>
-			<div class="nav-links row bg-light" id="nav-links" popover style:gap="1rem">
+			<div
+				class="nav-links row bg-light"
+				id="nav-links"
+				popover
+				style:gap="1rem"
+			>
 				<p class="row">
 					<Icon size="1.25em" id="package" class="mobile" />
 					<a class="hov-link" href="/packages">packages</a>
@@ -222,7 +237,8 @@
 	.logo:hover {
 		outline: none;
 		& > span {
-			animation: animate-logo 6s infinite steps(1, jump-end) calc(var(--idx) * 1s);
+			animation: animate-logo 6s infinite steps(1, jump-end)
+				calc(var(--idx) * 1s);
 			--idx: 0;
 			&:nth-child(2) {
 				--idx: 1;

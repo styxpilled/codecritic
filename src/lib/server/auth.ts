@@ -1,9 +1,21 @@
 import type { Cookies } from '@sveltejs/kit';
 import { GitHub } from 'arctic';
-import { eq } from 'drizzle-orm';
+import { eq, inArray, or } from 'drizzle-orm';
 import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from '$env/static/private';
 import { $db, type DrizzleClient } from './db';
-import { sessions, type Session, type User } from './db/schema';
+import {
+	likesReviews,
+	profiles,
+	reviews,
+	sessions,
+	stacks,
+	stacksLikes,
+	stacksPackages,
+	users,
+	usersFollows,
+	type Session,
+	type User,
+} from './db/schema';
 
 export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, null);
 
@@ -132,4 +144,62 @@ function generateSecureRandomString(): string {
 		id += alphabet[bytes[i] >> 3];
 	}
 	return id;
+}
+
+export async function invalidateSession(db: DrizzleClient, sessionID: string) {
+	await db.delete(sessions).where(eq(sessions.id, sessionID));
+}
+
+export async function invalidateUserSessions(
+	db: DrizzleClient,
+	userID: number
+) {
+	await db.delete(sessions).where(eq(sessions.userID, userID));
+}
+
+/**
+ * Removes the user and everything that belongs to them. `stacks.author` has no
+ * foreign key, so the order here does not rely on cascades.
+ */
+export async function deleteUser(db: DrizzleClient, userID: number) {
+	const userStacks = db
+		.select({ id: stacks.id })
+		.from(stacks)
+		.where(eq(stacks.author, userID));
+	const userReviews = db
+		.select({ id: reviews.id })
+		.from(reviews)
+		.where(eq(reviews.authorID, userID));
+
+	await db.batch([
+		db
+			.delete(stacksPackages)
+			.where(inArray(stacksPackages.stackID, userStacks)),
+		db
+			.delete(stacksLikes)
+			.where(
+				or(
+					eq(stacksLikes.userID, userID),
+					inArray(stacksLikes.stackID, userStacks)
+				)
+			),
+		db.delete(stacks).where(eq(stacks.author, userID)),
+		db
+			.delete(likesReviews)
+			.where(
+				or(
+					eq(likesReviews.userID, userID),
+					inArray(likesReviews.reviewID, userReviews)
+				)
+			),
+		db.delete(reviews).where(eq(reviews.authorID, userID)),
+		db
+			.delete(usersFollows)
+			.where(
+				or(eq(usersFollows.userID, userID), eq(usersFollows.following, userID))
+			),
+		db.delete(sessions).where(eq(sessions.userID, userID)),
+		db.delete(profiles).where(eq(profiles.id, userID)),
+		db.delete(users).where(eq(users.id, userID)),
+	]);
 }

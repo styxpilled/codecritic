@@ -60,14 +60,18 @@
 		<div class="row">
 			{#if review}
 				<button
-					class="btn bg-red bold"
+					class="btn interactive-btn bg-red bold"
 					form="delete-review-{review.id}"
 					type="submit"
 				>
 					DELETE
 				</button>
 			{/if}
-			<button class="btn bg-green bold" type="submit" disabled={!app.user}>
+			<button
+				class="btn interactive-btn bg-green bold"
+				type="submit"
+				disabled={!app.user}
+			>
 				SAVE
 			</button>
 		</div>
@@ -125,13 +129,5 @@
 
 	button {
 		font-size: 0.9rem;
-		transition:
-			padding 150ms ease-in-out,
-			margin 150ms ease-in-out;
-		&:hover,
-		&:focus {
-			padding: 2px calc(0.25rem + 2px);
-			margin: -2px;
-		}
 	}
 </style>

@@ -1,9 +1,17 @@
 import * as v from 'valibot';
 
 export const updateProfileSchema = v.object({
-	nickname: v.optional(v.string()),
+	nickname: v.optional(v.pipe(v.string(), v.maxLength(32))),
 	bio: v.optional(v.pipe(v.string(), v.maxLength(255))),
-	url: v.union([v.literal(''), v.pipe(v.string(), v.nonEmpty(), v.url())]),
+	url: v.union([
+		v.literal(''),
+		v.pipe(v.string(), v.nonEmpty(), v.url(), v.maxLength(255)),
+	]),
+});
+
+/** The user retypes their username to confirm an irreversible action. */
+export const confirmUsernameSchema = v.object({
+	confirm: v.string(),
 });
 
 export const genericSchema = v.object({

@@ -36,9 +36,14 @@ Light mode is not available. The block in `colors.css` is commented out and
 `src/lib/styles/app.css` holds the utilities. The main groups are:
 
 - Layout: `row`, `col`, `nogap`, `gap-sm`, `gap-lg`, `start`, `end`, `space`.
-- Shape: `btn`, `btn lg`, `round`.
+- Shape: `btn`, `btn lg`, `round`, `interactive-btn`.
 - Text: `semibold`, `bold`, `upcase`.
 - Hover and focus: `hov-link`, `hov-line`, `hov-light`, `hov-invert`.
+
+`interactive-btn` grows a button by 2px on hover and on `:focus-visible`. A
+negative margin cancels the growth, so the layout does not move. It reads the
+padding from the `--btn-py` and `--btn-px` custom properties that `btn` sets,
+which is why it works on both `btn` and `btn lg`.
 
 Hover utilities also apply on `:focus-visible`, and they remove the default
 outline. Keep this behavior when you add new ones, because the site has to stay

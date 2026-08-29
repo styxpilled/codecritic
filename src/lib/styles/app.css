@@ -75,10 +75,30 @@ a.link {
 }
 
 .btn {
-	padding: 0 0.25rem;
+	--btn-py: 0rem;
+	--btn-px: 0.25rem;
+
+	padding: var(--btn-py) var(--btn-px);
 
 	&.lg {
-		padding: 0.25rem 0.5rem;
+		--btn-py: 0.25rem;
+		--btn-px: 0.5rem;
+	}
+}
+
+/* Grows on hover. The negative margin keeps the box the same size in flow. */
+.interactive-btn {
+	--grow: 2px;
+
+	transition:
+		padding 150ms ease-in-out,
+		margin 150ms ease-in-out;
+
+	&:hover:not(:disabled),
+	&:focus-visible:not(:disabled) {
+		padding: calc(var(--btn-py, 0rem) + var(--grow))
+			calc(var(--btn-px, 0rem) + var(--grow));
+		margin: calc(-1 * var(--grow));
 	}
 }
 
@@ -116,6 +136,10 @@ a.link {
 .end {
 	display: flex;
 	align-items: flex-end;
+}
+
+.self-end {
+  align-self: flex-end;
 }
 
 .space {
@@ -169,7 +193,9 @@ label {
 	.open {
 		display: none;
 	}
-	&:has(input:is([type='checkbox'], [type='radio'], [type='file']):focus-visible) {
+	&:has(
+		input:is([type='checkbox'], [type='radio'], [type='file']):focus-visible
+	) {
 		outline: #40bcf4 solid 2px;
 	}
 	&:has(input:checked) {
