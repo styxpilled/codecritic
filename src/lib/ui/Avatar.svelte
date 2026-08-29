@@ -23,19 +23,29 @@
 		lg: 128,
 		xl: 256,
 	}[size];
+
+	// Seeded users have a negative github id. GitHub has no avatar for them, so
+	// the blank circle stays and no request goes out.
+	const src = $derived(
+		user
+			? user.githubID < 0
+				? null
+				: `https://avatars.githubusercontent.com/u/${user.githubID}?size=${pxSize}`
+			: `https://github.com/${username}.png?size=${pxSize}`
+	);
 </script>
 
 <div class="avatar {size}">
-	<img
-		draggable="false"
-		class={size}
-		height={pxSize}
-		width={pxSize}
-		src={user
-			? `https://avatars.githubusercontent.com/u/${user.githubID}?size=${pxSize}`
-			: `https://github.com/${username}.png?size=${pxSize}`}
-		alt="avatar"
-	/>
+	{#if src}
+		<img
+			draggable="false"
+			class={size}
+			height={pxSize}
+			width={pxSize}
+			{src}
+			alt="avatar"
+		/>
+	{/if}
 </div>
 
 <style>
