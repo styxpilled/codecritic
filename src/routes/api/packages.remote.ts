@@ -38,7 +38,6 @@ export const getPopularPackages = query(
 			.leftJoin($db.packagesKeywords, eq(sq.name, $db.packagesKeywords.name))
 			.groupBy(sq.name)
 			.orderBy(desc(sq.popularity));
-		console.log(packages);
 		return packages;
 	}
 );

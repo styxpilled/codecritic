@@ -79,10 +79,6 @@ export const createStack = form(
 	createStackSchema,
 	async ({ name, description, tags, packages, packagesString, tagsString }) => {
 		const { db, user } = getRequestEvent().locals;
-		console.log(packages);
-		console.log(tags);
-		console.log(packagesString);
-		console.log(tagsString);
 		try {
 			if (!user) error(401);
 			const normalized = normalizeName(name);

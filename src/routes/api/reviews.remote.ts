@@ -143,7 +143,7 @@ export const getPopularReviews = query(
 
 export const getGlobalPopularReviews = query(
 	genericSchema,
-	async ({ page, limit }) => {
+	async ({ page = 0, limit = 18 }) => {
 		const { db, user } = getRequestEvent().locals;
 		const reviews = await db
 			.select({
@@ -156,7 +156,9 @@ export const getGlobalPopularReviews = query(
 			.leftJoin($db.likesReviews, eq($db.reviews.id, $db.likesReviews.reviewID))
 			.innerJoin($db.users, eq($db.reviews.authorID, $db.users.id))
 			.groupBy($db.reviews.id)
-			.orderBy(sql`COUNT(${$db.likesReviews.reviewID}) DESC`);
+			.orderBy(sql`COUNT(${$db.likesReviews.reviewID}) DESC`)
+			.limit(limit)
+			.offset(page * limit);
 		return reviews;
 	}
 );

@@ -10,16 +10,17 @@
 			followsUser: boolean;
 		};
 	} = $props();
+	const form = user.userFollows ? unfollow.for(user.id) : follow.for(user.id);
 </script>
 
 <form
-	{...(user.userFollows ? unfollow : follow).enhance(async ({ submit }) => {
+	{...form.enhance(async ({ submit }) => {
 		user.userFollows = !user.userFollows;
 		await submit();
 	})}
 >
 	<input
-		{...(user.userFollows ? unfollow : follow).fields.username.as('text')}
+		{...form.fields.username.as('text')}
 		value={user.username}
 		class="hidden"
 	/>

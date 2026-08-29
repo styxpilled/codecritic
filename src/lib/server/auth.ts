@@ -1,7 +1,7 @@
-import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from '$env/static/private';
 import type { Cookies } from '@sveltejs/kit';
 import { GitHub } from 'arctic';
 import { eq } from 'drizzle-orm';
+import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from '$env/static/private';
 import { $db, type DrizzleClient } from './db';
 import { sessions, type Session, type User } from './db/schema';
 
@@ -17,7 +17,10 @@ export type InternalSession = {
 	createdAt: Date;
 };
 
-export async function createSession(db: DrizzleClient, user: User): Promise<InternalSession> {
+export async function createSession(
+	db: DrizzleClient,
+	user: User
+): Promise<InternalSession> {
 	const id = generateSecureRandomString();
 	const secret = generateSecureRandomString();
 	const secretHash = await hashSecret(secret);
@@ -28,19 +31,18 @@ export async function createSession(db: DrizzleClient, user: User): Promise<Inte
 		id,
 		secretHash,
 		createdAt: Math.floor(now.getTime() / 1000),
-		userID: user.id
+		userID: user.id,
 	});
 
 	return {
 		id,
 		token,
-		createdAt: now
+		createdAt: now,
 	};
 }
 
 export type SessionValidationResult =
-	| { session: Session; user: User }
-	| { session: null; user: null };
+	{ session: Session; user: User } | { session: null; user: null };
 
 export async function validateSessionToken(
 	db: DrizzleClient,
@@ -81,19 +83,22 @@ export async function validateSessionToken(
 	return { session, user };
 }
 
-export function setSessionTokenCookie(cookies: Cookies, session: InternalSession) {
+export function setSessionTokenCookie(
+	cookies: Cookies,
+	session: InternalSession
+) {
 	cookies.set(CODECRITIC_SESSION_COOKIE, session.token, {
 		// httpOnly: true,
 		// secure: secure,
 		sameSite: 'lax',
 		expires: new Date(session.createdAt.getTime() + SESSION_LIFESPAN),
-		path: '/'
+		path: '/',
 	});
 }
 
 export function deleteSessionTokenCookie(cookies: Cookies) {
-	cookies.delete('session', {
-		path: '/'
+	cookies.delete(CODECRITIC_SESSION_COOKIE, {
+		path: '/',
 	});
 }
 

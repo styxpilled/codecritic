@@ -43,8 +43,9 @@ export const getProfile = query(v.string(), async (username) => {
 		.leftJoin($db.reviews, eq($db.users.id, $db.reviews.authorID))
 		.where(eq($db.users.username, username))
 		.groupBy($db.users.id);
-	if (!req) error(404);
-	return req[0];
+	const [profile] = req;
+	if (!profile) error(404);
+	return profile;
 });
 
 export const updateProfile = form(

@@ -15,8 +15,6 @@ export const $fetch = async <T>(
 		}
 		return r.json();
 	} catch (e) {
-		console.log(e);
-
 		if (fallback === undefined) throw e;
 		return fallback;
 	}
@@ -37,7 +35,15 @@ export const stripGit = (url: string | null) => {
 	return url.substring(plusGit ? 4 : 0, dotGit ? url.length - 4 : url.length);
 };
 
-export const COLORS = ['red', 'orange', 'yellow', 'green', 'cyan', 'blue', 'purple'];
+export const COLORS = [
+	'red',
+	'orange',
+	'yellow',
+	'green',
+	'cyan',
+	'blue',
+	'purple',
+];
 
 export const normalizeName = (input: string) => {
 	return (

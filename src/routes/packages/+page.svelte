@@ -8,7 +8,7 @@
 	import Reviews from '$ui/Reviews.svelte';
 
 	let popularPackagesPromise = $derived(getPopularPackages({}));
-	let popularReviewsPromise = $derived(getGlobalPopularReviews({}));
+	let popularReviewsPromise = $derived(getGlobalPopularReviews({ limit: 6 }));
 	const recentPopularUsersPromise = $derived(getPopularUsers({ recent: true }));
 	let popularPackages = $derived(await popularPackagesPromise);
 	let popularReviews = $derived(await popularReviewsPromise);
