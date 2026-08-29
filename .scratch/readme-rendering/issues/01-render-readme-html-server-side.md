@@ -1,6 +1,6 @@
 # Render readme HTML on the server and cache it
 
-Status: needs-triage
+Status: done
 
 ## Problem
 
@@ -40,3 +40,16 @@ between refreshes, so the rendered HTML belongs in that row.
 - `.scratch/package-cache/issues/01-honor-cache-expiry.md` covers the unread
   `readmes.expires` value. Stored readmes never refresh today, which makes the
   stored HTML permanent too.
+
+## Comments
+
+Implemented.
+
+- `readmes.html` added (migration `0010_red_masked_marvel.sql`).
+- `src/lib/server/readme.ts` holds the pipeline: URL rewrite, `marked` with
+  `marked-highlight`, DOMPurify over `linkedom`.
+- `getReadme` renders on insert. A stored row with a null `html` renders once and
+  updates the row, so rows written before this change do not stay blank.
+- `Readme.svelte` is `{@html html}` plus the show-more label.
+- The client bundle no longer contains `marked`, `dompurify`, or `highlight.js`.
+  Only the hljs CSS remains.

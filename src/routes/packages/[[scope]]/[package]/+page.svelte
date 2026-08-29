@@ -11,4 +11,4 @@
 	<title>{toPackageName(params)} · Codecritic</title>
 </svelte:head>
 
-<Readme readme={readme.value} url={readme.url} />
+<Readme html={readme.html ?? ''} />

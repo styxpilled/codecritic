@@ -1,5 +1,11 @@
 import { relations, sql, type InferSelectModel } from 'drizzle-orm';
-import { sqliteTable, text, integer, blob, primaryKey } from 'drizzle-orm/sqlite-core';
+import {
+	sqliteTable,
+	text,
+	integer,
+	blob,
+	primaryKey,
+} from 'drizzle-orm/sqlite-core';
 
 export type User = InferSelectModel<typeof users>;
 export type Profile = InferSelectModel<typeof profiles>;
@@ -135,6 +141,7 @@ export const readmes = sqliteTable('readmes', {
 			onUpdate: 'cascade',
 		}),
 	value: text(),
+	html: text(),
 	expires: integer('expires', { mode: 'timestamp' }),
 	url: text(),
 });
@@ -220,11 +227,20 @@ export const stacksLikes = sqliteTable('stacks_likes', {
 });
 
 export const stacksRelations = relations(stacks, ({ many, one }) => ({
-	stacksToUsers: one(users, { fields: [stacks.author], references: [users.id] }),
+	stacksToUsers: one(users, {
+		fields: [stacks.author],
+		references: [users.id],
+	}),
 	stacksToPackages: many(stacksPackages),
 }));
 
 export const stacksPackagesRelations = relations(stacksPackages, ({ one }) => ({
-	stack: one(stacks, { fields: [stacksPackages.stackID], references: [stacks.id] }),
-	package: one(packages, { fields: [stacksPackages.package], references: [packages.name] }),
+	stack: one(stacks, {
+		fields: [stacksPackages.stackID],
+		references: [stacks.id],
+	}),
+	package: one(packages, {
+		fields: [stacksPackages.package],
+		references: [packages.name],
+	}),
 }));
