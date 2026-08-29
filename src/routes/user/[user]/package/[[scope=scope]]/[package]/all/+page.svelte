@@ -10,6 +10,7 @@
 		await getUserReviews({
 			username: params.user,
 			pkg: toPackageName(params),
+			limit: 50,
 		})
 	);
 </script>

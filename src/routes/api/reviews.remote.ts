@@ -1,32 +1,64 @@
 import { error } from '@sveltejs/kit';
-import { and, eq, getTableColumns, sql, desc, asc, count, gt } from 'drizzle-orm';
+import {
+	and,
+	eq,
+	getTableColumns,
+	sql,
+	desc,
+	asc,
+	count,
+	gt,
+} from 'drizzle-orm';
 import { alias } from 'drizzle-orm/sqlite-core';
 import * as v from 'valibot';
 import { form, getRequestEvent, query } from '$app/server';
 import { $db } from '$lib/server/db';
-import { createReviewSchema, genericSchema, getReviewSchema } from './schemas';
+import {
+	createReviewSchema,
+	genericSchema,
+	getReviewSchema,
+	reviewSortSchema,
+} from './schemas';
+
+/** Whether the signed in user likes the selected review. */
+const likedFlag = (viewerID: number) =>
+	sql`EXISTS (SELECT 1 FROM likes_reviews WHERE review_id = ${$db.reviews.id} AND user_id = ${viewerID})`.mapWith(
+		Boolean
+	);
 
 export const getUserReviews = query(
 	v.object({
 		username: v.string(),
 		pkg: v.optional(v.string()),
+		sort: v.optional(reviewSortSchema, 'recent'),
+		limit: v.optional(v.pipe(v.number(), v.minValue(1), v.maxValue(50))),
+		page: v.optional(v.number(), 0),
 	}),
-	async ({ username, pkg }) => {
+	async ({ username, pkg, sort = 'recent', limit = 25, page }) => {
 		const { db, user } = getRequestEvent().locals;
+		const order = {
+			recent: desc($db.reviews.createdAt),
+			popular: sql`COUNT(likes_reviews.user_id) DESC`,
+		}[sort];
 		const g = await db
 			.select({
 				...getTableColumns($db.reviews),
-				liked: (user ? sql`${user.id} = ${$db.likesReviews.userID}` : sql`0`).mapWith(Boolean),
+				liked: likedFlag(user?.id ?? -1),
 				likes: sql`COUNT(likes_reviews.user_id)`.mapWith(Number),
 			})
 			.from($db.reviews)
 			.leftJoin($db.likesReviews, eq($db.reviews.id, $db.likesReviews.reviewID))
 			.innerJoin($db.users, eq($db.users.id, $db.reviews.authorID))
 			.where(
-				and(eq($db.users.username, username), pkg ? eq($db.reviews.packageID, pkg) : undefined)
+				and(
+					eq($db.users.username, username),
+					pkg ? eq($db.reviews.packageID, pkg) : undefined
+				)
 			)
-			.orderBy(desc($db.reviews.createdAt))
-			.groupBy($db.reviews.id);
+			.orderBy(order)
+			.groupBy($db.reviews.id)
+			.limit(limit)
+			.offset(page * limit);
 		return g;
 	}
 );
@@ -46,7 +78,7 @@ export const getReview = query(getReviewSchema, async (obj) => {
 	const [review] = await db
 		.select({
 			...getTableColumns($db.reviews),
-			liked: (user ? sql`${user.id} = ${$db.likesReviews.userID}` : sql`0`).mapWith(Boolean),
+			liked: likedFlag(user?.id ?? -1),
 			likes: sql`COUNT(${$db.likesReviews.reviewID})`.mapWith(Number),
 		})
 		.from($db.reviews)
@@ -73,12 +105,12 @@ export const getRecentReview = query(
 		const [review] = await db
 			.select({
 				...getTableColumns($db.reviews),
-				liked: (user ? sql`${user.id} = ${$db.likesReviews.userID}` : sql`0`).mapWith(Boolean),
+				liked: likedFlag(user?.id ?? -1),
 			})
 			.from($db.reviews)
-			.leftJoin($db.likesReviews, eq($db.reviews.id, $db.likesReviews.reviewID))
-			.leftJoin($db.users, eq($db.reviews.authorID, $db.users.id))
-			.where(and(eq($db.reviews.authorID, author), eq($db.reviews.packageID, pkg)))
+			.where(
+				and(eq($db.reviews.authorID, author), eq($db.reviews.packageID, pkg))
+			)
 			.orderBy(desc($db.reviews.index))
 			.limit(1);
 		return review || null;
@@ -95,7 +127,7 @@ export const getPopularReviews = query(
 		const reviews = await db
 			.select({
 				...getTableColumns($db.reviews),
-				liked: (user ? sql`${user.id} = ${$db.likesReviews.userID}` : sql`0`).mapWith(Boolean),
+				liked: likedFlag(user?.id ?? -1),
 				likes: sql`COUNT(${$db.likesReviews.reviewID})`.mapWith(Number),
 				author: $db.users,
 			})
@@ -109,22 +141,25 @@ export const getPopularReviews = query(
 	}
 );
 
-export const getGlobalPopularReviews = query(genericSchema, async ({ page, limit }) => {
-	const { db, user } = getRequestEvent().locals;
-	const reviews = await db
-		.select({
-			...getTableColumns($db.reviews),
-			liked: (user ? sql`${user.id} = ${$db.likesReviews.userID}` : sql`0`).mapWith(Boolean),
-			likes: sql`COUNT(${$db.likesReviews.reviewID})`.mapWith(Number),
-			author: $db.users,
-		})
-		.from($db.reviews)
-		.leftJoin($db.likesReviews, eq($db.reviews.id, $db.likesReviews.reviewID))
-		.innerJoin($db.users, eq($db.reviews.authorID, $db.users.id))
-		.groupBy($db.reviews.id)
-		.orderBy(sql`COUNT(${$db.likesReviews.reviewID}) DESC`);
-	return reviews;
-});
+export const getGlobalPopularReviews = query(
+	genericSchema,
+	async ({ page, limit }) => {
+		const { db, user } = getRequestEvent().locals;
+		const reviews = await db
+			.select({
+				...getTableColumns($db.reviews),
+				liked: likedFlag(user?.id ?? -1),
+				likes: sql`COUNT(${$db.likesReviews.reviewID})`.mapWith(Number),
+				author: $db.users,
+			})
+			.from($db.reviews)
+			.leftJoin($db.likesReviews, eq($db.reviews.id, $db.likesReviews.reviewID))
+			.innerJoin($db.users, eq($db.reviews.authorID, $db.users.id))
+			.groupBy($db.reviews.id)
+			.orderBy(sql`COUNT(${$db.likesReviews.reviewID}) DESC`);
+		return reviews;
+	}
+);
 
 export const getLikedReviews = query(v.string(), async (username) => {
 	const { db, user } = getRequestEvent().locals;
@@ -132,7 +167,7 @@ export const getLikedReviews = query(v.string(), async (username) => {
 	const reviews = await db
 		.select({
 			...getTableColumns($db.reviews),
-			liked: (user ? sql`${user.id} = ${$db.likesReviews.userID}` : sql`0`).mapWith(Boolean),
+			liked: likedFlag(user?.id ?? -1),
 			likes: sql`COUNT(${$db.likesReviews.reviewID})`.mapWith(Number),
 			author: author,
 		})
@@ -195,7 +230,12 @@ export const unlikeReview = form(
 		if (!user) error(401);
 		await db
 			.delete($db.likesReviews)
-			.where(and(eq($db.likesReviews.userID, user.id), eq($db.likesReviews.reviewID, id)));
+			.where(
+				and(
+					eq($db.likesReviews.userID, user.id),
+					eq($db.likesReviews.reviewID, id)
+				)
+			);
 	}
 );
 
@@ -220,7 +260,9 @@ export const createReview = form(
 				index: count(),
 			})
 			.from($db.reviews)
-			.where(and(eq($db.reviews.authorID, user.id), eq($db.reviews.packageID, pkg)));
+			.where(
+				and(eq($db.reviews.authorID, user.id), eq($db.reviews.packageID, pkg))
+			);
 		return await db
 			.insert($db.reviews)
 			.values({

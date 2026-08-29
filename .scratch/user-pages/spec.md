@@ -9,14 +9,15 @@ routes that do not exist.
 | -------------------------------------------- | -------- |
 | `/user`                                       | Done. Profile settings. |
 | `/user/[user]`                                | Mostly done. |
-| `/user/[user]/followers`                      | Bare list. |
-| `/user/[user]/following`                      | Bare list. |
+| `/user/[user]/followers`                      | Done. |
+| `/user/[user]/following`                      | Done. |
 | `/user/[user]/likes`                          | Done. |
 | `/user/[user]/package/...`                    | Done. |
 | `/user/[user]/stack/...`                      | See `.scratch/stacks/`. |
-| `/user/[user]/reviews`                        | Missing. |
-| `/user/[user]/reviews/recent`                 | Missing, linked. |
+| `/user/[user]/reviews`                        | Done. Recent sort. |
+| `/user/[user]/reviews/popular`                | Done. Like count sort. |
 | `/user/[user]/stacks`                         | Missing, linked. |
+| `/user/[user]/mutuals`                        | Done. |
 | `/user/[user]/network`                        | Not a route. The nav link goes to `following`. |
 | `/user/[user]/stats`                          | Missing, linked. Long term. |
 

@@ -1,6 +1,6 @@
 # Network sub-nav and mutuals page
 
-Status: needs-triage
+Status: done
 
 ## Problem
 
@@ -23,3 +23,19 @@ The database does not store it.
   the query with a self join on `users_follows`. Do not store it.
 - Give the three lists a shared component. They are the same list of users.
 - Show the follow control on each row, as `/users` does.
+
+## Comments
+
+Implemented.
+
+- The `[user]` layout `Network` item points at `/user/[user]/following`. The
+  active state covers `following`, `followers` and `mutuals`. The profile nav
+  points at `following` too, not at `followers`.
+- `following`, `followers` and `mutuals` moved into a `(network)` route group.
+  Its `+layout.svelte` draws the shared sub-nav through the new `$ui/SubNav`.
+- `getMutuals` joins `users_follows` twice, once in each direction. Nothing is
+  stored.
+- The three pages share `$ui/UserList`, which shows the follow control.
+- `getFollowing`, `getFollowers` and `getMutuals` now return `userFollows` and
+  `followsUser`. They use `EXISTS` subqueries, so the row count stays correct
+  and no `GROUP BY` is necessary.

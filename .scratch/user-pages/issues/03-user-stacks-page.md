@@ -15,3 +15,8 @@ does not exist. There is no query that lists the stacks of one user.
   `.scratch/stacks/issues/01-stack-index-cards.md`. Do not design a second card.
 - Show a create control to the owner.
 - Depends on the stack card work.
+
+## Comments
+
+Blocked on `.scratch/stacks/issues/01-stack-index-cards.md`. The stack card does
+not exist yet, and this issue says not to design a second one.

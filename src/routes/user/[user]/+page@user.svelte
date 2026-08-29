@@ -11,7 +11,9 @@
 	let { params } = $props();
 	// svelte-ignore state_referenced_locally
 	let user = $state(await getProfile(params.user));
-	let reviewsPromise = $derived(getUserReviews({ username: params.user }));
+	let reviewsPromise = $derived(
+		getUserReviews({ username: params.user, limit: 5 })
+	);
 	let reviews = $derived(await reviewsPromise);
 	$effect(() => {
 		getProfile(params.user).then((v) => {
@@ -25,7 +27,11 @@
 		<div class="col start profile {c}">
 			{#if user.profile.bio}
 				<p class="fg-dark bio">
-					<Icon size="1em" style="float: left; margin: 0.25rem;" id="notebook" />
+					<Icon
+						size="1em"
+						style="float: left; margin: 0.25rem;"
+						id="notebook"
+					/>
 					{user.profile.bio}
 				</p>
 			{/if}
@@ -59,9 +65,13 @@
 						{/if}
 					</h1>
 					{#if app.user?.id === user.id}
-						<a href="/user" class="btn bg-light fg-dark hov-link hov-invert">Edit profile</a>
+						<a href="/user" class="btn bg-light fg-dark hov-link hov-invert">
+							Edit profile
+						</a>
 					{:else if !app.user}
-						<a href="/login/github" class="fg-dark hov-link">Sign in to follow</a>
+						<a href="/login/github" class="fg-dark hov-link">
+							Sign in to follow
+						</a>
 					{:else}
 						<FollowButton bind:user />
 					{/if}
@@ -80,16 +90,22 @@
 				<span>FOLLOWERS</span>
 			</a>
 			<a href="/user/{user.username}/reviews" class="col hov-link">
-				<span class="mono">000</span>
+				<span class="mono">{user.reviews.toString().padStart(3, '0')}</span>
 				<span>REVIEWS</span>
 			</a>
 		</div>
 	</div>
 	<nav>
 		<ul class="row space">
-			<li><a class="hov-link" href="/user/{user.username}/reviews">Reviews</a></li>
-			<li><a class="hov-link" href="/user/{user.username}/stacks">Stacks</a></li>
-			<li><a class="hov-link" href="/user/{user.username}/followers">Network</a></li>
+			<li>
+				<a class="hov-link" href="/user/{user.username}/reviews">Reviews</a>
+			</li>
+			<li>
+				<a class="hov-link" href="/user/{user.username}/stacks">Stacks</a>
+			</li>
+			<li>
+				<a class="hov-link" href="/user/{user.username}/following">Network</a>
+			</li>
 			<li><a class="hov-link" href="/user/{user.username}/likes">Likes</a></li>
 			<li><a class="hov-link" href="/user/{user.username}/stats">Stats</a></li>
 		</ul>
@@ -97,8 +113,8 @@
 	<div class="recent-reviews">
 		<List columns={1}>
 			{#snippet head()}
-				<a href="/user/{params.user}/reviews/recent">recent reviews</a>
-				<a href="/user/{params.user}/reviews/recent">more</a>
+				<a href="/user/{params.user}/reviews">recent reviews</a>
+				<a href="/user/{params.user}/reviews">more</a>
 			{/snippet}
 			{#each reviews as review (review.id)}
 				<Reviews {review} {user} />

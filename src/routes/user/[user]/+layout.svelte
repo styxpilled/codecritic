@@ -7,12 +7,14 @@
 	const user = $derived(await getProfile(params.user));
 </script>
 
-{#snippet link(label: string)}
+{#snippet link(label: string, path = label, prefixes = [path])}
 	<li>
 		<a
 			class="hov-link fg-dark"
-			href="/user/{user.username}/{label}"
-			class:active={page.url.pathname === `/user/${user.username}/${label}`}
+			href="/user/{user.username}/{path}"
+			class:active={prefixes.some((p) =>
+				page.url.pathname.startsWith(`/user/${user.username}/${p}`)
+			)}
 		>
 			{label}
 		</a>
@@ -32,7 +34,11 @@
 	<ul class="row desktop" style="gap: 2rem">
 		{@render link('reviews')}
 		{@render link('stacks')}
-		{@render link('network')}
+		{@render link('network', 'following', [
+			'following',
+			'followers',
+			'mutuals',
+		])}
 		{@render link('likes')}
 		{@render link('stats')}
 	</ul>
@@ -57,5 +63,9 @@
 
 	li a {
 		text-transform: capitalize;
+	}
+
+	li a.active {
+		--fg: var(--color-text);
 	}
 </style>

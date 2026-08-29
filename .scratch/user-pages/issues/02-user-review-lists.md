@@ -1,6 +1,6 @@
 # User review list routes
 
-Status: needs-triage
+Status: done
 
 ## Problem
 
@@ -26,3 +26,19 @@ no limit and no page.
   `/user/[user]/reviews`, not at `/reviews/recent`.
 - Add a sub-nav for the sorts. It must work without JavaScript, so use links,
   not a select element.
+
+## Comments
+
+Implemented.
+
+- `/user/[user]/reviews` sorts by recent. `/user/[user]/reviews/popular` sorts
+  by like count. Both render `reviews/ReviewList.svelte`, so a new sort is a new
+  subpath and one more entry in `reviewSortSchema`.
+- The sort, the limit and the page are arguments of `getUserReviews`. The sort
+  happens in `ORDER BY`. The sub-nav is plain links, so it works without
+  JavaScript.
+- The profile `recent reviews` heading and the `more` link point at
+  `/user/[user]/reviews`. The profile list asks for 5 reviews, so `more` has a
+  purpose.
+- Not done: rating, package name and version date sorts. The route shape and
+  `reviewSortSchema` accept them.

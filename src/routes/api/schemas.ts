@@ -11,6 +11,11 @@ export const genericSchema = v.object({
 	page: v.optional(v.number(), 0),
 });
 
+/** Review list sorts. Each one is a subpath of a review list route. */
+export const reviewSortSchema = v.picklist(['recent', 'popular']);
+
+export type ReviewSort = v.InferOutput<typeof reviewSortSchema>;
+
 export const getReviewSchema = v.variant('type', [
 	v.object({
 		type: v.literal('id'),
