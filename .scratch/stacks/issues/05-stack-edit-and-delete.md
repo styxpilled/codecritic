@@ -1,6 +1,6 @@
 # Edit and delete a stack
 
-Status: needs-triage
+Status: done
 
 ## Problem
 
@@ -22,3 +22,20 @@ they cannot change it or remove it.
 - Renaming a stack changes `normalizedName`, and so changes the index it needs.
   Decide what the index becomes on rename.
 - Show the edit and delete controls only to the owner.
+
+## Comments
+
+Done. `$ui/Stack/Editor.svelte` holds the form. `/stacks/new` and
+`/user/[user]/stack/[name]/[[index]]/edit` both render it. `updateStack`
+replaces the package and the tag rows, and `deleteStack` removes only a stack of
+the caller and then decrements the index of the later stacks of the same author
+with the same `normalizedName`.
+
+On a rename the stack takes the next free index of the new slug. The index of
+the old slug is not re-packed, because a stack URL is not stable, in the same way
+as a review URL.
+
+Verified without JavaScript against the dev database: create redirects to the new
+stack and writes the positions in order; a rename to an existing slug moves the
+stack to index 2; delete redirects to the user page and re-packs the later
+indexes.

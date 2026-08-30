@@ -1,6 +1,6 @@
 # Stack index cards
 
-Status: needs-triage
+Status: done
 
 ## Problem
 
@@ -23,3 +23,11 @@ packages.
   control.
 - Keep the package chips consistent with the `COLORS` rotation that
   `/stacks/new` already uses.
+
+## Comments
+
+Done. `$ui/Stack/Card.svelte` is a text-first card: the name, the author, the
+description, the tags and the packages as chips. The chips use the `COLORS`
+rotation. The card shows the first 6 packages and then a `+N more` chip that
+goes to the stack. `/stacks` renders the cards in a `List` and asks only for a
+limit. The `page` argument is gone.

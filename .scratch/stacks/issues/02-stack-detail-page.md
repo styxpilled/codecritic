@@ -1,6 +1,6 @@
 # Stack detail page
 
-Status: needs-triage
+Status: done
 
 ## Problem
 
@@ -19,3 +19,12 @@ raw package names. There is no author, no like control, no dates and no links.
 - `getStack` destructures `user` from locals and never uses it. Use it to return
   a `liked` flag, as the review queries do.
 - Respect the stored package order. See `03-stack-package-order.md`.
+
+## Comments
+
+Done. The page shows the author, the description, the tags, the created date and
+the edited date, the like control and the packages. The packages are a dense
+numbered list, not `Package/Default.svelte` cards, because a stack can hold a
+whole dependency tree. The owner sees Edit and Delete. Delete is a `details`
+disclosure that holds the form, so the confirmation step needs no JavaScript.
+A new `.../likes` route lists the users who liked the stack.

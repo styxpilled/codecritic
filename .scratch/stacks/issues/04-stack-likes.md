@@ -1,6 +1,6 @@
 # Stack likes
 
-Status: needs-triage
+Status: done
 
 ## Problem
 
@@ -19,3 +19,14 @@ Give stacks the same treatment as review likes.
   `getReviewLikes` does.
 - Show liked stacks on the user likes page, next to the liked reviews.
 - The like control has to work without JavaScript.
+
+## Comments
+
+Backend done: `likeStack`, `unlikeStack`, `getStackLikes`, `getLikedStacks`, and
+a `likes` count and a `liked` flag on `getStack`, `getRecentStacks`,
+`getUserStacks` and `getLikedStacks`. The counts and the flag are correlated
+subqueries, so they do not need a join or a `GROUP BY`.
+
+`$ui/Stack/LikeButton.svelte` holds the control. It is a plain form post without
+JavaScript. The user likes page now lists the liked stacks next to the liked
+reviews.

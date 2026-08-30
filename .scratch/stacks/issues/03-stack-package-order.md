@@ -1,6 +1,6 @@
 # Store the package order in a stack
 
-Status: needs-triage
+Status: done
 
 ## Problem
 
@@ -21,3 +21,11 @@ issue and accept an unordered stack.
   a different shape.
 - Let the author reorder the packages in the stack form. The reorder control has
   to degrade without JavaScript.
+
+## Comments
+
+Done. `stacks_packages` has a `position` column (migration
+`0011_unique_gargoyle`). `createStack` and `updateStack` write the position from
+the order of the `packages` field. The queries read the packages through a
+subquery that orders by position, because `json_group_array` takes no
+`ORDER BY`. The same shape gives the tags.

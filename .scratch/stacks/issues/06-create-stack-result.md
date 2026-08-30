@@ -1,6 +1,6 @@
 # createStack loses its result
 
-Status: needs-triage
+Status: done
 
 ## Problem
 
@@ -20,3 +20,9 @@ ready for real errors.
 - Note that `error(401)` inside the `try` is currently caught and swallowed, so
   an anonymous visitor can reach the insert path.
 - Confirm the redirect works without JavaScript.
+
+## Comments
+
+Done. The `try/catch` is gone, so `error(401)` and validation failures reach
+`allIssues()`. `createStack` redirects with 303 to the new stack, which works
+without JavaScript.
