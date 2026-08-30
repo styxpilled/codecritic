@@ -10,7 +10,7 @@
 		review,
 		user,
 		showUser,
-		showUsername,
+		heading = 'package',
 		small,
 		full,
 		truncate = true,
@@ -20,7 +20,7 @@
 		review: Review & { liked?: boolean; likes?: number };
 		user?: User;
 		showUser?: boolean;
-		showUsername?: boolean;
+		heading?: 'username' | 'package';
 		small?: boolean;
 		full?: boolean;
 		truncate?: boolean;
@@ -30,46 +30,49 @@
 </script>
 
 <div class="review btn bg-light" class:small class:truncate>
-	<h4 class="fg-orange row" style:font-size={headingFontSize ? `${headingFontSize}rem` : undefined}>
-		{#if (showUser || showUsername) && user}
-			<a href="/user/{user.username}" class="row" title={user.username}>
-				<Avatar {user} {size} />
-			</a>
-			{#if showUsername}
-				<a
-					href="/user/{user.username}/package/{review.packageID}/{optSubpath(review.index)}"
-					class="fg-red hov-line"
-				>
-					{#if user.nickname}
-						{user.nickname} ({user.username})
-					{:else}
-						{user.username}
-					{/if}
-				</a>
-			{/if}
-		{/if}
-		{#if !small}
-			{#if full}
-				<a href="/packages/{review.packageID}" class="hov-line">
-					{review.packageID}
-				</a>
-			{:else if user}
-				<a
-					href="/user/{user.username}/package/{review.packageID}/{optSubpath(review.index)}"
-					class="hov-line"
-				>
-					{review.packageID}
-				</a>
-			{:else}
-				<a href="/review/{review.id}">{review.packageID}</a>
-			{/if}
-		{/if}
+	<h4 class="fg-orange row space" style:font-size={headingFontSize ? `${headingFontSize}rem` : undefined}>
+		<span class="row">
+      {#if (showUser || heading === 'username') && user}
+        <a href="/user/{user.username}" class="row" title={user.username}>
+          <Avatar {user} {size} />
+        </a>
+        {#if heading === 'username'}
+          <a
+            href="/user/{user.username}/package/{review.packageID}/{optSubpath(review.index)}"
+            class="fg-red hov-line"
+          >
+            {#if user.nickname}
+              {user.nickname} ({user.username})
+            {:else}
+              {user.username}
+            {/if}
+          </a>
+        {/if}
+      {/if}
+      {#if !small}
+        {#if full}
+          <a href="/packages/{review.packageID}" class="hov-line">
+            {review.packageID}
+          </a>
+        {:else if user}
+          <a
+            href="/user/{user.username}/package/{review.packageID}/{optSubpath(review.index)}"
+            class="hov-line"
+                style="max-height: 1lh; white-space: nowrap;"
+          >
+            {review.packageID}
+          </a>
+        {:else}
+          <a href="/review/{review.id}">{review.packageID}</a>
+        {/if}
+      {/if}
+    </span>
 		<Rating rating={review.rating} />
 	</h4>
 	<p>
-		<span class="fg-purple">{review.version}</span><span class="fg-dark">@</span><span
-			class="fg-yellow">{review.createdAt.toLocaleDateString('en-GB')}</span
-		>
+  {#if heading === 'package' && user && showUser}
+      <a href="/user/{user.username}" class="fg-red hov-line">{user?.username}</a>
+    {/if}<span class="fg-dark">^</span><span class="fg-purple">{review.version}</span><span class="fg-dark">@</span><span class="fg-yellow">{review.createdAt.toLocaleDateString('en-GB')}</span>
 	</p>
 	<p class="content">{review.content}</p>
 	<div class="row">
@@ -129,7 +132,7 @@
 		padding: 0.75rem 1rem;
 		width: 40rem;
 		width: 100%;
-		position: relative;
+    position: relative;
 		/* margin-bottom: 1rem; */
 
 		@media (width <=950px) {

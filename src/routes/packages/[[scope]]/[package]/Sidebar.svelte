@@ -72,7 +72,7 @@
 		<div class="col">
 			<List columns={1} style="width: 100%; --gap: .5rem">
 				{#each reviews as review (review.id)}
-					<Reviews {review} user={review.author} showUsername small />
+					<Reviews {review} user={review.author} heading='username' small />
 				{/each}
 				{#snippet foot()}
 					<span></span>
