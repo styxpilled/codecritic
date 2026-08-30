@@ -5,12 +5,12 @@ unusual, the cause is usually parity with Letterboxd. Match Letterboxd first.
 
 ## Terms
 
-| Codecritic | Letterboxd equivalent | Notes                                     |
-| ---------- | --------------------- | ----------------------------------------- |
-| Package    | Film                  | Data comes from the npm registry.         |
-| Review     | Diary entry           | A user can write many for one package.    |
-| Stack      | List                  | The name is flavor only.                  |
-| Friend     | Friend                | See `Follows`.                            |
+| Codecritic | Letterboxd equivalent | Notes                                  |
+| ---------- | --------------------- | -------------------------------------- |
+| Package    | Film                  | Data comes from the npm registry.      |
+| Review     | Diary entry           | A user can write many for one package. |
+| Stack      | List                  | The name is flavor only.               |
+| Friend     | Friend                | See `Follows`.                         |
 
 ## Package
 
@@ -47,8 +47,16 @@ A stack is a named collection of package names that one user owns.
   normalized name.
 - Duplicate names are always permitted. Never block a stack because the name is
   in use. The index makes the URL unique.
-- Tags are not implemented. The `tags` and `tagsString` fields in
-  `createStackSchema` are unused.
+- A rename changes `normalizedName`, and so it changes the slug. `updateStack`
+  gives the stack the next free index of the new slug. It does not re-pack the
+  index of the old slug, because the URL of a stack is not stable.
+- `deleteStack` decrements the index of the later stacks of the same author with
+  the same `normalizedName`.
+- Packages live in `stacks_packages`. The `position` column holds the order that
+  the author chose. Queries read the packages through a subquery, because
+  `json_group_array` takes no `ORDER BY`.
+- Tags live in `stacks_tags`, one row per tag, in the same shape as
+  `packages_keywords`. Tags are not searchable.
 
 ## Follows
 

@@ -53,13 +53,32 @@ export const createReviewSchema = v.object({
 	id: v.optional(v.number()),
 });
 
+/** A stack is addressed by its id, or by author, slug and index. */
+export const getStackSchema = v.variant('type', [
+	v.object({
+		type: v.literal('id'),
+		id: v.number(),
+	}),
+	v.object({
+		type: v.literal('name'),
+		name: v.string(),
+		username: v.string(),
+		index: v.number(),
+	}),
+]);
+
 export const createStackSchema = v.object({
-	name: v.string(),
-	description: v.string(),
+	name: v.pipe(v.string(), v.nonEmpty(), v.maxLength(64)),
+	description: v.pipe(v.string(), v.maxLength(2048)),
 	tags: v.array(v.string()),
 	tagsString: v.optional(v.string(), ''),
 	packages: v.array(v.string()),
 	packagesString: v.optional(v.string(), ''),
+});
+
+export const updateStackSchema = v.object({
+	...createStackSchema.entries,
+	id: v.pipe(v.union([v.string(), v.number()]), v.toNumber()),
 });
 
 export const updateFollowSchema = v.object({

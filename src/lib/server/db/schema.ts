@@ -207,10 +207,21 @@ export const stacksPackages = sqliteTable('stacks_packages', {
 		onUpdate: 'cascade',
 	}),
 	package: text(),
+	position: integer().notNull().default(0),
 	// .references(() => packages.name, {
 	// 	onDelete: 'cascade',
 	// 	onUpdate: 'cascade',
 	// }),
+});
+
+export const stacksTags = sqliteTable('stacks_tags', {
+	stackID: integer('stack_id')
+		.notNull()
+		.references(() => stacks.id, {
+			onDelete: 'cascade',
+			onUpdate: 'cascade',
+		}),
+	tag: text().notNull(),
 });
 
 export const stacksLikes = sqliteTable('stacks_likes', {
@@ -232,6 +243,15 @@ export const stacksRelations = relations(stacks, ({ many, one }) => ({
 		references: [users.id],
 	}),
 	stacksToPackages: many(stacksPackages),
+	tags: many(stacksTags),
+	likes: many(stacksLikes),
+}));
+
+export const stacksTagsRelations = relations(stacksTags, ({ one }) => ({
+	stack: one(stacks, {
+		fields: [stacksTags.stackID],
+		references: [stacks.id],
+	}),
 }));
 
 export const stacksPackagesRelations = relations(stacksPackages, ({ one }) => ({
