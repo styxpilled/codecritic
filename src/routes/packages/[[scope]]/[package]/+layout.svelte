@@ -28,7 +28,7 @@
 			</div>
 			<p>{pkg.description}</p>
 			<ul class="row">
-				{#each pkg.keywords as keyword}
+				{#each pkg.keywords as keyword (keyword)}
 					<li class="">
 						<a
 							class="btn fg-dark bg-bright hov-link hov-invert"
@@ -74,5 +74,6 @@
 		margin: 0.5rem;
 		max-width: 30rem;
 		flex-wrap: wrap;
+		gap: 0 0.5rem;
 	}
 </style>

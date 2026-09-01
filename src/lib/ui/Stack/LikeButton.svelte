@@ -14,7 +14,11 @@
 		stack,
 	}: {
 		// user?: User;
-		stack: Stack & { liked?: boolean; likes?: number; author: User };
+		stack: Omit<Stack, 'author'> & {
+			liked?: boolean;
+			likes?: number;
+			author: User;
+		};
 	} = $props();
 
 	// const updates = [

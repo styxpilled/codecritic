@@ -2,6 +2,7 @@
 	import { getRecentStacks } from '$api/stacks.remote';
 	import Icon from '$ui/Icon.svelte';
 	import List from '$ui/List.svelte';
+	import Masonry from '$ui/Masonry.svelte';
 	import Card from '$ui/Stack/Card.svelte';
 
 	const recentStacksPromise = $derived(getRecentStacks({ limit: 18 }));
@@ -20,13 +21,15 @@
 	</h3>
 </div>
 
-<List columns={3}>
+<List columns={1}>
 	{#snippet head()}
 		<span>recent stacks</span>
 	{/snippet}
-	{#each recentStacks as stack (stack.id)}
-		<Card {stack} />
-	{/each}
+	<Masonry items={recentStacks} columns={3}>
+		{#snippet item(stack)}
+			<Card {stack} />
+		{/snippet}
+	</Masonry>
 </List>
 
 <style>

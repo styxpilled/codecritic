@@ -2,14 +2,13 @@
 	import { COLORS, optSubpath } from '$lib';
 	import type { Stack, User } from '$lib/server/db/schema';
 	import Avatar from '$ui/Avatar.svelte';
-	// import Avatar from '$ui/Avatar.svelte';
 	import LikeButton from './LikeButton.svelte';
 
 	let {
 		stack,
 		max = 6,
 	}: {
-		stack: Stack & {
+		stack: Omit<Stack, 'author'> & {
 			likes?: number;
 			liked?: boolean;
 			author: User;
@@ -36,7 +35,7 @@
 <article class="stack btn bg-light col">
 	<h3 class="row">
 		<Avatar user={stack.author} size="sm" />
-		<a class="fg-orange hov-line" {href}>{stack.name}</a>
+		<a class="name fg-orange hov-line" {href}>{stack.name}</a>
 	</h3>
 	{#if stack.description}
 		<p class="description fg-darker">{stack.description}</p>
@@ -92,7 +91,7 @@
 <style>
 	.stack {
 		width: 100%;
-		padding: 0.5rem 0.75rem;
+		padding: 0.75rem;
 		gap: 0.375rem;
 		align-items: stretch;
 		height: min-content;
