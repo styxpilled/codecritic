@@ -79,27 +79,27 @@
 	}
 
 	.xs {
-		height: 1.5rem;
-		width: 1.5rem;
+		min-height: 1.5rem;
+		min-width: 1.5rem;
 	}
 
 	.sm {
-		height: 2rem;
-		width: 2rem;
+		min-height: 2rem;
+		min-width: 2rem;
 	}
 
 	.md {
-		height: 3rem;
-		width: 3rem;
+		min-height: 3rem;
+		min-width: 3rem;
 	}
 
 	.lg {
-		height: 4rem;
-		width: 4rem;
+		min-height: 4rem;
+		min-width: 4rem;
 	}
 
 	.xl {
-		height: 8rem;
-		width: 8rem;
+		min-height: 8rem;
+		min-width: 8rem;
 	}
 </style>

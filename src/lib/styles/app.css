@@ -139,7 +139,7 @@ a.link {
 }
 
 .self-end {
-  align-self: flex-end;
+	align-self: flex-end;
 }
 
 .space {
@@ -157,6 +157,13 @@ a.link {
 .pointer {
 	cursor: pointer;
 }
+
+/* .hide-spaces {
+	font-size: 0;
+	& > * {
+		font-size: 1rem;
+	}
+} */
 
 select,
 input,

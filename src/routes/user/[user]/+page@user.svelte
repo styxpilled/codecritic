@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getUserReviews } from '$api/reviews.remote.js';
-	import { follow, getProfile, unfollow } from '$api/user.remote.js';
+	import { getProfile } from '$api/user.remote.js';
 	import { app } from '$lib/client/state.svelte.js';
 	import Avatar from '$ui/Avatar.svelte';
 	import FollowButton from '$ui/FollowButton.svelte';

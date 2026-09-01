@@ -1,24 +1,24 @@
 <script lang="ts">
 	import { COLORS, optSubpath } from '$lib';
-	import type { User } from '$lib/server/db/schema';
+	import type { Stack, User } from '$lib/server/db/schema';
 	import Avatar from '$ui/Avatar.svelte';
+	// import Avatar from '$ui/Avatar.svelte';
 	import LikeButton from './LikeButton.svelte';
 
-	type Stack = {
-		id: number;
-		author: User;
-		name: string;
-		normalizedName: string;
-		description: string;
-		createdAt: Date;
-		index: number | null;
-		packages: string[];
-		tags: string[];
-		likes?: number;
-		liked?: boolean;
-	};
-
-	let { stack, max = 6 }: { stack: Stack; max?: number } = $props();
+	let {
+		stack,
+		max = 6,
+	}: {
+		stack: Stack & {
+			likes?: number;
+			liked?: boolean;
+			author: User;
+			index: number | null;
+			packages: string[];
+			tags: string[];
+		};
+		max?: number;
+	} = $props();
 
 	const color = (value: string) =>
 		COLORS[
@@ -29,16 +29,15 @@
 	const href = $derived(
 		`/user/${stack.author.username}/stack/${stack.normalizedName}/${optSubpath(stack.index)}`
 	);
-	const shown = $derived(stack.packages.slice(0, max));
+	const shown = $derived(stack.packages.slice(0, max).filter((v) => v));
 	const rest = $derived(stack.packages.length - shown.length);
 </script>
 
 <article class="stack btn bg-light col">
-	<span class="row space">
-    <h3>
-      <a class="fg-orange hov-line" {href}>{stack.name}</a>
-    </h3>
-  </span>
+	<h3 class="row">
+		<Avatar user={stack.author} size="sm" />
+		<a class="fg-orange hov-line" {href}>{stack.name}</a>
+	</h3>
 	{#if stack.description}
 		<p class="description fg-darker">{stack.description}</p>
 	{/if}
@@ -51,35 +50,42 @@
 			{/each}
 		</ul>
 	{/if}
-	<ul class="chips row wrap">
-		{#each shown as pkg, i (i)}
-			<li>
-				<a class="chip bg-{color(pkg)} hov-invert" href="/packages/{pkg}">
-					{pkg}
-				</a>
-			</li>
-		{/each}
-		{#if rest > 0}
-			<li>
-				<a class="chip fg-dark bg-bright hov-link" {href}>+{rest} more</a>
-			</li>
-		{:else if shown.length === 0}
-			<li class="fg-dark">No packages yet</li>
-		{/if}
-	</ul>
+	{#if shown.length !== 0}
+		<ul class="chips row wrap">
+			{#each shown as pkg, i (i)}
+				<li>
+					<a class="chip bg-{color(pkg)} hov-invert" href="/packages/{pkg}">
+						{pkg}
+					</a>
+				</li>
+			{/each}
+			{#if rest > 0}
+				<li>
+					<a class="chip fg-dark bg-bright hov-link" {href}>+{rest} more</a>
+				</li>
+			{/if}
+		</ul>
+	{:else if shown.length === 0}
+		<p class="fg-dark">No packages yet</p>
+	{/if}
 	<div class="foot row space">
-		<LikeButton {stack} href="{href}likes" />
-    <span class="row nogap">
-      <a class="author fg-red hov-line row gap-sm" href="/user/{stack.author.username}">
-          {#if stack.author.nickname}
-            {stack.author.nickname} ({stack.author.username})
-          {:else}
-            {stack.author.username}
-          {/if}
-      </a>
-      <span class="fg-dark">@</span>
-          <span class="fg-yellow">{stack.createdAt.toLocaleDateString('en-GB')}</span>
-    </span>
+		<LikeButton {stack} />
+		<span class="row nogap">
+			<a
+				class="author fg-red hov-line row gap-sm"
+				href="/user/{stack.author.username}"
+			>
+				{#if stack.author.nickname}
+					{stack.author.nickname} ({stack.author.username})
+				{:else}
+					{stack.author.username}
+				{/if}
+			</a>
+			<span class="fg-dark">@</span>
+			<span class="fg-green">
+				{stack.createdAt.toLocaleDateString('en-GB')}
+			</span>
+		</span>
 	</div>
 </article>
 
@@ -89,7 +95,9 @@
 		padding: 0.5rem 0.75rem;
 		gap: 0.375rem;
 		align-items: stretch;
-    height: min-content;
+		height: min-content;
+		overflow: hidden;
+		min-width: 0;
 	}
 
 	h3 {
@@ -97,7 +105,6 @@
 		margin: 0;
 	}
 
-	h3 a,
 	.author {
 		max-width: 100%;
 		overflow: hidden;
@@ -105,11 +112,9 @@
 		text-overflow: ellipsis;
 	}
 
-	.author {
-		width: max-content;
-	}
-
 	.description {
+		max-width: 100%;
+		word-break: break-all;
 		display: -webkit-box;
 		-webkit-box-orient: vertical;
 		-webkit-line-clamp: 3;
@@ -130,8 +135,6 @@
 	}
 
 	.foot {
-		/* margin-top: auto; */
-		padding-top: 0.25rem;
 		font-size: 0.875rem;
 	}
 </style>

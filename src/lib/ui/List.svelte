@@ -52,8 +52,9 @@
 		grid-template-columns: repeat(var(--columns, 3), 1fr);
 		gap: var(--gap, 0.5rem);
 		width: 100%;
-		@media (width <=950px) {
-			grid-template-columns: repeat(calc(var(--columns, 3) / 3), 1fr);
+		@media (width <= 950px) {
+			grid-template-columns: repeat(max(calc(var(--columns, 3) / 3), 1), 1fr);
+			grid-template-columns: 1fr;
 		}
 	}
 

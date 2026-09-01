@@ -1,66 +1,44 @@
 <script lang="ts">
-	import { likeStack, unlikeStack } from '$api/stacks.remote';
-	import { app } from '$lib/client/state.svelte';
+	import {
+		// getReview,
+		// getUserReviews,
+		likeStack,
+		unlikeStack,
+	} from '$api/stacks.remote';
+	import { optSubpath } from '$lib';
+	import type { Stack, User } from '$lib/server/db/schema';
+	import LikeButton from '$ui/shared/LikeButton.svelte';
 
 	let {
+		// user,
 		stack,
-		href,
 	}: {
-		stack: {
-			id: number;
-			author: { id: number };
-			liked?: boolean;
-			likes?: number;
-		};
-		/** Link to the "who liked this" page. Without it the count is plain text. */
-		href?: string;
+		// user?: User;
+		stack: Stack & { liked?: boolean; likes?: number; author: User };
 	} = $props();
 
-	const likes = $derived(stack.likes ?? 0);
+	// const updates = [
+	// getReview({ id: review.id, type: 'id' }).withOverride((reviews) => {
+	// 	reviews.liked = !review.liked;
+	// 	reviews.likes = likes + (review.liked ? 1 : -1);
+	// 	return reviews;
+	// }),
+	// getUserReviews({ username: 'lockfilelover', limit: 5 }).withOverride(
+	// 	(reviews) => {
+	// 		const i = reviews.findIndex((r) => r.id === obj.id);
+	// 		reviews[i].liked = !obj.liked;
+	// 		reviews[i].likes = likes + (obj.liked ? 1 : -1);
+	// 		return reviews;
+	// 	}
+	// ),
+	// ];
 </script>
 
-<div class="row gap-sm">
-	{#if !app.user}
-		<a href="/login/github" class="fg-dark hov-light">Log in to like</a>
-	{:else if app.user.id !== stack.author.id}
-		<form
-			{...(stack.liked ? unlikeStack : likeStack)
-				.for(stack.id)
-				.enhance(async ({ submit }) => {
-					await submit();
-					stack.liked = !stack.liked;
-					stack.likes = likes + (stack.liked ? 1 : -1);
-				})}
-		>
-			<input
-				class="hidden"
-				{...(stack.liked ? unlikeStack : likeStack).fields.id.as('number')}
-				value={stack.id}
-			/>
-			{#if stack.liked}
-				<button class="fg-dark hov-light" type="submit">
-					<span class="fg-red">❤︎</span>
-					 Liked
-				</button>
-			{:else}
-				<button class="fg-dark hov-light" type="submit">
-					<span>❤︎</span>
-					 Like
-				</button>
-			{/if}
-		</form>
-	{/if}
-	{#if likes}
-		{#if href}
-			<a {href} class="fg-dark hov-line">
-				{likes}
-				{likes === 1 ? 'like' : 'likes'}
-			</a>
-		{:else}
-			<span class="fg-dark">
-				{likes}
-				{likes === 1 ? 'like' : 'likes'}
-			</span>
-		{/if}
-	{/if}
-</div>
+<LikeButton
+	obj={stack}
+	like={likeStack}
+	unlike={unlikeStack}
+	authorID={stack.author.id}
+	href="/user/${stack.author
+		.username}/stack/${stack.normalizedName}/${optSubpath(stack.index)}likes"
+/>

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { likeReview, unlikeReview } from '$api/reviews.remote';
 	import { optSubpath } from '$lib';
 	import { app } from '$lib/client/state.svelte';
 	import type { Review, User } from '$lib/server/db/schema';
 	import Avatar from './Avatar.svelte';
+	import LikeButton from './Review/LikeButton.svelte';
 	import Rating from './Review/Rating.svelte';
 
 	let {
@@ -30,93 +30,67 @@
 </script>
 
 <div class="review btn bg-light" class:small class:truncate>
-	<h4 class="fg-orange row space" style:font-size={headingFontSize ? `${headingFontSize}rem` : undefined}>
-		<span class="row">
-      {#if (showUser || heading === 'username') && user}
-        <a href="/user/{user.username}" class="row" title={user.username}>
-          <Avatar {user} {size} />
-        </a>
-        {#if heading === 'username'}
-          <a
-            href="/user/{user.username}/package/{review.packageID}/{optSubpath(review.index)}"
-            class="fg-red hov-line"
-          >
-            {#if user.nickname}
-              {user.nickname} ({user.username})
-            {:else}
-              {user.username}
-            {/if}
-          </a>
-        {/if}
-      {/if}
-      {#if !small}
-        {#if full}
-          <a href="/packages/{review.packageID}" class="hov-line">
-            {review.packageID}
-          </a>
-        {:else if user}
-          <a
-            href="/user/{user.username}/package/{review.packageID}/{optSubpath(review.index)}"
-            class="hov-line"
-                style="max-height: 1lh; white-space: nowrap;"
-          >
-            {review.packageID}
-          </a>
-        {:else}
-          <a href="/review/{review.id}">{review.packageID}</a>
-        {/if}
-      {/if}
-    </span>
+	<h4
+		class="fg-orange row space start"
+		style:font-size={headingFontSize ? `${headingFontSize}rem` : undefined}
+	>
+		<span class="row review-title">
+			{#if (showUser || heading === 'username') && user}
+				<a href="/user/{user.username}" class="row" title={user.username}>
+					<Avatar {user} {size} />
+				</a>
+				{#if heading === 'username'}
+					<a
+						href="/user/{user.username}/package/{review.packageID}/{optSubpath(
+							review.index
+						)}"
+						class="fg-red hov-line"
+					>
+						{#if user.nickname}
+							{user.nickname} ({user.username})
+						{:else}
+							{user.username}
+						{/if}
+					</a>
+				{/if}
+			{/if}
+			{#if !small}
+				{#if full}
+					<a href="/packages/{review.packageID}" class="hov-line">
+						{review.packageID}
+					</a>
+				{:else if user}
+					<a
+						href="/user/{user.username}/package/{review.packageID}/{optSubpath(
+							review.index
+						)}"
+						class="hov-line"
+						style="max-height: 1lh; white-space: nowrap;"
+					>
+						{review.packageID}
+					</a>
+				{:else}
+					<a href="/review/{review.id}">{review.packageID}</a>
+				{/if}
+			{/if}
+		</span>
 		<Rating rating={review.rating} />
 	</h4>
-	<p>
-  {#if heading === 'package' && user && showUser}
-      <a href="/user/{user.username}" class="fg-red hov-line">{user?.username}</a>
-    {/if}<span class="fg-dark">^</span><span class="fg-purple">{review.version}</span><span class="fg-dark">@</span><span class="fg-yellow">{review.createdAt.toLocaleDateString('en-GB')}</span>
-	</p>
-	<p class="content">{review.content}</p>
-	<div class="row">
-		{#if !app.user}
-			<a href="/login/github" class="fg-dark">Log in to like</a>
-		{:else if app.user.id !== review.authorID}
-			<form
-				{...(review.liked ? unlikeReview : likeReview)
-					.for(review.id)
-					.enhance(async ({ submit }) => {
-						await submit();
-						review.liked = !review.liked;
-					})}
-			>
-				<input
-					class="hidden"
-					{...(review.liked ? unlikeReview : likeReview).fields.id.as('number')}
-					value={review.id}
-				/>
-				{#if review.liked}
-					<button class="fg-dark hov-light" type="submit">
-						<span class="fg-red">❤︎</span> Liked
-					</button>
-				{:else}
-					<button class="fg-dark hov-light" type="submit">
-						<span>❤︎</span> Like
-					</button>
-				{/if}
-			</form>
-		{/if}
-		{#if review.likes}
-			{@const url = user
-				? `/user/${user.username}/package/${review.packageID}/${optSubpath(review.index)}likes`
-				: `"/review/${review.id}"`}
-			<a href={url} class="fg-dark hov-line">
-				{review.likes}
-				{#if review.likes === 1}
-					like
-				{:else}
-					likes
-				{/if}
+	<p class="row nogap">
+		{#if heading === 'package' && user && showUser}
+			<a href="/user/{user.username}" class="fg-red hov-line">
+				{user?.username}
 			</a>
 		{/if}
-	</div>
+		<span class="fg-dark">^</span>
+		<span class="fg-purple">{review.version}</span>
+		<span class="fg-dark">@</span>
+		<span class="fg-green">
+			{review.createdAt.toLocaleDateString('en-GB')}
+		</span>
+	</p>
+	<p class="content">{review.content}</p>
+	<LikeButton {review} {user} />
 	{#if app.user && app.user.id === review.authorID}
 		<a
 			href="/packages/{review.packageID}/review/{review.index}/edit"
@@ -130,13 +104,16 @@
 <style>
 	.review {
 		padding: 0.75rem 1rem;
-		width: 40rem;
-		width: 100%;
-    position: relative;
+		/* width: 40rem; */
+		/* width: 100%; */
+		/* position: relative; */
 		/* margin-bottom: 1rem; */
-
-		@media (width <=950px) {
-			width: 100%;
+		/* Necessary for shrinking on mobile */
+		overflow: hidden;
+		/* min-width: 0; */
+		@media (width <= 950px) {
+			/* width: 100%; */
+			/* max-width: 80vw; */
 		}
 		&.small {
 			width: 100%;
@@ -148,11 +125,16 @@
 
 	h4 {
 		font-size: 1.5rem;
+
+		.review-title {
+			max-width: 80%;
+			overflow: hidden;
+			& > .hov-line {
+				margin-top: -2px;
+			}
+		}
 	}
 
-	/* input.hidden {
-		display: none !important;
-	} */
 	.edit-btn {
 		position: absolute;
 		bottom: 0.75rem;

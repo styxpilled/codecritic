@@ -7,6 +7,18 @@ The UI is a cross between Letterboxd and the One Dark Pro editor theme.
 `src/lib/styles/colors.css` holds the palette. The colors are One Dark Pro
 terminal colors. Backgrounds go from `--color-bg` to `--color-bg-brightest`.
 
+Colors can carry sematic meaning:
+
+| Color  | Meaning                 |
+| ------ | ----------------------- |
+| Red    | Usernames               |
+| Blue   | Packages, Ratings, Tags |
+| Purple | Versions                |
+| Green  | Dates                   |
+| Yellow | Constants               |
+| Orange | Reviews                 |
+| Cyan   | Licenses                |
+
 ### The fg/bg pair
 
 Colored elements do not set `color` or `background-color` directly. They set the

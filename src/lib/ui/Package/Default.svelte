@@ -15,7 +15,11 @@
 </script>
 
 <div class="pkg">
-	<h3><a class="fg-blue hov-line semibold" href="/packages/{pkg.name}">{pkg.name}</a></h3>
+	<h3>
+		<a class="fg-blue hov-line semibold" href="/packages/{pkg.name}">
+			{pkg.name}
+		</a>
+	</h3>
 	<div class="details">
 		<p class="description">
 			<a tabindex="-1" href="/packages/{pkg.name}">{pkg.description}</a>
@@ -37,13 +41,21 @@
 	</div>
 	<p class="meta row space">
 		{#if pkg.latest}
-			<span><span class="fg-yellow">@latest</span> <span class="fg-green">{pkg.latest}</span></span>
+			<span class="row nogap">
+				<span class="fg-yellow">@latest</span>
+				<span class="fg-dark">^</span>
+				<span class="fg-purple">{pkg.latest}</span>
+			</span>
 		{/if}
 		{#if pkg.license}
-			<span class="hoverable">
-				<Icon size="1em" id="scale" />
+			<span class="license">
+				<span class="license-icon">
+					<Icon size="1em" id="scale" />
+				</span>
+				<span class="license-info fg-cyan">
+					{pkg.license}
+				</span>
 			</span>
-			<span class="hoverable-content hoverable-top">{pkg.license}</span>
 		{/if}
 	</p>
 </div>
@@ -102,7 +114,23 @@
 
 	.keyword {
 		word-break: keep-all;
+		white-space: pre;
 		border-radius: 0.25rem;
 		padding: 0 0.25rem;
+	}
+
+	.license {
+		& > .license-info {
+			display: none;
+			user-select: none;
+		}
+		&:hover {
+			& > .license-info {
+				display: inline;
+			}
+			& > .license-icon {
+				display: none;
+			}
+		}
 	}
 </style>

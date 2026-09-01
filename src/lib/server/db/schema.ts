@@ -5,12 +5,14 @@ import {
 	integer,
 	blob,
 	primaryKey,
+	unique,
 } from 'drizzle-orm/sqlite-core';
 
 export type User = InferSelectModel<typeof users>;
 export type Profile = InferSelectModel<typeof profiles>;
 export type Session = InferSelectModel<typeof sessions>;
 export type Review = InferSelectModel<typeof reviews>;
+export type Stack = InferSelectModel<typeof stacks>;
 export type _PackageDB = InferSelectModel<typeof packages>;
 export type Package = Expand<
 	Omit<_PackageDB, 'expires'> & {
@@ -175,18 +177,22 @@ export const reviewsRelations = relations(reviews, ({ one, many }) => ({
 	likes: many(likesReviews),
 }));
 
-export const likesReviews = sqliteTable('likes_reviews', {
-	userID: integer('user_id')
-		.notNull()
-		.references(() => users.id, {
+export const likesReviews = sqliteTable(
+	'likes_reviews',
+	{
+		userID: integer('user_id')
+			.notNull()
+			.references(() => users.id, {
+				onDelete: 'cascade',
+				onUpdate: 'cascade',
+			}),
+		reviewID: integer('review_id').references(() => reviews.id, {
 			onDelete: 'cascade',
 			onUpdate: 'cascade',
 		}),
-	reviewID: integer('review_id').references(() => reviews.id, {
-		onDelete: 'cascade',
-		onUpdate: 'cascade',
-	}),
-});
+	},
+	(t) => [unique().on(t.userID, t.reviewID)]
+);
 
 export const stacks = sqliteTable('stacks', {
 	id: integer().primaryKey(),
@@ -224,18 +230,22 @@ export const stacksTags = sqliteTable('stacks_tags', {
 	tag: text().notNull(),
 });
 
-export const stacksLikes = sqliteTable('stacks_likes', {
-	userID: integer('user_id')
-		.notNull()
-		.references(() => users.id, {
+export const stacksLikes = sqliteTable(
+	'stacks_likes',
+	{
+		userID: integer('user_id')
+			.notNull()
+			.references(() => users.id, {
+				onDelete: 'cascade',
+				onUpdate: 'cascade',
+			}),
+		stackID: integer('stack_id').references(() => stacks.id, {
 			onDelete: 'cascade',
 			onUpdate: 'cascade',
 		}),
-	stackID: integer('stack_id').references(() => stacks.id, {
-		onDelete: 'cascade',
-		onUpdate: 'cascade',
-	}),
-});
+	},
+	(t) => [unique().on(t.userID, t.stackID)]
+);
 
 export const stacksRelations = relations(stacks, ({ many, one }) => ({
 	stacksToUsers: one(users, {
