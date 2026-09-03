@@ -1,5 +1,4 @@
 <script lang="ts">
-	// @ts-expect-error font
 	import '@fontsource-variable/inter';
 	import { app } from '$lib/client/state.svelte';
 	import { dev } from '$app/environment';
@@ -19,7 +18,9 @@
 
 <svelte:head>
 	<link rel="icon" href={favicon} />
-	<title>{dev ? 'DEV' : 'codecritic'} · Social node package manager package discovery</title>
+	<title>
+		{dev ? 'DEV' : 'codecritic'} · Social node package manager package discovery
+	</title>
 	<meta name="darkreader-lock" />
 </svelte:head>
 
@@ -38,6 +39,15 @@
 			oklab(from var(--color-bg) calc(l * 0.9) a b),
 			var(--color-bg) 400px
 		);
+	}
+
+	@media (prefers-color-scheme: light) {
+		#root {
+			background: linear-gradient(
+				oklab(from var(--color-bg) calc(l * 0.925) a b),
+				var(--color-bg) 400px
+			);
+		}
 	}
 
 	#main {

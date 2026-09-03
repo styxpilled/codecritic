@@ -1,31 +1,3 @@
-/* @media (prefers-color-scheme: light) {
-	:root {
-		--color-bg: hsl(200, 6%, 10%);
-		--color-bg: hsl(0, 0%, 98%);
-		--color-bg-bright: hsl(216, 13%, 15%);
-		--color-bg-bright: hsl(0, 0%, 95%);
-		--color-bg-brighter: hsl(220, 13%, 18%);
-		--color-bg-brighter: hsl(0, 0%, 92%);
-		--color-bg-brightest: hsl(221, 16%, 30%);
-		--color-bg-brightest: hsl(0, 0%, 85%);
-
-		--color-text: hsl(228, 8%, 24%);
-		--color-text-darker: hsl(228, 8%, 30%);
-		--color-text-dark: hsl(228, 8%, 40%);
-
-		--fg: var(--color-text);
-
-		--color-red: rgb(228, 86, 73);
-		--color-orange: rgb(152, 104, 1);
-		--color-yellow: rgb(193, 132, 1);
-		--color-green: rgb(80, 161, 79);
-		--color-cyan: rgb(1, 132, 187);
-		--color-blue: rgb(64, 120, 242);
-		--color-purple: #a626a4;
-		--c: #c18401;
-	}
-} */
-
 :root {
 	--color-bg: #181a1b;
 	--color-bg-bright: #21252b;
@@ -34,6 +6,7 @@
 
 	--color-text: #dcdfe4;
 	--color-text-darker: hsl(220, 13%, 80%);
+	--color-text-semidark: hsl(219, 14%, 71%);
 	--color-text-dark: hsl(220, 13%, 55%);
 
 	--fg: var(--color-text);
@@ -50,6 +23,36 @@
 
 *::selection {
 	background-color: var(--color-bg-brightest);
+}
+
+@media (prefers-color-scheme: light) {
+	:root {
+		--color-bg: hsl(0, 0%, 98%);
+		--color-bg-bright: hsl(0, 0%, 95%);
+		--color-bg-brighter: hsl(0, 0%, 92%);
+		--color-bg-brightest: hsl(218, 13%, 72%);
+		/* --color-bg-brightest: hsl(0, 0%, 85%); */
+
+		--color-text: hsl(228, 8%, 28%);
+		--color-text-darker: hsl(228, 8%, 30%);
+		--color-text-semidark: hsl(228, 8%, 35%);
+		--color-text-dark: hsl(228, 8%, 40%);
+		--color-text-dark: hsl(230, 10%, 65%);
+
+		--fg: var(--color-text);
+
+		--color-red: rgb(228, 86, 73);
+		--color-orange: #d46f1b;
+		--color-yellow: rgb(205, 149, 28);
+		--color-green: rgb(80, 161, 79);
+		--color-cyan: rgb(1, 132, 187);
+		--color-blue: rgb(64, 120, 242);
+		--color-purple: #a626a4;
+	}
+
+	*::selection {
+		background-color: oklab(from var(--color-bg-brighter) calc(l * 0.925) a b);
+	}
 }
 
 *[class*='fg-'],
