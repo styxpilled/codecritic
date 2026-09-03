@@ -1,18 +1,27 @@
-// Seeds the local D1 database with users, popular npm packages and stacks.
+// Seeds the D1 database with users, popular npm packages and stacks.
 //
-//   node scripts/seed.js              seed
+//   node scripts/seed.js              seed the local database
+//   node scripts/seed.js --sql        write scripts/seed.sql instead
 //   node scripts/seed.js --reset      remove seeded data, then stop
 //   node scripts/seed.js --packages=40
 //
-// Seeded users get a negative github_id. GitHub only issues positive ids, so
-// this cannot collide with a real account. The script removes those users, and
-// everything that cascades from them, before it seeds. Real users, real
+// Seeded rows use negative ids. SQLite accepts them for an INTEGER PRIMARY
+// KEY, real rows keep their positive ids, and rowid allocation stays
+// untouched. GitHub only issues positive account ids, so the seeded users
+// cannot collide with a real account either. The script removes those rows,
+// and everything that cascades from them, before it seeds. Real users, real
 // packages and the package cache stay as they are.
-import { readdirSync } from 'node:fs';
+//
+// The script builds plain SQL text. It either runs that text against the
+// local miniflare database, or writes it to a file for:
+//
+//   wrangler d1 execute codecritic-d1 --remote --file=scripts/seed.sql
+import { readdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 
 const D1_DIR = '.wrangler/state/v3/d1/miniflare-D1DatabaseObject';
+const SQL_OUT = 'scripts/seed.sql';
 // Negative, so a real GitHub id can never match.
 const SEED_GITHUB_ID = -900000;
 const WEEK = 1000 * 60 * 60 * 24 * 7;
@@ -120,6 +129,7 @@ const STACK_TAGS = [
 
 const args = process.argv.slice(2);
 const reset = args.includes('--reset');
+const toFile = args.includes('--sql');
 const packageCount = Number(
 	args.find((a) => a.startsWith('--packages='))?.split('=')[1] ?? 30
 );
@@ -144,19 +154,23 @@ const normalizeName = (input) =>
 const someTimeInTheLastTwoMonths = () =>
 	Math.floor((Date.now() - random() * 60 * 24 * 60 * 60 * 1000) / 1000);
 
-function openDatabase() {
-	const file = readdirSync(D1_DIR).find(
-		(f) => f.endsWith('.sqlite') && f !== 'metadata.sqlite'
-	);
-	if (!file)
-		throw new Error(`No D1 database in ${D1_DIR}. Run the app once first.`);
-	return new DatabaseSync(join(D1_DIR, file));
-}
+// Every value reaches the database as a literal, so quoting is on us.
+const lit = (value) => {
+	if (value === null || value === undefined) return 'NULL';
+	if (typeof value === 'number') return String(value);
+	return `'${String(value).replaceAll("'", "''")}'`;
+};
 
-function clear(db) {
-	// Cascades remove the reviews, likes, follows, profiles and stacks.
-	const { changes } = db.prepare('DELETE FROM users WHERE github_id < 0').run();
-	return changes;
+const statements = [];
+const write = (sql, ...values) => {
+	let i = 0;
+	statements.push(sql.replaceAll('?', () => lit(values[i++])) + ';');
+};
+
+// Stacks hold no foreign key to their author, so they need their own delete.
+function clear() {
+	write('DELETE FROM stacks WHERE id < 0');
+	write('DELETE FROM users WHERE github_id < 0');
 }
 
 async function fetchPackages() {
@@ -175,32 +189,33 @@ async function fetchPackages() {
 	return [...found.values()].slice(0, packageCount);
 }
 
-function insertUsers(db) {
-	const user = db.prepare(
-		'INSERT INTO users (username, nickname, github_id) VALUES (?, ?, ?) RETURNING id'
-	);
-	const profile = db.prepare(
-		'INSERT INTO profiles (id, bio, url) VALUES (?, ?, ?)'
-	);
+function insertUsers() {
 	return USERS.map((u, i) => {
-		const { id } = user.get(u.username, u.nickname, SEED_GITHUB_ID - i);
-		profile.run(id, u.bio, `https://example.com/${u.username}`);
+		const id = -1 - i;
+		write(
+			'INSERT INTO users (id, username, nickname, github_id) VALUES (?, ?, ?, ?)',
+			id,
+			u.username,
+			u.nickname,
+			SEED_GITHUB_ID - i
+		);
+		write(
+			'INSERT INTO profiles (id, bio, url) VALUES (?, ?, ?)',
+			id,
+			u.bio,
+			`https://example.com/${u.username}`
+		);
 		return { ...u, id };
 	});
 }
 
-function insertPackages(db, packages) {
-	const pkg = db.prepare(
-		`INSERT OR IGNORE INTO packages
-		 (name, description, latest, next, license, repository, homepage, expires, modified)
-		 VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`
-	);
-	const keyword = db.prepare(
-		'INSERT INTO packages_keywords (name, keyword) VALUES (?, ?)'
-	);
+function insertPackages(packages) {
 	const expires = Math.floor((Date.now() + WEEK) / 1000);
 	for (const p of packages) {
-		const { changes } = pkg.run(
+		write(
+			`INSERT OR IGNORE INTO packages
+	(name, description, latest, next, license, repository, homepage, expires, modified)
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
 			p.name,
 			p.description ?? '',
 			p.version,
@@ -211,18 +226,24 @@ function insertPackages(db, packages) {
 			expires,
 			p.date ?? null
 		);
-		// Leave the keywords of a package that the app already cached.
-		if (changes === 0) continue;
-		for (const k of new Set(p.keywords ?? [])) keyword.run(p.name, k);
+		// Never duplicate a keyword that the app already cached.
+		for (const k of new Set(p.keywords ?? [])) {
+			write(
+				`INSERT INTO packages_keywords (name, keyword)
+	SELECT ?, ? WHERE NOT EXISTS
+	(SELECT 1 FROM packages_keywords WHERE name = ? AND keyword = ?)`,
+				p.name,
+				k,
+				p.name,
+				k
+			);
+		}
 	}
 }
 
-function insertReviews(db, users, packages) {
-	const review = db.prepare(
-		`INSERT INTO reviews (authorID, packageID, created_at, version, content, rating, "index")
-		 VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id`
-	);
+function insertReviews(users, packages) {
 	const ids = [];
+	let nextID = -1;
 	for (const user of users) {
 		const count = 3 + Math.floor(random() * 5);
 		const reviewed = new Set();
@@ -231,11 +252,14 @@ function insertReviews(db, users, packages) {
 			if (reviewed.has(pkg.name)) continue;
 			reviewed.add(pkg.name);
 			const content = [pick(OPENERS), pick(CLOSERS)].filter(Boolean).join(' ');
-			const createdAt = someTimeInTheLastTwoMonths();
-			const { id } = review.get(
+			const id = nextID--;
+			write(
+				`INSERT INTO reviews (id, authorID, packageID, created_at, version, content, rating, "index")
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+				id,
 				user.id,
 				pkg.name,
-				createdAt,
+				someTimeInTheLastTwoMonths(),
 				pkg.version,
 				content,
 				1 + Math.floor(random() * 10),
@@ -247,21 +271,11 @@ function insertReviews(db, users, packages) {
 	return ids;
 }
 
-function insertStacks(db, users, packages) {
-	const stack = db.prepare(
-		`INSERT INTO stacks
-		 (author, name, normalizedName, description, created_at, updated_at, "index")
-		 VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id`
-	);
-	const member = db.prepare(
-		'INSERT INTO stacks_packages (stack_id, package, position) VALUES (?, ?, ?)'
-	);
-	const tag = db.prepare(
-		'INSERT INTO stacks_tags (stack_id, tag) VALUES (?, ?)'
-	);
+function insertStacks(users, packages) {
 	// The index disambiguates two stacks of one author under the same slug.
 	const indexes = new Map();
 	const ids = [];
+	let nextID = -1;
 	for (const user of users) {
 		const total = 1 + upTo(3);
 		for (let i = 0; i < total; i++) {
@@ -271,7 +285,12 @@ function insertStacks(db, users, packages) {
 			const index = indexes.get(key) ?? 0;
 			indexes.set(key, index + 1);
 			const createdAt = someTimeInTheLastTwoMonths();
-			const { id } = stack.get(
+			const id = nextID--;
+			write(
+				`INSERT INTO stacks
+	(id, author, name, normalizedName, description, created_at, updated_at, "index")
+	VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+				id,
 				user.id,
 				name,
 				normalized,
@@ -284,12 +303,20 @@ function insertStacks(db, users, packages) {
 			const members = new Set();
 			const size = Math.min(3 + upTo(6), packages.length);
 			while (members.size < size) members.add(pick(packages).name);
-			[...members].forEach((pkg, position) => member.run(id, pkg, position));
+			[...members].forEach((pkg, position) =>
+				write(
+					'INSERT INTO stacks_packages (stack_id, package, position) VALUES (?, ?, ?)',
+					id,
+					pkg,
+					position
+				)
+			);
 
 			const tags = new Set();
 			const tagCount = Math.min(upTo(5), STACK_TAGS.length);
 			while (tags.size < tagCount) tags.add(pick(STACK_TAGS));
-			for (const t of tags) tag.run(id, t);
+			for (const t of tags)
+				write('INSERT INTO stacks_tags (stack_id, tag) VALUES (?, ?)', id, t);
 
 			ids.push({ id, authorID: user.id });
 		}
@@ -297,62 +324,92 @@ function insertStacks(db, users, packages) {
 	return ids;
 }
 
-function insertStackLikes(db, users, stacks) {
-	const like = db.prepare(
-		'INSERT OR IGNORE INTO stacks_likes (user_id, stack_id) VALUES (?, ?)'
-	);
+function insertStackLikes(users, stacks) {
 	let likes = 0;
 	for (const user of users) {
 		for (const stack of stacks) {
 			if (stack.authorID === user.id || random() > 0.35) continue;
-			likes += like.run(user.id, stack.id).changes;
+			write(
+				'INSERT OR IGNORE INTO stacks_likes (user_id, stack_id) VALUES (?, ?)',
+				user.id,
+				stack.id
+			);
+			likes++;
 		}
 	}
 	return likes;
 }
 
-function insertFollowsAndLikes(db, users, reviews) {
-	const follow = db.prepare(
-		'INSERT OR IGNORE INTO users_follows (user_id, following) VALUES (?, ?)'
-	);
-	const like = db.prepare(
-		'INSERT INTO likes_reviews (user_id, review_id) VALUES (?, ?)'
-	);
+function insertFollowsAndLikes(users, reviews) {
 	let follows = 0;
 	let likes = 0;
 	for (const user of users) {
 		for (const other of users) {
 			if (other.id === user.id || random() > 0.4) continue;
-			follows += follow.run(user.id, other.id).changes;
+			write(
+				'INSERT OR IGNORE INTO users_follows (user_id, following) VALUES (?, ?)',
+				user.id,
+				other.id
+			);
+			follows++;
 		}
 		for (const review of reviews) {
 			if (review.authorID === user.id || random() > 0.25) continue;
-			like.run(user.id, review.id);
+			write(
+				'INSERT INTO likes_reviews (user_id, review_id) VALUES (?, ?)',
+				user.id,
+				review.id
+			);
 			likes++;
 		}
 	}
 	return { follows, likes };
 }
 
-const db = openDatabase();
-const removed = clear(db);
-if (reset) {
-	console.log(
-		`Removed ${removed} seeded users and everything that hangs off them.`
+function runLocally(sql) {
+	const file = readdirSync(D1_DIR).find(
+		(f) => f.endsWith('.sqlite') && f !== 'metadata.sqlite'
 	);
-	process.exit(0);
+	if (!file)
+		throw new Error(`No D1 database in ${D1_DIR}. Run the app once first.`);
+	const db = new DatabaseSync(join(D1_DIR, file));
+	db.exec('PRAGMA foreign_keys = ON');
+	db.exec(sql);
+	db.close();
 }
 
-const packages = await fetchPackages();
-const users = insertUsers(db);
-insertPackages(db, packages);
-const reviews = insertReviews(db, users, packages);
-const stacks = insertStacks(db, users, packages);
-const { follows, likes } = insertFollowsAndLikes(db, users, reviews);
-const stackLikes = insertStackLikes(db, users, stacks);
+clear();
 
-console.log(
-	`Seeded ${users.length} users, ${packages.length} packages, ${reviews.length} reviews, ` +
+let summary;
+if (reset) {
+	summary = 'Removed the seeded users and stacks, and everything below them.';
+} else {
+	const packages = await fetchPackages();
+	const users = insertUsers();
+	insertPackages(packages);
+	const reviews = insertReviews(users, packages);
+	const stacks = insertStacks(users, packages);
+	const { follows, likes } = insertFollowsAndLikes(users, reviews);
+	const stackLikes = insertStackLikes(users, stacks);
+	summary =
+		`${users.length} users, ${packages.length} packages, ${reviews.length} reviews, ` +
 		`${stacks.length} stacks, ${follows} follows, ${likes} review likes and ` +
-		`${stackLikes} stack likes.`
-);
+		`${stackLikes} stack likes.`;
+}
+
+// D1 runs a remote file over HTTP, which refuses BEGIN and COMMIT. Every
+// statement is idempotent instead, so a re-run is safe.
+const sql = statements.join('\n') + '\n';
+
+if (toFile) {
+	writeFileSync(SQL_OUT, sql);
+	console.log(
+		`Wrote ${statements.length} statements to ${SQL_OUT}: ${summary}`
+	);
+	console.log(
+		`Apply with: wrangler d1 execute codecritic-d1 --remote --file=${SQL_OUT}`
+	);
+} else {
+	runLocally(sql);
+	console.log(`Seeded the local database: ${summary}`);
+}
