@@ -5,10 +5,12 @@
 		items,
 		item,
 		columns = 3,
+		rows,
 	}: {
 		items: T[];
 		item: Snippet<[T, number]>;
 		columns?: number;
+		rows?: number;
 	} = $props();
 
 	const grouped = $derived(
@@ -16,6 +18,7 @@
 			items
 				.map((value, index) => ({ value, index }))
 				.filter(({ index }) => index % columns === col)
+				.slice(0, rows)
 		)
 	);
 </script>
@@ -54,7 +57,6 @@
 		min-width: 0;
 	}
 
-	/* One column: the wrappers dissolve and `order` restores the source order. */
 	@media (width <= 950px) {
 		.masonry-col {
 			display: contents;

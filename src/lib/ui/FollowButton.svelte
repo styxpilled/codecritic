@@ -41,7 +41,7 @@
 		class:not-following={!_user.userFollows}
 		type="submit"
 	>
-		<span class="not-following btn bg-light">
+		<span class="not-following btn bg-light fg-dark">
 			{#if _user.followsUser}
 				Follows you
 			{:else}
@@ -61,6 +61,13 @@
 </form>
 
 <style>
+	:global(*):hover > form > .follow-btn,
+	:global(.header-fields) > form > .follow-btn {
+		.not-following {
+			opacity: 1;
+		}
+	}
+
 	.follow-btn {
 		height: 1.5rem;
 		width: 10rem;
@@ -70,7 +77,9 @@
 		span {
 			left: 0;
 			position: absolute;
-			transition: top 250ms ease-in-out;
+			transition:
+				top 250ms ease-in-out,
+				opacity 100ms ease-in-out;
 			width: 100%;
 			display: block;
 		}
@@ -89,7 +98,7 @@
 			top: 3rem;
 		}
 		.not-following {
-			top: -1.5rem;
+			opacity: 0;
 			top: 0rem;
 		}
 		&.not-following {

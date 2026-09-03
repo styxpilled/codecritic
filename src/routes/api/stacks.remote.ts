@@ -80,6 +80,17 @@ export const getRecentStacks = query(genericSchema, async ({ limit = 10 }) => {
 	return stacks;
 });
 
+export const getPopularStacks = query(genericSchema, async ({ limit = 10 }) => {
+	const { db, user } = getRequestEvent().locals;
+	const stacks = await db
+		.select(stackColumns(user?.id ?? -1))
+		.from($db.stacks)
+		.innerJoin($db.users, eq($db.stacks.author, $db.users.id))
+		.orderBy(desc(likeCount), desc($db.stacks.createdAt))
+		.limit(limit);
+	return stacks;
+});
+
 export const getUserStacks = query(v.string(), async (username) => {
 	const { db, user } = getRequestEvent().locals;
 	const stacks = await db

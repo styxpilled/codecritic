@@ -1,12 +1,18 @@
 <script lang="ts">
-	import { getRecentStacks } from '$api/stacks.remote';
+	import { getPopularStacks, getRecentStacks } from '$api/stacks.remote';
 	import Icon from '$ui/Icon.svelte';
 	import List from '$ui/List.svelte';
 	import Masonry from '$ui/Masonry.svelte';
 	import Card from '$ui/Stack/Card.svelte';
 
-	const recentStacksPromise = $derived(getRecentStacks({ limit: 18 }));
+	const COLUMNS = 3;
+	const ROWS = 3;
+	const LIMIT = COLUMNS * ROWS;
+
+	const recentStacksPromise = $derived(getRecentStacks({ limit: LIMIT }));
+	const popularStacksPromise = $derived(getPopularStacks({ limit: LIMIT }));
 	const recentStacks = $derived(await recentStacksPromise);
+	const popularStacks = $derived(await popularStacksPromise);
 </script>
 
 <div class="page col">
@@ -25,7 +31,18 @@
 	{#snippet head()}
 		<span>recent stacks</span>
 	{/snippet}
-	<Masonry items={recentStacks} columns={3}>
+	<Masonry items={recentStacks} columns={COLUMNS} rows={ROWS}>
+		{#snippet item(stack)}
+			<Card {stack} />
+		{/snippet}
+	</Masonry>
+</List>
+
+<List columns={1}>
+	{#snippet head()}
+		<span>popular stacks</span>
+	{/snippet}
+	<Masonry items={popularStacks} columns={COLUMNS} rows={ROWS}>
 		{#snippet item(stack)}
 			<Card {stack} />
 		{/snippet}
@@ -40,5 +57,17 @@
 
 	h3 a {
 		padding: 0.125rem 0.5rem;
+	}
+
+	@media (prefers-color-scheme: dark) {
+		.a {
+			display: none;
+		}
+	}
+
+	@media (prefers-color-scheme: light) {
+		.b {
+			display: none;
+		}
 	}
 </style>

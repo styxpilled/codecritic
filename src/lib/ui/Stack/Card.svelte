@@ -6,7 +6,7 @@
 
 	let {
 		stack,
-		max = 6,
+		lines = 2,
 	}: {
 		stack: Omit<Stack, 'author'> & {
 			likes?: number;
@@ -16,7 +16,8 @@
 			packages: string[];
 			tags: string[];
 		};
-		max?: number;
+		/** How many lines of chips each list gets. */
+		lines?: number;
 	} = $props();
 
 	const color = (value: string) =>
@@ -28,8 +29,30 @@
 	const href = $derived(
 		`/user/${stack.author.username}/stack/${stack.normalizedName}/${optSubpath(stack.index)}`
 	);
-	const shown = $derived(stack.packages.slice(0, max).filter((v) => v));
-	const rest = $derived(stack.packages.length - shown.length);
+
+	// A card is a third of the list, so a line of chips holds about this many
+	// characters. Counting them keeps the chips inside `lines` without JS.
+	const PER_LINE = 35;
+	// The width of a "+9 more" chip.
+	const MORE = 9;
+
+	/** The chips that fit in `lines` lines, and how many stay behind. */
+	const clip = (items: string[]) => {
+		const budget = PER_LINE * lines;
+		let used = 0;
+		const shown: string[] = [];
+		for (const [i, item] of items.entries()) {
+			// The padding and the gap of a chip cost about two characters.
+			const last = i === items.length - 1;
+			used += item.length + 2;
+			if (i > 0 && used > budget - (last ? 0 : MORE)) break;
+			shown.push(item);
+		}
+		return { shown, rest: items.length - shown.length };
+	};
+
+	const packages = $derived(clip(stack.packages.filter((v) => v)));
+	const tags = $derived(clip(stack.tags));
 </script>
 
 <article class="stack btn bg-light col">
@@ -40,31 +63,40 @@
 	{#if stack.description}
 		<p class="description fg-darker">{stack.description}</p>
 	{/if}
-	{#if stack.tags.length}
+	{#if tags.shown.length}
 		<ul class="chips row wrap">
-			{#each stack.tags as tag (tag)}
+			{#each tags.shown as tag (tag)}
 				<li>
 					<span class="chip fg-dark bg-bright hov-link hov-invert">#{tag}</span>
 				</li>
 			{/each}
+			{#if tags.rest > 0}
+				<li>
+					<a class="chip fg-dark bg-bright hov-link" {href}>
+						+{tags.rest} more
+					</a>
+				</li>
+			{/if}
 		</ul>
 	{/if}
-	{#if shown.length !== 0}
+	{#if packages.shown.length !== 0}
 		<ul class="chips row wrap">
-			{#each shown as pkg, i (i)}
+			{#each packages.shown as pkg, i (i)}
 				<li>
 					<a class="chip bg-{color(pkg)} hov-invert" href="/packages/{pkg}">
 						{pkg}
 					</a>
 				</li>
 			{/each}
-			{#if rest > 0}
+			{#if packages.rest > 0}
 				<li>
-					<a class="chip fg-dark bg-bright hov-link" {href}>+{rest} more</a>
+					<a class="chip fg-dark bg-bright hov-link" {href}>
+						+{packages.rest} more
+					</a>
 				</li>
 			{/if}
 		</ul>
-	{:else if shown.length === 0}
+	{:else}
 		<p class="fg-dark">No packages yet</p>
 	{/if}
 	<div class="foot row space">
@@ -74,11 +106,7 @@
 				class="author fg-red hov-line row gap-sm"
 				href="/user/{stack.author.username}"
 			>
-				{#if stack.author.nickname}
-					{stack.author.nickname} ({stack.author.username})
-				{:else}
-					{stack.author.username}
-				{/if}
+				{stack.author.username}
 			</a>
 			<span class="fg-dark">@</span>
 			<span class="fg-green">
@@ -102,6 +130,14 @@
 	h3 {
 		font-size: 1.125rem;
 		margin: 0;
+		min-width: 0;
+	}
+
+	.name {
+		min-width: 0;
+		/* The heading rules break every line mid-word. */
+		word-break: normal;
+		overflow-wrap: break-word;
 	}
 
 	.author {
@@ -113,7 +149,7 @@
 
 	.description {
 		max-width: 100%;
-		word-break: break-all;
+		overflow-wrap: break-word;
 		display: -webkit-box;
 		-webkit-box-orient: vertical;
 		-webkit-line-clamp: 3;
@@ -123,14 +159,24 @@
 
 	.chips {
 		gap: 0.25rem;
+		min-width: 0;
+	}
+
+	.chips li {
+		min-width: 0;
+		max-width: 100%;
 	}
 
 	.chip {
 		display: block;
+		max-width: 100%;
 		border-radius: 0.25rem;
 		padding: 0 0.25rem;
 		word-break: keep-all;
 		font-size: 0.875rem;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.foot {

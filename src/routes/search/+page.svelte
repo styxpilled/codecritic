@@ -9,20 +9,22 @@
 </script>
 
 <svelte:boundary>
-	<List>
-		{#snippet head()}
-			{#if results}
-				<h3>Showing matches for "{query}":</h3>
-			{:else}
-				<h3>Nothing here but chickens!</h3>
-			{/if}
-		{/snippet}
-		{#each results as pkg (pkg.name)}
-			<Package {pkg} />
-		{/each}
-		{#snippet foot()}
-			<span></span>
-			<a href="/search?{page.url.searchParams}" class="hov-link">Load more results</a>
-		{/snippet}
-	</List>
+	{#if results && results.length > 0}
+		<List>
+			{#snippet head()}
+				<h3 class="fg-dark">Showing matches for "{query}":</h3>
+			{/snippet}
+			{#each results as pkg (pkg.name)}
+				<Package {pkg} />
+			{/each}
+			{#snippet foot()}
+				<span></span>
+				<a href="/search?{page.url.searchParams}" class="hov-link">
+					Load more results
+				</a>
+			{/snippet}
+		</List>
+	{:else}
+		<h3 class="fg-dark">Nothing here but chickens!</h3>
+	{/if}
 </svelte:boundary>
