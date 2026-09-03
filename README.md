@@ -2,7 +2,7 @@
 
 ## structure
 
-There are three environments: dev, preview and remote. dev uses `local.db` (set in `env.DATABASE_URL`) and `@libsql/client`. preview uses `wrangler` to provide a cf/d1 platform context, and `remote` gets deployed on cloudflare pages.
+There are three environments: dev, preview and remote. dev and preview use `wrangler` to provide a cf/d1 platform context, and `remote` gets deployed on cloudflare pages.
 
 Because this is not a durable project, migrations are not included in the repo.
 

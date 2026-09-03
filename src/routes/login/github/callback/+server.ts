@@ -1,13 +1,19 @@
 // routes/login/github/callback/+server.ts
-import { OAuth2RequestError } from 'arctic';
+import { error } from '@sveltejs/kit';
+import { GitHub, OAuth2RequestError } from 'arctic';
 // import { $db, db } from '$db';
 import { eq } from 'drizzle-orm';
 import { dev } from '$app/environment';
-import { github } from '$lib/server/auth';
 import { createSession, setSessionTokenCookie } from '$lib/server/auth';
 import { $db } from '$lib/server/db';
 
-export async function GET({ cookies, url, fetch, locals }): Promise<Response> {
+export async function GET({
+	cookies,
+	url,
+	fetch,
+	locals,
+	platform,
+}): Promise<Response> {
 	const db = locals.db;
 	const code = url.searchParams.get('code');
 	const state = url.searchParams.get('state');
@@ -19,8 +25,15 @@ export async function GET({ cookies, url, fetch, locals }): Promise<Response> {
 		});
 	}
 
+	const GITHUB_CLIENT_ID = platform?.env.GITHUB_CLIENT_ID;
+	const GITHUB_CLIENT_SECRET = platform?.env.GITHUB_CLIENT_SECRET;
+	if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
+		throw error(500, 'CANNOT READ GITHUB SECRETS FROM ENVIRONMENT');
+	}
+	const gh = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, null);
+
 	try {
-		const tokens = await github.validateAuthorizationCode(code);
+		const tokens = await gh.validateAuthorizationCode(code);
 
 		const githubUserResponse = await fetch('https://api.github.com/user', {
 			headers: {

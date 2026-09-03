@@ -208,9 +208,9 @@ export const getReviewLikes = query(getReviewSchema, async (obj) => {
 
 export const likeReview = form(
 	v.object({
-		id: v.number(),
+		_id: v.number(),
 	}),
-	async ({ id }) => {
+	async ({ _id: id }) => {
 		const { db, user } = getRequestEvent().locals;
 		if (!user) error(401);
 		await db
@@ -225,9 +225,9 @@ export const likeReview = form(
 
 export const unlikeReview = form(
 	v.object({
-		id: v.number(),
+		_id: v.number(),
 	}),
-	async ({ id }) => {
+	async ({ _id: id }) => {
 		const { db, user } = getRequestEvent().locals;
 		if (!user) error(401);
 		await db

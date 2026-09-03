@@ -27,7 +27,7 @@
 	</h3>
 </div>
 
-<List columns={1}>
+<List columns={1} groupID="recent-stacks">
 	{#snippet head()}
 		<span>recent stacks</span>
 	{/snippet}
@@ -38,7 +38,7 @@
 	</Masonry>
 </List>
 
-<List columns={1}>
+<List columns={1} groupID="popular-stacks">
 	{#snippet head()}
 		<span>popular stacks</span>
 	{/snippet}
@@ -57,17 +57,5 @@
 
 	h3 a {
 		padding: 0.125rem 0.5rem;
-	}
-
-	@media (prefers-color-scheme: dark) {
-		.a {
-			display: none;
-		}
-	}
-
-	@media (prefers-color-scheme: light) {
-		.b {
-			display: none;
-		}
 	}
 </style>

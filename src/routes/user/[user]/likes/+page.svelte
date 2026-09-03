@@ -2,6 +2,7 @@
 	import { getLikedReviews } from '$api/reviews.remote';
 	import { getLikedStacks } from '$api/stacks.remote';
 	import List from '$ui/List.svelte';
+	import Masonry from '$ui/Masonry.svelte';
 	import Reviews from '$ui/Reviews.svelte';
 	import Card from '$ui/Stack/Card.svelte';
 
@@ -19,14 +20,24 @@
 	{/snippet}
 	{#each likedReviews as review (review.id)}
 		<Reviews {review} showUser={true} user={review.author} />
+	{:else}
+		<p class="fg-dark">Nothing yet!</p>
 	{/each}
 </List>
 
-<List>
+<List columns={1}>
 	{#snippet head()}
 		<span>stacks liked by {params.user}</span>
 	{/snippet}
-	{#each likedStacks as stack (stack.id)}
-		<Card {stack} />
-	{/each}
+	<Masonry items={likedStacks} columns={3} rows={3}>
+		{#snippet item(stack)}
+			<Card {stack} />
+		{/snippet}
+	</Masonry>
 </List>
+
+<style>
+	p {
+		padding-left: 2ch;
+	}
+</style>

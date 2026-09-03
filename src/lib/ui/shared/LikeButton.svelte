@@ -1,10 +1,11 @@
 <script lang="ts">
 	import type { RemoteForm, RemoteQueryUpdate } from '@sveltejs/kit';
+	import { getContext } from 'svelte';
 	import { app } from '$lib/client/state.svelte';
 
 	type Form = RemoteForm<
 		{
-			id: number;
+			_id: number;
 		},
 		void
 	>;
@@ -32,32 +33,32 @@
 
 	let likes = $derived(obj.likes ?? 0);
 	let liked = $derived(obj.liked ?? false);
+
+	const groupID = getContext<number | undefined>('group-id');
+	const key = groupID ? `${groupID}:${obj.id}` : obj.id;
 </script>
 
 <div class="row gap-sm">
 	{#if !app.user}
-		<a href="/login/github" class="fg-dark hov-light">Log in to like</a>
+		<a href="/login/github" class="fg-dark hov-light log-in">
+			<span>❤︎</span>
+			Like
+		</a>
 	{:else if app.user.id !== authorID}
+		{@const form = (obj.liked ? unlike : like).for(key)}
 		<form
-			{...(obj.liked ? unlike : like).for(obj.id).enhance(({ submit }) => {
-				liked = !obj.liked;
+			{...form.enhance(({ submit }) => {
+				liked = !liked;
 				likes = likes + (liked ? 1 : -1);
 				submit()
 					.updates(...(updates ?? []))
 					.catch(() => {
 						obj.liked = !obj.liked;
 						obj.likes = likes - (obj.liked ? 1 : -1);
-					})
-					.finally(() => {
-						console.log('after');
 					});
 			})}
 		>
-			<input
-				class="hidden"
-				{...(liked ? unlike : like).fields.id.as('number')}
-				value={obj.id}
-			/>
+			<input class="hidden" {...form.fields._id.as('number')} value={obj.id} />
 			{#if liked}
 				<button class="fg-dark hov-light" type="submit">
 					<span class="fg-red">❤︎</span>

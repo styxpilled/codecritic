@@ -9,8 +9,8 @@
 <header>
 	<section class="row space">
 		<h3 class="site-logo">
-			<a href="/">
-				<span class="logo">
+			<a href="/" class="row">
+				<span class="logo row nogap">
 					<span>★</span>
 					<span>★</span>
 					<span>_</span>

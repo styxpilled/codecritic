@@ -2,7 +2,6 @@
 	import { deleteStack, getStack } from '$api/stacks.remote';
 	import { optSubpath } from '$lib';
 	import { app } from '$lib/client/state.svelte';
-	import Avatar from '$ui/Avatar.svelte';
 	import LikeButton from '$ui/Stack/LikeButton.svelte';
 
 	let { params } = $props();
@@ -30,10 +29,10 @@
 	<header class="row space">
 		<h1>{stack.name}</h1>
 		{#if owner}
-			<div class="row gap-sm">
+			<div class="row gap">
 				<a
 					href="{url}edit"
-					class="btn bg-bright fg-dark hov-light upcase semibold"
+					class="btn bg-cyan fg-dark hov-light upcase semibold"
 				>
 					edit
 				</a>
@@ -57,30 +56,16 @@
 			</div>
 		{/if}
 	</header>
-
-	<a href="/user/{stack.author.username}" class="author row fg-dark">
-		<Avatar user={stack.author} size="sm" />
-		<span class="fg-red hov-line">
-			{#if stack.author.nickname}
-				{stack.author.nickname} ({stack.author.username})
-			{:else}
-				{stack.author.username}
-			{/if}
-		</span>
-	</a>
-
 	{#if stack.description}
 		<p class="description">{stack.description}</p>
 	{/if}
-
 	{#if stack.tags.length}
 		<ul class="tags row wrap">
 			{#each stack.tags as tag (tag)}
-				<li class="tag fg-dark bg-bright hov-link hov-invert">{tag}</li>
+				<li class="tag fg-dark bg-bright hov-link hov-invert">#{tag}</li>
 			{/each}
 		</ul>
 	{/if}
-
 	<p class="dates fg-dark">
 		<span class="fg-yellow">{stack.createdAt.toLocaleDateString('en-GB')}</span>
 		{#if stack.updatedAt && stack.updatedAt.getTime() !== stack.createdAt.getTime()}
@@ -90,8 +75,7 @@
 			</span>
 		{/if}
 	</p>
-
-	<LikeButton {stack} href="{url}likes" />
+	<LikeButton {stack} />
 </article>
 
 <ol class="packages col start nogap">

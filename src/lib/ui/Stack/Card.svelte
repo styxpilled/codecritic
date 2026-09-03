@@ -99,7 +99,7 @@
 	{:else}
 		<p class="fg-dark">No packages yet</p>
 	{/if}
-	<div class="foot row space">
+	<div class="foot row nogap space">
 		<LikeButton {stack} />
 		<span class="row nogap">
 			<a

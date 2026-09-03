@@ -1,5 +1,5 @@
 {
-	"name": "codecritic2",
+	"name": "codecritic",
 	"version": "2.0.1",
 	"private": true,
 	"type": "module",
@@ -13,13 +13,15 @@
 		"lint": "prettier --check . && eslint .",
 		"format": "prettier --write .",
 		"db:seed": "node scripts/seed.js",
+		"db:seed:sql": "node scripts/seed.js --sql",
 		"db:generate": "drizzle-kit generate",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
-		"cf:preview": "pnpm run build && wrangler dev",
+		"cf:preview": "pnpm run build && wrangler dev --env staging",
 		"cf:migrate": "wrangler d1 migrations apply codecritic-d1",
 		"cf:migrate-remote": "wrangler d1 migrations apply codecritic-d1 --remote",
-		"cf:deploy": "pnpm run build && wrangler deploy",
+		"cf:seed-remote": "pnpm run db:seed:sql && wrangler d1 execute codecritic-d1 --remote --file=scripts/seed.sql",
+		"cf:deploy": "pnpm run build && wrangler deploy --env prod",
 		"cf:typegen": "wrangler types && mv worker-configuration.d.ts src/"
 	},
 	"dependencies": {

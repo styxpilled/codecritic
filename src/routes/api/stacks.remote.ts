@@ -137,18 +137,21 @@ export const getStackLikes = query(getStackSchema, async (obj) => {
 	return users;
 });
 
-export const likeStack = form(v.object({ id: v.number() }), async ({ id }) => {
-	const { db, user } = getRequestEvent().locals;
-	if (!user) error(401);
-	await db
-		.insert($db.stacksLikes)
-		.values({ userID: user.id, stackID: id })
-		.onConflictDoNothing();
-});
+export const likeStack = form(
+	v.object({ _id: v.number() }),
+	async ({ _id: id }) => {
+		const { db, user } = getRequestEvent().locals;
+		if (!user) error(401);
+		await db
+			.insert($db.stacksLikes)
+			.values({ userID: user.id, stackID: id })
+			.onConflictDoNothing();
+	}
+);
 
 export const unlikeStack = form(
-	v.object({ id: v.number() }),
-	async ({ id }) => {
+	v.object({ _id: v.number() }),
+	async ({ _id: id }) => {
 		const { db, user } = getRequestEvent().locals;
 		if (!user) error(401);
 		await db

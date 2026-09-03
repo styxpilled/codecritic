@@ -16,7 +16,7 @@ routes that do not exist.
 | `/user/[user]/stack/...`                      | See `.scratch/stacks/`. |
 | `/user/[user]/reviews`                        | Done. Recent sort. |
 | `/user/[user]/reviews/popular`                | Done. Like count sort. |
-| `/user/[user]/stacks`                         | Missing, linked. |
+| `/user/[user]/stacks`                         | Done. |
 | `/user/[user]/mutuals`                        | Done. |
 | `/user/[user]/network`                        | Not a route. The nav link goes to `following`. |
 | `/user/[user]/stats`                          | Missing, linked. Long term. |

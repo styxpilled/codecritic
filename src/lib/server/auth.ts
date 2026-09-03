@@ -1,7 +1,5 @@
 import type { Cookies } from '@sveltejs/kit';
-import { GitHub } from 'arctic';
 import { eq, inArray, or } from 'drizzle-orm';
-import { GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET } from '$env/static/private';
 import { $db, type DrizzleClient } from './db';
 import {
 	likesReviews,
@@ -16,8 +14,6 @@ import {
 	type Session,
 	type User,
 } from './db/schema';
-
-export const github = new GitHub(GITHUB_CLIENT_ID, GITHUB_CLIENT_SECRET, null);
 
 export const getDays = (days: number) => 1000 * 60 * 60 * 24 * days;
 const SESSION_LIFESPAN = getDays(30);

@@ -1,6 +1,6 @@
 {
 	"$schema": "./node_modules/wrangler/config-schema.json",
-	"name": "codecritic2",
+	"name": "codecritic",
 	"main": ".svelte-kit/cloudflare/_worker.js",
 	"compatibility_date": "2026-03-30",
 	"compatibility_flags": ["nodejs_compat"],
@@ -9,11 +9,44 @@
 			"binding": "codecritic_d1",
 			"database_name": "codecritic-d1",
 			"database_id": "27a6d09d-2a20-455d-9278-95ffd4058bc2",
-			"migrations_dir": "./src/lib/server/db/migrations"
-		}
+			"migrations_dir": "./src/lib/server/db/migrations",
+		},
 	],
+	"routes": [
+		{
+			"pattern": "codecritic.styx.gay/*",
+			"zone_name": "styx.gay",
+		},
+	],
+	"env": {
+		"staging": {
+			"d1_databases": [
+				{
+					"binding": "codecritic_d1",
+					"database_name": "codecritic-d1",
+					"database_id": "27a6d09d-2a20-455d-9278-95ffd4058bc2",
+					"migrations_dir": "./src/lib/server/db/migrations",
+				},
+			],
+		},
+		"prod": {
+			"d1_databases": [
+				{
+					"binding": "codecritic_d1",
+					"database_name": "codecritic-d1",
+					"database_id": "27a6d09d-2a20-455d-9278-95ffd4058bc2",
+					"migrations_dir": "./src/lib/server/db/migrations",
+				},
+			],
+			"secrets": {
+				"required": ["GITHUB_CLIENT_ID", "GITHUB_CLIENT_SECRET"],
+			},
+		},
+	},
+	"workers_dev": true,
+	"preview_urls": false,
 	"assets": {
 		"binding": "ASSETS",
-		"directory": ".svelte-kit/cloudflare"
-	}
+		"directory": ".svelte-kit/cloudflare",
+	},
 }

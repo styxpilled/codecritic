@@ -45,7 +45,11 @@
 			{#if _user.followsUser}
 				Follows you
 			{:else}
-				Not following
+				{#if user}
+					Not logged in
+				{:else}
+					Not following
+				{/if}
 			{/if}
 		</span>
 		<span class="follow btn bg-blue">Follow</span>
