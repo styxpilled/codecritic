@@ -1,4 +1,4 @@
-// Seeds the local D1 database with users and popular npm packages.
+// Seeds the local D1 database with users, popular npm packages and stacks.
 //
 //   node scripts/seed.js              seed
 //   node scripts/seed.js --reset      remove seeded data, then stop
@@ -80,6 +80,44 @@ const CLOSERS = [
 	'',
 ];
 
+const STACK_NAMES = [
+	'Daily drivers',
+	'What I reach for first',
+	'Boring on purpose',
+	'The build shelf',
+	'Small and sharp',
+	'Everything a new service needs',
+	'Testing, top to bottom',
+	'Things I wish I had found sooner',
+	'Zero config club',
+	'For the CLI drawer',
+	'Frontend, minus the framework',
+	'Types all the way down',
+];
+
+const STACK_DESCRIPTIONS = [
+	'The set I copy into every new repository.',
+	'Nothing here is clever. That is the point.',
+	'Built this after one too many rewrites.',
+	'Opinionated. Ask me about any of them.',
+	'Small dependencies that pull their weight. Nothing over 10kb, nothing that drags half of npm in behind it, and every one of them replaceable in an afternoon if it stops being maintained.',
+	'Half of these replaced something bigger.',
+	'',
+];
+
+const STACK_TAGS = [
+	'typescript',
+	'tooling',
+	'testing',
+	'frontend',
+	'backend',
+	'cli',
+	'build',
+	'minimal',
+	'svelte',
+	'node',
+];
+
 const args = process.argv.slice(2);
 const reset = args.includes('--reset');
 const packageCount = Number(
@@ -93,6 +131,18 @@ const random = () => {
 	return seed / 4294967296;
 };
 const pick = (arr) => arr[Math.floor(random() * arr.length)];
+const upTo = (max) => Math.floor(random() * max);
+
+// Same slug rule as normalizeName in src/lib/index.ts.
+const normalizeName = (input) =>
+	input
+		.normalize('NFD')
+		.toLowerCase()
+		.replaceAll(/[^0-9a-z]+/g, '-')
+		.replaceAll(/^-+|-+$/g, '');
+
+const someTimeInTheLastTwoMonths = () =>
+	Math.floor((Date.now() - random() * 60 * 24 * 60 * 60 * 1000) / 1000);
 
 function openDatabase() {
 	const file = readdirSync(D1_DIR).find(
@@ -181,9 +231,7 @@ function insertReviews(db, users, packages) {
 			if (reviewed.has(pkg.name)) continue;
 			reviewed.add(pkg.name);
 			const content = [pick(OPENERS), pick(CLOSERS)].filter(Boolean).join(' ');
-			const createdAt = Math.floor(
-				(Date.now() - random() * 60 * 24 * 60 * 60 * 1000) / 1000
-			);
+			const createdAt = someTimeInTheLastTwoMonths();
 			const { id } = review.get(
 				user.id,
 				pkg.name,
@@ -197,6 +245,70 @@ function insertReviews(db, users, packages) {
 		}
 	}
 	return ids;
+}
+
+function insertStacks(db, users, packages) {
+	const stack = db.prepare(
+		`INSERT INTO stacks
+		 (author, name, normalizedName, description, created_at, updated_at, "index")
+		 VALUES (?, ?, ?, ?, ?, ?, ?) RETURNING id`
+	);
+	const member = db.prepare(
+		'INSERT INTO stacks_packages (stack_id, package, position) VALUES (?, ?, ?)'
+	);
+	const tag = db.prepare(
+		'INSERT INTO stacks_tags (stack_id, tag) VALUES (?, ?)'
+	);
+	// The index disambiguates two stacks of one author under the same slug.
+	const indexes = new Map();
+	const ids = [];
+	for (const user of users) {
+		const total = 1 + upTo(3);
+		for (let i = 0; i < total; i++) {
+			const name = pick(STACK_NAMES);
+			const normalized = normalizeName(name);
+			const key = `${user.id}/${normalized}`;
+			const index = indexes.get(key) ?? 0;
+			indexes.set(key, index + 1);
+			const createdAt = someTimeInTheLastTwoMonths();
+			const { id } = stack.get(
+				user.id,
+				name,
+				normalized,
+				pick(STACK_DESCRIPTIONS),
+				createdAt,
+				createdAt,
+				index
+			);
+
+			const members = new Set();
+			const size = Math.min(3 + upTo(6), packages.length);
+			while (members.size < size) members.add(pick(packages).name);
+			[...members].forEach((pkg, position) => member.run(id, pkg, position));
+
+			const tags = new Set();
+			const tagCount = Math.min(upTo(5), STACK_TAGS.length);
+			while (tags.size < tagCount) tags.add(pick(STACK_TAGS));
+			for (const t of tags) tag.run(id, t);
+
+			ids.push({ id, authorID: user.id });
+		}
+	}
+	return ids;
+}
+
+function insertStackLikes(db, users, stacks) {
+	const like = db.prepare(
+		'INSERT OR IGNORE INTO stacks_likes (user_id, stack_id) VALUES (?, ?)'
+	);
+	let likes = 0;
+	for (const user of users) {
+		for (const stack of stacks) {
+			if (stack.authorID === user.id || random() > 0.35) continue;
+			likes += like.run(user.id, stack.id).changes;
+		}
+	}
+	return likes;
 }
 
 function insertFollowsAndLikes(db, users, reviews) {
@@ -235,9 +347,12 @@ const packages = await fetchPackages();
 const users = insertUsers(db);
 insertPackages(db, packages);
 const reviews = insertReviews(db, users, packages);
+const stacks = insertStacks(db, users, packages);
 const { follows, likes } = insertFollowsAndLikes(db, users, reviews);
+const stackLikes = insertStackLikes(db, users, stacks);
 
 console.log(
 	`Seeded ${users.length} users, ${packages.length} packages, ${reviews.length} reviews, ` +
-		`${follows} follows and ${likes} likes.`
+		`${stacks.length} stacks, ${follows} follows, ${likes} review likes and ` +
+		`${stackLikes} stack likes.`
 );
