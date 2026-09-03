@@ -4,11 +4,14 @@
 		getFriendRecentReviews,
 	} from '$api/friends.remote';
 	import { getPopularPackages } from '$api/packages.remote';
+	import { getPopularStacks } from '$api/stacks.remote';
 	import { app } from '$lib/client/state.svelte';
 	import { sliceArrayToMultiple } from '$lib/helpers';
 	import List from '$ui/List.svelte';
+	import Masonry from '$ui/Masonry.svelte';
 	import Package from '$ui/Package';
 	import Reviews from '$ui/Reviews.svelte';
+	import { Card } from '$ui/Stack';
 
 	const popularPackages = $derived(
 		await getPopularPackages({
@@ -25,20 +28,24 @@
 	const friendReviews = $derived(
 		app.user
 			? await getFriendRecentReviews({
-					limit: 6,
+					limit: 4,
 				})
 			: []
 	);
+	const popularStacksPromise = $derived(getPopularStacks({ limit: 6 }));
+	const popularStacks = $derived(await popularStacksPromise);
 </script>
 
 <h1 class="fg-dark">
 	{#if app.user}
-		<span>
+		<span class="row">
 			Hello,
-			<a href="/user/{app.user.username}" class="fg-red hov-line">
-				{app.user.nickname || app.user.username}
-			</a>
-			!
+			<span class="row nogap">
+				<a href="/user/{app.user.username}" class="fg-red hov-line">
+					{app.user.nickname || app.user.username}
+				</a>
+				!
+			</span>
 		</span>
 	{:else}
 		Welcome to codecritic!
@@ -87,6 +94,16 @@
 	{#each sliceArrayToMultiple(popularPackages, 3) as pkg (pkg.name)}
 		<Package {pkg} />
 	{/each}
+</List>
+<List columns={1} groupID="popular-stacks">
+	{#snippet head()}
+		<span>popular stacks</span>
+	{/snippet}
+	<Masonry items={popularStacks} columns={3} rows={2}>
+		{#snippet item(stack)}
+			<Card {stack} />
+		{/snippet}
+	</Masonry>
 </List>
 
 <style>

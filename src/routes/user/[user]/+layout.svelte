@@ -66,6 +66,6 @@
 	}
 
 	li a.active {
-		--fg: var(--color-text);
+		--fg: var(--color-blue);
 	}
 </style>
