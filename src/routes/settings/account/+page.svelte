@@ -3,9 +3,9 @@
 		deleteAccount,
 		getSessions,
 		signOutEverywhere,
-	} from '$api/auth.remote';
-	import { confirmUsernameSchema } from '$api/schemas';
-	import { app } from '$lib/client/state.svelte';
+	} from '#api/auth.remote.ts';
+	import { confirmUsernameSchema } from '#api/schemas.ts';
+	import { app } from '#lib/client/state.svelte.ts';
 
 	const sessions = await getSessions();
 	const format = new Intl.DateTimeFormat(undefined, { dateStyle: 'medium' });

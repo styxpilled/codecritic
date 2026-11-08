@@ -2,9 +2,9 @@ import { error, redirect } from '@sveltejs/kit';
 import { and, count, desc, eq, getTableColumns, gt, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/sqlite-core';
 import * as v from 'valibot';
+import { normalizeName, optSubpath } from '#lib';
+import { $db, toStringArr } from '#lib/server/db/index.ts';
 import { query, getRequestEvent, form } from '$app/server';
-import { normalizeName, optSubpath } from '$lib';
-import { $db, toStringArr } from '$lib/server/db';
 import {
 	createStackSchema,
 	genericSchema,

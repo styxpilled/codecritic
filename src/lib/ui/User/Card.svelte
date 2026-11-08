@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { UserCard } from '$lib/types';
-	import Avatar from '$ui/Avatar.svelte';
-	import { Compact } from '$ui/FollowButton';
+	import type { UserCard } from '#lib/types.ts';
+	import Avatar from '#ui/Avatar.svelte';
+	import { Compact } from '#ui/FollowButton/index.ts';
 	import Favorites from './Favorites.svelte';
 	import Name from './Name.svelte';
 

@@ -110,7 +110,7 @@
 			<p>
 				Your data will be stored by us until you decide to end using our Service
 				by going to the <a href="/settings" class="link">Settings</a>
-				 page, or until it gets erased due to a technical reason. Deleting your account
+				page, or until it gets erased due to a technical reason. Deleting your account
 				removes all data and activity associated with it as soon as possible. For
 				technical reasons that data may persist on the disk of our platform provider
 				for a short time.

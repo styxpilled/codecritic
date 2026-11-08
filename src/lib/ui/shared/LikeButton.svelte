@@ -1,7 +1,7 @@
 <script lang="ts">
-	import type { RemoteForm, RemoteQueryUpdate } from '@sveltejs/kit';
 	import { getContext } from 'svelte';
-	import { app } from '$lib/client/state.svelte';
+	import { app } from '#lib/client/state.svelte.ts';
+	import type { RemoteForm, RemoteQueryUpdate } from '$app/server';
 
 	type Form = RemoteForm<
 		{
@@ -17,6 +17,8 @@
 		like,
 		unlike,
 		updates,
+
+		/** Link to the "who liked this" page. Without it the count is plain text. */
 	}: {
 		obj: {
 			id: number;
@@ -27,7 +29,6 @@
 		like: Form;
 		unlike: Form;
 		updates?: RemoteQueryUpdate[];
-		/** Link to the "who liked this" page. Without it the count is plain text. */
 		href?: string;
 	} = $props();
 
@@ -50,6 +51,7 @@
 			{...form.enhance(({ submit }) => {
 				liked = !liked;
 				likes = likes + (liked ? 1 : -1);
+
 				submit()
 					.updates(...(updates ?? []))
 					.catch(() => {

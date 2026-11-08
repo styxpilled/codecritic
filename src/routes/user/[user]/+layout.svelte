@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { getProfile } from '$api/user.remote.js';
+	import { getProfile } from '#api/user.remote.ts';
+	import Avatar from '#ui/Avatar.svelte';
 	import { page } from '$app/state';
-	import Avatar from '$ui/Avatar.svelte';
 
 	let { children, params } = $props();
 	const user = $derived(await getProfile(params.user));

@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { app } from '$lib/client/state.svelte';
-	import type { Review } from '$lib/server/db/schema';
+	import { app } from '#lib/client/state.svelte.ts';
+	import type { Review } from '#lib/server/db/schema.ts';
 	import RatingInput from './RatingInput.svelte';
 
 	let {

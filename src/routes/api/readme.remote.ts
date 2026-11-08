@@ -1,10 +1,10 @@
 import { error } from '@sveltejs/kit';
 import { eq } from 'drizzle-orm';
 import * as v from 'valibot';
+import { $fetch, stripGit } from '#lib';
+import { $db } from '#lib/server/db/index.ts';
+import { renderReadme } from '#lib/server/readme.ts';
 import { getRequestEvent, query } from '$app/server';
-import { $fetch, stripGit } from '$lib';
-import { $db } from '$lib/server/db';
-import { renderReadme } from '$lib/server/readme';
 import { getNPMPackage } from './npm.remote';
 
 export const getReadme = query(v.string(), async (name) => {

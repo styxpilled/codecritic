@@ -1,13 +1,14 @@
-import type { Handle } from '@sveltejs/kit';
+import type { Handle } from '@sveltejs/kit/hooks';
+import { env } from 'cloudflare:workers';
 import {
 	CODECRITIC_SESSION_COOKIE,
 	deleteSessionTokenCookie,
 	validateSessionToken,
-} from '$lib/server/auth';
-import { getDb } from '$lib/server/db';
+} from '#lib/server/auth.ts';
+import { getDb } from '#lib/server/db/index.ts';
 
 export const handle: Handle = async ({ event, resolve }) => {
-	event.locals.db = getDb(event.platform?.env.codecritic_d1);
+	event.locals.db = getDb(env.codecritic_d1);
 	const token = event.cookies.get(CODECRITIC_SESSION_COOKIE) || null;
 
 	if (token === null) {

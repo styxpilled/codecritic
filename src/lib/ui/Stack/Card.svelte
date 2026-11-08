@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { hashColor, optSubpath } from '$lib';
-	import type { Stack, User } from '$lib/server/db/schema';
-	import Avatar from '$ui/Avatar.svelte';
+	import { hashColor, optSubpath } from '#lib';
+	import type { Stack, User } from '#lib/server/db/schema.ts';
+	import Avatar from '#ui/Avatar.svelte';
 	import LikeButton from './LikeButton.svelte';
 
 	let {

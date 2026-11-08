@@ -4,9 +4,9 @@
 		// getUserReviews,
 		likeReview,
 		unlikeReview,
-	} from '$api/reviews.remote';
-	import type { Review, User } from '$lib/server/db/schema';
-	import LikeButton from '$ui/shared/LikeButton.svelte';
+	} from '#api/reviews.remote.ts';
+	import type { Review, User } from '#lib/server/db/schema.ts';
+	import LikeButton from '#ui/shared/LikeButton.svelte';
 
 	let {
 		user,

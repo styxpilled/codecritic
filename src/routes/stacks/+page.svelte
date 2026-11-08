@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { getPopularStacks, getRecentStacks } from '$api/stacks.remote';
-	import Icon from '$ui/Icon.svelte';
-	import List from '$ui/List.svelte';
-	import Masonry from '$ui/Masonry.svelte';
-	import Card from '$ui/Stack/Card.svelte';
+	import { getPopularStacks, getRecentStacks } from '#api/stacks.remote.ts';
+	import Icon from '#ui/Icon.svelte';
+	import List from '#ui/List.svelte';
+	import Masonry from '#ui/Masonry.svelte';
+	import Card from '#ui/Stack/Card.svelte';
 
 	const COLUMNS = 3;
 	const ROWS = 3;

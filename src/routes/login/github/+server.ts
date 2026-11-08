@@ -2,11 +2,12 @@ import type { RequestEvent } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 import { generateState } from 'arctic';
 import { GitHub } from 'arctic';
+import { env } from 'cloudflare:workers';
 
 export async function GET(event: RequestEvent): Promise<Response> {
 	const state = generateState();
-	const GITHUB_CLIENT_ID = event.platform?.env.GITHUB_CLIENT_ID;
-	const GITHUB_CLIENT_SECRET = event.platform?.env.GITHUB_CLIENT_SECRET;
+	const GITHUB_CLIENT_ID = env.GITHUB_CLIENT_ID;
+	const GITHUB_CLIENT_SECRET = env.GITHUB_CLIENT_SECRET;
 	if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
 		throw error(500, 'CANNOT READ GITHUB SECRETS FROM ENVIRONMENT');
 	}

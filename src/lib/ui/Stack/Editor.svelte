@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { searchNPM } from '$api/npm.remote';
-	import { createStackSchema, updateStackSchema } from '$api/schemas';
-	import { createStack, updateStack } from '$api/stacks.remote';
-	import { hashColor, optSubpath } from '$lib';
-	import Icon from '$ui/Icon.svelte';
+	import { searchNPM } from '#api/npm.remote.ts';
+	import { createStackSchema, updateStackSchema } from '#api/schemas.ts';
+	import { createStack, updateStack } from '#api/stacks.remote.ts';
+	import { hashColor, optSubpath } from '#lib';
+	import Icon from '#ui/Icon.svelte';
 
 	type Stack = {
 		id: number;

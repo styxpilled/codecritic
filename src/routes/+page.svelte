@@ -2,16 +2,16 @@
 	import {
 		getFriendLikedReviews,
 		getFriendRecentReviews,
-	} from '$api/friends.remote';
-	import { getPopularPackages } from '$api/packages.remote';
-	import { getPopularStacks } from '$api/stacks.remote';
-	import { app } from '$lib/client/state.svelte';
-	import { sliceArrayToMultiple } from '$lib/helpers';
-	import List from '$ui/List.svelte';
-	import Masonry from '$ui/Masonry.svelte';
-	import Package from '$ui/Package';
-	import Reviews from '$ui/Reviews.svelte';
-	import { Card } from '$ui/Stack';
+	} from '#api/friends.remote.ts';
+	import { getPopularPackages } from '#api/packages.remote.ts';
+	import { getPopularStacks } from '#api/stacks.remote.ts';
+	import { app } from '#lib/client/state.svelte.ts';
+	import { sliceArrayToMultiple } from '#lib/helpers.ts';
+	import List from '#ui/List.svelte';
+	import Masonry from '#ui/Masonry.svelte';
+	import Package from '#ui/Package/index.ts';
+	import Reviews from '#ui/Reviews.svelte';
+	import { Card } from '#ui/Stack/index.ts';
 
 	const popularPackages = $derived(
 		await getPopularPackages({

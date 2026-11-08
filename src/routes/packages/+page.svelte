@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { getPopularPackages } from '$api/packages.remote';
-	import { getGlobalPopularReviews } from '$api/reviews.remote';
-	import { getPopularUsers } from '$api/user.remote';
-	import Avatar from '$ui/Avatar.svelte';
-	import { Compact } from '$ui/FollowButton';
-	import List from '$ui/List.svelte';
-	import Package from '$ui/Package';
-	import Reviews from '$ui/Reviews.svelte';
+	import { getPopularPackages } from '#api/packages.remote.ts';
+	import { getGlobalPopularReviews } from '#api/reviews.remote.ts';
+	import { getPopularUsers } from '#api/user.remote.ts';
+	import Avatar from '#ui/Avatar.svelte';
+	import { Compact } from '#ui/FollowButton/index.ts';
+	import List from '#ui/List.svelte';
+	import Package from '#ui/Package/index.ts';
+	import Reviews from '#ui/Reviews.svelte';
 
 	let popularPackagesPromise = $derived(getPopularPackages({}));
 	let popularReviewsPromise = $derived(getGlobalPopularReviews({ limit: 6 }));

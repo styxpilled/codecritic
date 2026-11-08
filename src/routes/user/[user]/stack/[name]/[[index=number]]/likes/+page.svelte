@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { getStackLikes } from '$api/stacks.remote';
-	import Avatar from '$ui/Avatar.svelte';
-	import List from '$ui/List.svelte';
+	import { getStackLikes } from '#api/stacks.remote.ts';
+	import Avatar from '#ui/Avatar.svelte';
+	import List from '#ui/List.svelte';
 
 	let { params } = $props();
 

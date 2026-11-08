@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { signOut } from '$api/auth.remote';
-	import { dev } from '$app/environment';
-	import { app } from '$lib/client/state.svelte';
+	import { signOut } from '#api/auth.remote.ts';
+	import { app } from '#lib/client/state.svelte.ts';
+	import { dev } from '$app/env';
 	import Avatar from './Avatar.svelte';
 	import Icon from './Icon.svelte';
 </script>

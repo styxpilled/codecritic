@@ -1,4 +1,4 @@
-import type { NPMDirectPackage } from '$lib/types';
+import type { NPMDirectPackage } from '#lib/types.ts';
 import type { Package } from './db/schema';
 
 export const npmToDB = (pkg: NPMDirectPackage): Package => {

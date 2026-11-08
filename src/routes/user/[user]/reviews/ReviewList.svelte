@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { getUserReviews } from '$api/reviews.remote';
-	import type { ReviewSort } from '$api/schemas';
-	import { getProfile } from '$api/user.remote';
-	import List from '$ui/List.svelte';
-	import Reviews from '$ui/Reviews.svelte';
+	import { getUserReviews } from '#api/reviews.remote.ts';
+	import type { ReviewSort } from '#api/schemas.ts';
+	import { getProfile } from '#api/user.remote.ts';
+	import List from '#ui/List.svelte';
+	import Reviews from '#ui/Reviews.svelte';
 
 	let { username, sort }: { username: string; sort: ReviewSort } = $props();
 

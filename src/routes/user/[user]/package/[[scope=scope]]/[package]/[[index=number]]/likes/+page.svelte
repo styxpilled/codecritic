@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { getReviewLikes } from '$api/reviews.remote';
-	import { toPackageName } from '$lib';
-	import Avatar from '$ui/Avatar.svelte';
-	import List from '$ui/List.svelte';
+	import { getReviewLikes } from '#api/reviews.remote.ts';
+	import { toPackageName } from '#lib';
+	import Avatar from '#ui/Avatar.svelte';
+	import List from '#ui/List.svelte';
 
 	let { params } = $props();
 	const users = $derived(

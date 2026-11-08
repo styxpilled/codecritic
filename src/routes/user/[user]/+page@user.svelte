@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { getUserReviews } from '$api/reviews.remote.js';
-	import { getProfile } from '$api/user.remote.js';
-	import { app } from '$lib/client/state.svelte.js';
-	import Avatar from '$ui/Avatar.svelte';
-	import { Default as FollowButton } from '$ui/FollowButton';
-	import Icon from '$ui/Icon.svelte';
-	import List from '$ui/List.svelte';
-	import Reviews from '$ui/Reviews.svelte';
-	import { Favorites } from '$ui/User';
+	import { getUserReviews } from '#api/reviews.remote.ts';
+	import { getProfile } from '#api/user.remote.ts';
+	import { app } from '#lib/client/state.svelte.ts';
+	import Avatar from '#ui/Avatar.svelte';
+	import { Default as FollowButton } from '#ui/FollowButton/index.ts';
+	import Icon from '#ui/Icon.svelte';
+	import List from '#ui/List.svelte';
+	import Reviews from '#ui/Reviews.svelte';
+	import { Favorites } from '#ui/User/index.ts';
 
 	let { params } = $props();
 	// svelte-ignore state_referenced_locally

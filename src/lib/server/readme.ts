@@ -8,8 +8,8 @@ import xml from 'highlight.js/lib/languages/xml';
 import { parseHTML } from 'linkedom';
 import { Marked } from 'marked';
 import { markedHighlight } from 'marked-highlight';
-import { stripGit } from '$lib';
-import { hljsDefineSvelte } from '$lib/client/highlight';
+import { stripGit } from '#lib';
+import { hljsDefineSvelte } from '#lib/client/highlight.ts';
 
 hljs.registerLanguage('javascript', js);
 hljs.registerLanguage('typescript', ts);

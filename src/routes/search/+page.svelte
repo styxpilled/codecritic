@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { searchNPM } from '$api/npm.remote';
+	import { searchNPM } from '#api/npm.remote.ts';
+	import List from '#ui/List.svelte';
+	import Package from '#ui/Package/index.ts';
 	import { page } from '$app/state';
-	import List from '$ui/List.svelte';
-	import Package from '$ui/Package';
 
 	let query = $derived(page.url.searchParams.get('query'));
 	const results = $derived(query ? await searchNPM(query) : []);

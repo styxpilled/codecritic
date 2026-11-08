@@ -1,7 +1,7 @@
 import { asc, desc, eq, sql } from 'drizzle-orm';
 import * as v from 'valibot';
+import { $db, toStringArr } from '#lib/server/db/index.ts';
 import { query, getRequestEvent } from '$app/server';
-import { $db, toStringArr } from '$lib/server/db';
 
 const CACHE_TTL = 1000 * 60 * 5;
 const cache = new Map<string, { expires: number; value: PopularPackage[] }>();

@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { searchNPM } from '$api/npm.remote';
-	import { updateProfileSchema } from '$api/schemas';
+	import { searchNPM } from '#api/npm.remote.ts';
+	import { updateProfileSchema } from '#api/schemas.ts';
 	import {
 		getProfile,
 		setFavoritePackages,
 		updateProfile,
-	} from '$api/user.remote';
-	import { app } from '$lib/client/state.svelte';
+	} from '#api/user.remote.ts';
+	import { app } from '#lib/client/state.svelte.ts';
 
 	const user = await getProfile(app.user?.username || '');
 

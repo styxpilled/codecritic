@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { follow, getProfile, unfollow } from '$api/user.remote';
-	import { app } from '$lib/client/state.svelte';
-	import type { FollowUser } from '$lib/types';
-	import Icon from '$ui/Icon.svelte';
+	import { follow, getProfile, unfollow } from '#api/user.remote.ts';
+	import { app } from '#lib/client/state.svelte.ts';
+	import type { FollowUser } from '#lib/types.ts';
+	import Icon from '#ui/Icon.svelte';
 
 	let { user = $bindable() }: { user: FollowUser } = $props();
 	const form = $derived(

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { User } from '$lib/server/db/schema';
+	import type { User } from '#lib/server/db/schema.ts';
 
 	/** The link on the nickname and the username. */
 	let { user }: { user: User } = $props();

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { version } from '$app/environment';
+	import { version } from '$app/env';
 </script>
 
 <footer>
@@ -11,7 +11,7 @@
 		</p>
 		<p>
 			A <a href="https://styx.gay/" class="fg-blue hov-line">@styx</a>
-			 endeavour
+			endeavour
 		</p>
 		<p>
 			<a
@@ -20,7 +20,7 @@
 			>
 				NoJS
 			</a>
-			 compatible
+			compatible
 		</p>
 		<p>
 			<a class="hov-line" href="https://github.com/styxpilled/codecritic">

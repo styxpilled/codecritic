@@ -1,15 +1,15 @@
 <script lang="ts">
 	import '@fontsource-variable/inter';
-	import { app } from '$lib/client/state.svelte';
-	import { dev } from '$app/environment';
-	import favicon from '$lib/assets/favicon.png';
-	import Footer from '$lib/ui/Footer.svelte';
-	import Header from '$lib/ui/Header.svelte';
+	import { app } from '#lib/client/state.svelte.ts';
+	import { dev } from '$app/env';
+	import favicon from '#lib/assets/favicon.png';
+	import Footer from '#lib/ui/Footer.svelte';
+	import Header from '#lib/ui/Header.svelte';
 	// sort-imports-ignore
-	import '$styles/remedy.css';
-	import '$styles/app.css';
-	import '$styles/colors.css';
-	import '$styles/static.css';
+	import '#styles/remedy.css';
+	import '#styles/app.css';
+	import '#styles/colors.css';
+	import '#styles/static.css';
 
 	let { children, data } = $props();
 	// svelte-ignore state_referenced_locally

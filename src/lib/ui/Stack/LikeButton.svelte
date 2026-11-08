@@ -4,10 +4,10 @@
 		// getUserReviews,
 		likeStack,
 		unlikeStack,
-	} from '$api/stacks.remote';
-	import { optSubpath } from '$lib';
-	import type { Stack, User } from '$lib/server/db/schema';
-	import LikeButton from '$ui/shared/LikeButton.svelte';
+	} from '#api/stacks.remote.ts';
+	import { optSubpath } from '#lib';
+	import type { Stack, User } from '#lib/server/db/schema.ts';
+	import LikeButton from '#ui/shared/LikeButton.svelte';
 
 	let {
 		// user,

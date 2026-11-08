@@ -1,4 +1,4 @@
-import type { User } from '$lib/server/db/schema';
+import type { User } from '#lib/server/db/schema.ts';
 
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 

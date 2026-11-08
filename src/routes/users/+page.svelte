@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { getPopularUsers } from '$api/user.remote';
-	import List from '$ui/List.svelte';
-	import { Card, List as UserList } from '$ui/User';
+	import { getPopularUsers } from '#api/user.remote.ts';
+	import List from '#ui/List.svelte';
+	import { Card, List as UserList } from '#ui/User/index.ts';
 
 	const recentPopularUsersPromise = $derived(getPopularUsers({ recent: true }));
 	const recentPopularUsers = $derived(await recentPopularUsersPromise);

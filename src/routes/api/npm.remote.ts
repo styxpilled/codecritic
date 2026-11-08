@@ -1,11 +1,11 @@
 import { error } from '@sveltejs/kit';
 import { eq, getTableColumns, sql } from 'drizzle-orm';
 import * as v from 'valibot';
+import { $fetch } from '#lib';
+import { $db, toStringArr } from '#lib/server/db/index.ts';
+import { npmToDB } from '#lib/server/helpers.ts';
+import type { NPMDirectPackage, NPMSearchResult } from '#lib/types.ts';
 import { query, getRequestEvent } from '$app/server';
-import { $fetch } from '$lib';
-import { $db, toStringArr } from '$lib/server/db';
-import { npmToDB } from '$lib/server/helpers';
-import type { NPMDirectPackage, NPMSearchResult } from '$lib/types';
 
 export const searchNPM = query(v.string(), async (query) => {
 	if (query.length < 2) return [];

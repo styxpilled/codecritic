@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { error } from '@sveltejs/kit';
-	import { app } from '$lib/client/state.svelte';
-	import Avatar from '$ui/Avatar.svelte';
-	import SubNav from '$ui/SubNav.svelte';
+	import { app } from '#lib/client/state.svelte.ts';
+	import Avatar from '#ui/Avatar.svelte';
+	import SubNav from '#ui/SubNav.svelte';
 
 	let { children } = $props();
 	if (!app.user) error(401);

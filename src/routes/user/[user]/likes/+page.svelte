@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { getLikedReviews } from '$api/reviews.remote';
-	import { getLikedStacks } from '$api/stacks.remote';
-	import List from '$ui/List.svelte';
-	import Masonry from '$ui/Masonry.svelte';
-	import Reviews from '$ui/Reviews.svelte';
-	import Card from '$ui/Stack/Card.svelte';
+	import { getLikedReviews } from '#api/reviews.remote.ts';
+	import { getLikedStacks } from '#api/stacks.remote.ts';
+	import List from '#ui/List.svelte';
+	import Masonry from '#ui/Masonry.svelte';
+	import Reviews from '#ui/Reviews.svelte';
+	import Card from '#ui/Stack/Card.svelte';
 
 	let { params } = $props();
 

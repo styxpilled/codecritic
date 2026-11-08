@@ -2,18 +2,13 @@
 import { error } from '@sveltejs/kit';
 import { GitHub, OAuth2RequestError } from 'arctic';
 // import { $db, db } from '$db';
+import { env } from 'cloudflare:workers';
 import { eq } from 'drizzle-orm';
-import { dev } from '$app/environment';
-import { createSession, setSessionTokenCookie } from '$lib/server/auth';
-import { $db } from '$lib/server/db';
+import { createSession, setSessionTokenCookie } from '#lib/server/auth.ts';
+import { $db } from '#lib/server/db/index.ts';
+import { dev } from '$app/env';
 
-export async function GET({
-	cookies,
-	url,
-	fetch,
-	locals,
-	platform,
-}): Promise<Response> {
+export async function GET({ cookies, url, fetch, locals }): Promise<Response> {
 	const db = locals.db;
 	const code = url.searchParams.get('code');
 	const state = url.searchParams.get('state');
@@ -25,8 +20,8 @@ export async function GET({
 		});
 	}
 
-	const GITHUB_CLIENT_ID = platform?.env.GITHUB_CLIENT_ID;
-	const GITHUB_CLIENT_SECRET = platform?.env.GITHUB_CLIENT_SECRET;
+	const GITHUB_CLIENT_ID = env.GITHUB_CLIENT_ID;
+	const GITHUB_CLIENT_SECRET = env.GITHUB_CLIENT_SECRET;
 	if (!GITHUB_CLIENT_ID || !GITHUB_CLIENT_SECRET) {
 		throw error(500, 'CANNOT READ GITHUB SECRETS FROM ENVIRONMENT');
 	}

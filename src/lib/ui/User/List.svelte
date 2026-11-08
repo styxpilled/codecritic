@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { UserCard } from '$lib/types';
+	import type { UserCard } from '#lib/types.ts';
 	import Row from './Row.svelte';
 
 	let { users, empty }: { users: UserCard[]; empty: string } = $props();

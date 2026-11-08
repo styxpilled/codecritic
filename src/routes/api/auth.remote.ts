@@ -1,13 +1,13 @@
 import { error, invalid, redirect } from '@sveltejs/kit';
 import { asc, eq } from 'drizzle-orm';
-import { form, getRequestEvent, query } from '$app/server';
 import {
 	deleteSessionTokenCookie,
 	deleteUser,
 	invalidateSession,
 	invalidateUserSessions,
-} from '$lib/server/auth';
-import { $db } from '$lib/server/db';
+} from '#lib/server/auth.ts';
+import { $db } from '#lib/server/db/index.ts';
+import { form, getRequestEvent, query } from '$app/server';
 import { confirmUsernameSchema } from './schemas';
 
 /** Sessions of the signed in user. The current one comes first. */

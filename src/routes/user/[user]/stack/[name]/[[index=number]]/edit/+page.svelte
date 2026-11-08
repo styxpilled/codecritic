@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { getStack } from '$api/stacks.remote';
-	import { app } from '$lib/client/state.svelte';
-	import Editor from '$ui/Stack/Editor.svelte';
+	import { getStack } from '#api/stacks.remote.ts';
+	import { app } from '#lib/client/state.svelte.ts';
+	import Editor from '#ui/Stack/Editor.svelte';
 
 	let { params } = $props();
 

@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { getUserStacks } from '$api/stacks.remote';
-	import { app } from '$lib/client/state.svelte.js';
-	import Icon from '$ui/Icon.svelte';
-	import List from '$ui/List.svelte';
-	import Masonry from '$ui/Masonry.svelte';
-	import Card from '$ui/Stack/Card.svelte';
+	import { getUserStacks } from '#api/stacks.remote.ts';
+	import { app } from '#lib/client/state.svelte.ts';
+	import Icon from '#ui/Icon.svelte';
+	import List from '#ui/List.svelte';
+	import Masonry from '#ui/Masonry.svelte';
+	import Card from '#ui/Stack/Card.svelte';
 
 	let { params } = $props();
 

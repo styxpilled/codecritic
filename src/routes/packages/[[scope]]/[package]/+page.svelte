@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { getReadme } from '$api/readme.remote';
-	import { toPackageName } from '$lib';
-	import Readme from '$ui/Readme.svelte';
+	import { getReadme } from '#api/readme.remote.ts';
+	import { toPackageName } from '#lib';
+	import Readme from '#ui/Readme.svelte';
 
 	let { params } = $props();
 	const readme = $derived(await getReadme(toPackageName(params)));

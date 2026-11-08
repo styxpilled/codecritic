@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { getNPMPackage } from '$api/npm.remote';
-	import { toPackageName } from '$lib';
-	import { relativeTimeFromDates } from '$lib/helpers';
+	import { getNPMPackage } from '#api/npm.remote.ts';
+	import { toPackageName } from '#lib';
+	import { relativeTimeFromDates } from '#lib/helpers.ts';
 	import Sidebar from './Sidebar.svelte';
 
 	let { children, params } = $props();

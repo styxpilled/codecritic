@@ -1,13 +1,13 @@
 <script lang="ts">
-	import { getPopularReviews, getRecentReview } from '$api/reviews.remote';
+	import { getPopularReviews, getRecentReview } from '#api/reviews.remote.ts';
+	import { stripGit } from '#lib';
+	import type { Package } from '#lib/server/db/schema.ts';
+	import Icon from '#ui/Icon.svelte';
+	import List from '#ui/List.svelte';
+	import ReviewEditor from '#ui/Review/Editor.svelte';
+	import Recent from '#ui/Review/Recent.svelte';
+	import Reviews from '#ui/Reviews.svelte';
 	import { page } from '$app/state';
-	import { stripGit } from '$lib';
-	import type { Package } from '$lib/server/db/schema';
-	import Icon from '$ui/Icon.svelte';
-	import List from '$ui/List.svelte';
-	import ReviewEditor from '$ui/Review/Editor.svelte';
-	import Recent from '$ui/Review/Recent.svelte';
-	import Reviews from '$ui/Reviews.svelte';
 
 	type Props = {
 		pkg: Package;

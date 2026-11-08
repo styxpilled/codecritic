@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { hashColor } from '$lib';
+	import { hashColor } from '#lib';
 
 	/** The favorite package chips. An empty list keeps one line of height. */
 	let { packages }: { packages: string[] } = $props();

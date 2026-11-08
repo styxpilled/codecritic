@@ -1,10 +1,10 @@
 <script lang="ts">
 	import { error } from '@sveltejs/kit';
-	import { getReview } from '$api/reviews.remote';
+	import { getReview } from '#api/reviews.remote.ts';
+	import { optSubpath, toPackageName } from '#lib';
+	import { app } from '#lib/client/state.svelte.ts';
+	import Editor from '#ui/Review/Editor.svelte';
 	import { goto } from '$app/navigation';
-	import { optSubpath, toPackageName } from '$lib';
-	import { app } from '$lib/client/state.svelte';
-	import Editor from '$ui/Review/Editor.svelte';
 
 	if (!app.user) error(401);
 

@@ -1,7 +1,7 @@
 <script lang="ts">
-	import { optSubpath } from '$lib';
-	import { app } from '$lib/client/state.svelte';
-	import type { Review, User } from '$lib/server/db/schema';
+	import { optSubpath } from '#lib';
+	import { app } from '#lib/client/state.svelte.ts';
+	import type { Review, User } from '#lib/server/db/schema.ts';
 	import Avatar from './Avatar.svelte';
 	import LikeButton from './Review/LikeButton.svelte';
 	import Rating from './Review/Rating.svelte';

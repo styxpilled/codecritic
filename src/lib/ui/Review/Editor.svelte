@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { createReview, deleteReview } from '$api/reviews.remote';
-	import { createReviewSchema } from '$api/schemas';
+	import { createReview, deleteReview } from '#api/reviews.remote.ts';
+	import { createReviewSchema } from '#api/schemas.ts';
+	import { app } from '#lib/client/state.svelte.ts';
+	import type { Package, Review } from '#lib/server/db/schema.ts';
 	import { goto } from '$app/navigation';
-	import { app } from '$lib/client/state.svelte';
-	import type { Package, Review } from '$lib/server/db/schema';
 	import RatingInput from './RatingInput.svelte';
 
 	let {

@@ -1,9 +1,9 @@
 <script lang="ts">
-	import { getRecentReview, getReview } from '$api/reviews.remote.js';
-	import { getProfile } from '$api/user.remote.js';
-	import { toPackageName } from '$lib';
-	import Recent from '$ui/Review/Recent.svelte';
-	import Reviews from '$ui/Reviews.svelte';
+	import { getRecentReview, getReview } from '#api/reviews.remote.ts';
+	import { getProfile } from '#api/user.remote.ts';
+	import { toPackageName } from '#lib';
+	import Recent from '#ui/Review/Recent.svelte';
+	import Reviews from '#ui/Reviews.svelte';
 
 	let { params } = $props();
 

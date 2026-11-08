@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { getNPMPackage } from '$api/npm.remote.js';
-	import { getPopularReviews } from '$api/reviews.remote';
-	import { toPackageName } from '$lib';
-	import Reviews from '$ui/Reviews.svelte';
+	import { getNPMPackage } from '#api/npm.remote.ts';
+	import { getPopularReviews } from '#api/reviews.remote.ts';
+	import { toPackageName } from '#lib';
+	import Reviews from '#ui/Reviews.svelte';
 
 	let { params } = $props();
 	const pkg = $derived(await getNPMPackage(toPackageName(params)));

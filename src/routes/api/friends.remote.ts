@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
 import { eq, getTableColumns, sql, desc } from 'drizzle-orm';
+import { $db } from '#lib/server/db/index.ts';
 import { query, getRequestEvent } from '$app/server';
-import { $db } from '$lib/server/db';
 import { genericSchema } from './schemas';
 
 export const getFriendLikedReviews = query(

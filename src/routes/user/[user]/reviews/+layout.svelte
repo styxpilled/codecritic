@@ -1,5 +1,5 @@
 <script lang="ts">
-	import SubNav from '$ui/SubNav.svelte';
+	import SubNav from '#ui/SubNav.svelte';
 
 	let { children, params } = $props();
 	const base = $derived(`/user/${params.user}/reviews`);

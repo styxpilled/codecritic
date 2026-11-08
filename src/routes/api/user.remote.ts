@@ -2,9 +2,9 @@ import { error } from '@sveltejs/kit';
 import { and, desc, eq, getTableColumns, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/sqlite-core';
 import * as v from 'valibot';
+import { getDays } from '#lib/server/auth.ts';
+import { $db, toStringArr } from '#lib/server/db/index.ts';
 import { query, getRequestEvent, form } from '$app/server';
-import { getDays } from '$lib/server/auth';
-import { $db, toStringArr } from '$lib/server/db';
 import {
 	favoritesSchema,
 	updateFollowSchema,

@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { deleteStack, getStack } from '$api/stacks.remote';
-	import { optSubpath } from '$lib';
-	import { app } from '$lib/client/state.svelte';
-	import LikeButton from '$ui/Stack/LikeButton.svelte';
+	import { deleteStack, getStack } from '#api/stacks.remote.ts';
+	import { optSubpath } from '#lib';
+	import { app } from '#lib/client/state.svelte.ts';
+	import LikeButton from '#ui/Stack/LikeButton.svelte';
 
 	let { params } = $props();
 

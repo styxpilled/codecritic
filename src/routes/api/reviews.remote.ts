@@ -11,8 +11,8 @@ import {
 } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/sqlite-core';
 import * as v from 'valibot';
+import { $db } from '#lib/server/db/index.ts';
 import { form, getRequestEvent, query } from '$app/server';
-import { $db } from '$lib/server/db';
 import {
 	createReviewSchema,
 	genericSchema,

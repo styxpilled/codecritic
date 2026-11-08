@@ -1,8 +1,8 @@
 <script lang="ts">
 	import { minidenticon } from 'minidenticons';
 	import type { Snippet } from 'svelte';
-	import { hashColor } from '$lib';
-	import type { User } from '$lib/server/db/schema';
+	import { hashColor } from '#lib';
+	import type { User } from '#lib/server/db/schema.ts';
 
 	type Props = Expand<
 		{

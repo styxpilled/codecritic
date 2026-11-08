@@ -1,8 +1,8 @@
 <script lang="ts">
-	import { getUserReviews } from '$api/reviews.remote';
-	import { toPackageName } from '$lib';
-	import List from '$ui/List.svelte';
-	import Reviews from '$ui/Reviews.svelte';
+	import { getUserReviews } from '#api/reviews.remote.ts';
+	import { toPackageName } from '#lib';
+	import List from '#ui/List.svelte';
+	import Reviews from '#ui/Reviews.svelte';
 
 	let { params } = $props();
 

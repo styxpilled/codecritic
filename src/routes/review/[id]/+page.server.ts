@@ -1,7 +1,7 @@
 import { error, redirect } from '@sveltejs/kit';
 import { asc, eq, and, getTableColumns } from 'drizzle-orm';
-import { optSubpath } from '$lib';
-import { $db } from '$lib/server/db';
+import { optSubpath } from '#lib';
+import { $db } from '#lib/server/db/index.ts';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals, params }) => {

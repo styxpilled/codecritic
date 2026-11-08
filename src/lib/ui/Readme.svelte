@@ -1,6 +1,6 @@
 <script lang="ts">
-	import '$styles/github.css';
-	import '$styles/readme.css';
+	import '#styles/github.css';
+	import '#styles/readme.css';
 	import Icon from './Icon.svelte';
 
 	interface Props {
