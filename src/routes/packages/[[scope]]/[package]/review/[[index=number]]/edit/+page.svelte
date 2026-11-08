@@ -23,7 +23,9 @@
 <Editor
 	{review}
 	onSubmit={() => {
-		goto(`/user/${app.user?.username}/package/${review.packageID}/${optSubpath(review.index)}`);
+		goto(
+			`/user/${app.user?.username}/package/${review.packageID}/${optSubpath(review.index)}`
+		);
 	}}
 />
 

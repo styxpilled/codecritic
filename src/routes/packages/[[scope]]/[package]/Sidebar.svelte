@@ -36,19 +36,29 @@
 		{#each managers as manager (manager)}
 			<label class="btn pointer hov-light fg-dark bg-bright">
 				{manager}
-				<input class="" type="radio" name="install" value={manager} bind:group={selectedManager} />
+				<input
+					class=""
+					type="radio"
+					name="install"
+					value={manager}
+					bind:group={selectedManager}
+				/>
 			</label>
 		{/each}
 	</div>
 	<p class="btn lg fg-dark bg-light row space">
 		{#each managers as manager (manager)}
-			<span class="command" data-manager={manager}>{manager} add {pkg.name}</span>
+			<span class="command" data-manager={manager}>
+				{manager} add {pkg.name}
+			</span>
 		{/each}
 		<span class="copy-feedback btn bg-green">Copied!</span>
 		<button
 			class="copy-btn hov-light js-only"
 			onclick={async () => {
-				await navigator.clipboard.writeText(`${selectedManager} add ${pkg.name}`);
+				await navigator.clipboard.writeText(
+					`${selectedManager} add ${pkg.name}`
+				);
 			}}
 		>
 			<Icon size="1.25em" id="copy" />
@@ -59,7 +69,9 @@
 		<p class="btn lg fg-dark bg-light hov-link">{stripGit(pkg.repository)}</p>
 		<p class="semibold fg-dark">Homepage</p>
 		<p class="btn lg fg-dark bg-light">
-			<a class="hov-link" style="word-break:break-all;" href={pkg.homepage}>{pkg.homepage}</a>
+			<a class="hov-link" style="word-break:break-all;" href={pkg.homepage}>
+				{pkg.homepage}
+			</a>
 		</p>
 	</div>
 	{#if yourReview}
@@ -72,7 +84,7 @@
 		<div class="col">
 			<List columns={1} style="width: 100%; --gap: .5rem">
 				{#each reviews as review (review.id)}
-					<Reviews {review} user={review.author} heading='username' small />
+					<Reviews {review} user={review.author} heading="username" small />
 				{/each}
 				{#snippet foot()}
 					<span></span>

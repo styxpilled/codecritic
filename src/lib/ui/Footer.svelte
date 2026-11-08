@@ -5,19 +5,27 @@
 <footer>
 	<section class="fg-dark">
 		<p>
-			Made with <a href="https://svelte.dev/" class="svelte hov-line">Svelte</a>/<a
-				href="https://kit.svelte.dev/"
-				class="svelte hov-line">Kit</a
+			Made with <a href="https://svelte.dev/" class="svelte hov-line">Svelte</a>
+			/
+			<a href="https://kit.svelte.dev/" class="svelte hov-line">Kit</a>
+		</p>
+		<p>
+			A <a href="https://styx.gay/" class="fg-blue hov-line">@styx</a>
+			 endeavour
+		</p>
+		<p>
+			<a
+				class="nojs hov-line"
+				href="https://www.kryogenix.org/code/browser/everyonehasjs.html"
 			>
-		</p>
-		<p>A <a href="https://styx.gay/" class="fg-blue hov-line">@styx</a> endeavour</p>
-		<p>
-			<a class="nojs hov-line" href="https://www.kryogenix.org/code/browser/everyonehasjs.html"
-				>NoJS</a
-			> compatible
+				NoJS
+			</a>
+			 compatible
 		</p>
 		<p>
-			<a class="hov-line" href="https://github.com/styxpilled/codecritic"> build hash {version}</a>
+			<a class="hov-line" href="https://github.com/styxpilled/codecritic">
+				build hash {version}
+			</a>
 		</p>
 		<p><a class=" hov-line" href="/privacy-notice">Privacy policy</a></p>
 	</section>

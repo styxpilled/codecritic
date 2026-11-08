@@ -12,7 +12,9 @@
 
 	// Suggestions for the slot the member types in. Plain text inputs without JS.
 	let search = $state('');
-	const suggestions = $derived(search.length > 1 ? await searchNPM(search) : []);
+	const suggestions = $derived(
+		search.length > 1 ? await searchNPM(search) : []
+	);
 </script>
 
 <form

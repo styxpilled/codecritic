@@ -30,7 +30,12 @@
 					}
 				}}
 			/>
-			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="32" viewBox="0 0 32 64">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="16"
+				height="32"
+				viewBox="0 0 32 64"
+			>
 				<path d="M0 25h26l8-25 8 25h25L46 40l8 24-20-15-21 15 8-24z" />
 			</svg>
 		</label>

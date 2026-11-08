@@ -1,6 +1,6 @@
-export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
-
 import type { User } from '$lib/server/db/schema';
+
+export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
 /** A user with their follow state relative to the viewer. */
 export type FollowUser = User & {

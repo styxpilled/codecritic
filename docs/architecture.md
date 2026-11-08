@@ -12,11 +12,11 @@
 
 See `README.md` for the commands.
 
-| Environment | Database                          |
-| ----------- | --------------------------------- |
-| dev         | `local.db` through wrangler       |
-| preview     | wrangler local D1                 |
-| remote      | Cloudflare D1 `codecritic-d1`     |
+| Environment | Database                      |
+| ----------- | ----------------------------- |
+| dev         | `local.db` through wrangler   |
+| preview     | wrangler local D1             |
+| remote      | Cloudflare D1 `codecritic-d1` |
 
 Migrations are in `src/lib/server/db/migrations`. The D1 binding is
 `codecritic_d1`.

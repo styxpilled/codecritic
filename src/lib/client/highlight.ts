@@ -5,7 +5,7 @@ export function hljsDefineSvelte(hljs: HLJSApi) {
 		subLanguage: 'xml',
 		contains: [
 			hljs.COMMENT('<!--', '-->', {
-				relevance: 10
+				relevance: 10,
 			}),
 			{
 				begin: /^(\s*)(<script(\s*context="module")?>)/gm,
@@ -17,16 +17,16 @@ export function hljsDefineSvelte(hljs: HLJSApi) {
 					{
 						begin: /^(\s*)(\$:)/gm,
 						end: /(\s*)/gm,
-						className: 'keyword'
-					}
-				]
+						className: 'keyword',
+					},
+				],
 			},
 			{
 				begin: /^(\s*)(<style.*>)/gm,
 				end: /^(\s*)(<\/style>)/gm,
 				subLanguage: 'css',
 				excludeBegin: true,
-				excludeEnd: true
+				excludeEnd: true,
 			},
 			{
 				begin: /\{/gm,
@@ -36,15 +36,15 @@ export function hljsDefineSvelte(hljs: HLJSApi) {
 					{
 						begin: /[\{]/,
 						end: /[\}]/,
-						skip: true
+						skip: true,
 					},
 					{
 						begin: /([#:\/@])(if|else|each|await|then|catch|debug|html)/gm,
 						className: 'keyword',
-						relevance: 10
-					}
-				]
-			}
-		]
+						relevance: 10,
+					},
+				],
+			},
+		],
 	};
 }

@@ -16,5 +16,8 @@ export const load: PageServerLoad = async ({ locals, params }) => {
 		.where(eq($db.reviews.id, parseInt(params.id)));
 	if (!review) error(404);
 
-	redirect(303, `/user/${review.username}/package/${review.packageID}/${optSubpath(review.index)}`);
+	redirect(
+		303,
+		`/user/${review.username}/package/${review.packageID}/${optSubpath(review.index)}`
+	);
 };

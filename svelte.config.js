@@ -1,6 +1,7 @@
 import adapter from '@sveltejs/adapter-cloudflare';
-import { relative, sep } from 'node:path';
 import pkg from 'git-describe';
+import { relative, sep } from 'node:path';
+
 const { gitDescribeSync } = pkg;
 
 /** @type {import('@sveltejs/kit').Config} */
@@ -15,8 +16,8 @@ const config = {
 			return isExternalLibrary ? undefined : true;
 		},
 		experimental: {
-			async: true
-		}
+			async: true,
+		},
 	},
 	kit: {
 		// adapter-auto only supports some environments, see https://svelte.dev/docs/kit/adapter-auto for a list.
@@ -24,17 +25,17 @@ const config = {
 		// See https://svelte.dev/docs/kit/adapters for more information about adapters.
 		adapter: adapter(),
 		version: {
-			name: gitDescribeSync().hash
+			name: gitDescribeSync().hash,
 		},
 		experimental: {
-			remoteFunctions: true
+			remoteFunctions: true,
 		},
 		alias: {
 			$ui: './src/lib/ui',
 			$styles: './src/lib/styles',
-			$api: './src/routes/api'
-		}
-	}
+			$api: './src/routes/api',
+		},
+	},
 };
 
 export default config;

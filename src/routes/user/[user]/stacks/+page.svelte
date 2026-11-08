@@ -36,7 +36,8 @@
 	{:else}
 		<p class="fg-dark">
 			{#if owner}
-				No stacks yet. <a href="/stacks/new" class="hov-link">Create one</a>.
+				No stacks yet. <a href="/stacks/new" class="hov-link">Create one</a>
+				.
 			{:else}
 				Nothing yet!
 			{/if}
