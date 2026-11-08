@@ -49,4 +49,11 @@
 		"binding": "ASSETS",
 		"directory": ".svelte-kit/cloudflare",
 	},
+	"observability": {
+		"logs": {
+			"enabled": true,
+			"invocation_logs": false,
+			// "head_sampling_rate": 0.01 // 1% sampling rate
+		},
+	},
 }
