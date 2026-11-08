@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getMutuals } from '$api/user.remote';
-	import UserList from '$ui/UserList.svelte';
+	import { List as UserList } from '$ui/User';
 
 	const { params } = $props();
 	const mutuals = $derived(await getMutuals({ username: params.user }));

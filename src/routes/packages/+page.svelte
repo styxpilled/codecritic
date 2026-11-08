@@ -3,6 +3,7 @@
 	import { getGlobalPopularReviews } from '$api/reviews.remote';
 	import { getPopularUsers } from '$api/user.remote';
 	import Avatar from '$ui/Avatar.svelte';
+	import { Compact } from '$ui/FollowButton';
 	import List from '$ui/List.svelte';
 	import Package from '$ui/Package';
 	import Reviews from '$ui/Reviews.svelte';
@@ -39,20 +40,23 @@
 		{#snippet head()}
 			<span>popular reviewers</span>
 		{/snippet}
-		{#each recentPopularUsers as user (user.id)}
-			<div class="row center">
-				<a href="/user/{user.username}">
-					<Avatar {user} />
-				</a>
-				<div class="col fg-dark start nogap">
-					<a href="/user/{user.username}" class="fg-red hov-line">
-						{user.nickname || user.username}
+		{#each recentPopularUsers as user, i (user.id)}
+			<div class="row space center">
+				<div class="row">
+					<a href="/user/{user.username}">
+						<Avatar {user} />
 					</a>
-					<div class="row">
-						<span>{user.likes} likes</span>
-						<span>{user.reviews} reviews</span>
+					<div class="col fg-dark start nogap">
+						<a href="/user/{user.username}" class="fg-red hov-line">
+							{user.nickname || user.username}
+						</a>
+						<div class="row">
+							<span class="info">{user.likes} likes</span>
+							<span class="info">{user.reviews} reviews</span>
+						</div>
 					</div>
 				</div>
+				<Compact bind:user={recentPopularUsers[i]} />
 			</div>
 		{/each}
 	</List>
@@ -72,5 +76,9 @@
 		@media (width <= 950px) {
 			display: block;
 		}
+	}
+
+	.info {
+		min-width: 4rem;
 	}
 </style>

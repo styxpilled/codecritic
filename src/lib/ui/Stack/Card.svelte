@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { COLORS, optSubpath } from '$lib';
+	import { hashColor, optSubpath } from '$lib';
 	import type { Stack, User } from '$lib/server/db/schema';
 	import Avatar from '$ui/Avatar.svelte';
 	import LikeButton from './LikeButton.svelte';
@@ -19,12 +19,6 @@
 		/** How many lines of chips each list gets. */
 		lines?: number;
 	} = $props();
-
-	const color = (value: string) =>
-		COLORS[
-			value.split('').reduce((sum, c) => sum + c.charCodeAt(0), 0) %
-				COLORS.length
-		];
 
 	const href = $derived(
 		`/user/${stack.author.username}/stack/${stack.normalizedName}/${optSubpath(stack.index)}`
@@ -57,11 +51,15 @@
 
 <article class="stack btn bg-light col">
 	<h3 class="row">
-		<Avatar user={stack.author} size="sm" />
+		<a href="/user/{stack.author.username}">
+			<Avatar user={stack.author} size="sm" />
+		</a>
 		<a class="name fg-orange hov-line" {href}>{stack.name}</a>
 	</h3>
 	{#if stack.description}
-		<p class="description fg-darker">{stack.description}</p>
+		<p class="description fg-darker">
+			<a {href}>{stack.description}</a>
+		</p>
 	{/if}
 	{#if tags.shown.length}
 		<ul class="chips row wrap">
@@ -83,7 +81,7 @@
 		<ul class="chips row wrap">
 			{#each packages.shown as pkg, i (i)}
 				<li>
-					<a class="chip bg-{color(pkg)} hov-invert" href="/packages/{pkg}">
+					<a class="chip bg-{hashColor(pkg)} hov-invert" href="/packages/{pkg}">
 						{pkg}
 					</a>
 				</li>

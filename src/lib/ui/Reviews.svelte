@@ -89,7 +89,19 @@
 			{review.createdAt.toLocaleDateString('en-GB')}
 		</span>
 	</p>
-	<p class="content">{review.content}</p>
+	<p class="content">
+		{#if user}
+			<a
+				href="/user/{user.username}/package/{review.packageID}/{optSubpath(
+					review.index
+				)}"
+			>
+				{review.content}
+			</a>
+		{:else}
+			<a href="/review/{review.id}">{review.content}</a>
+		{/if}
+	</p>
 	<LikeButton {review} {user} />
 	{#if app.user && app.user.id === review.authorID}
 		<a

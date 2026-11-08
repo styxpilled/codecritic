@@ -21,7 +21,7 @@
 	{#each likedReviews as review (review.id)}
 		<Reviews {review} showUser={true} user={review.author} />
 	{:else}
-		<p class="fg-dark">Nothing yet!</p>
+		<p class="fg-dark">{params.user} hasn't liked any reviews yet.</p>
 	{/each}
 </List>
 
@@ -29,11 +29,15 @@
 	{#snippet head()}
 		<span>stacks liked by {params.user}</span>
 	{/snippet}
-	<Masonry items={likedStacks} columns={3} rows={3}>
-		{#snippet item(stack)}
-			<Card {stack} />
-		{/snippet}
-	</Masonry>
+	{#if likedReviews.length > 0}
+		<Masonry items={likedStacks} columns={3} rows={3}>
+			{#snippet item(stack)}
+				<Card {stack} />
+			{/snippet}
+		</Masonry>
+	{:else}
+		<p class="fg-dark">{params.user} hasn't liked any stacks yet.</p>
+	{/if}
 </List>
 
 <style>

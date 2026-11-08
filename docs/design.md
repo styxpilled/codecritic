@@ -35,8 +35,14 @@ can swap the two values and still produce a readable result.
 
 ### COLORS
 
-`COLORS` in `src/lib/index.ts` is the color rotation. Use it only for the two
-cases it already serves: keyword chips and avatars. It is not a general palette.
+`COLORS` in `src/lib/index.ts` is the color rotation. Use it only for the cases
+it already serves: keyword chips, avatars, and package chips on stack cards and
+user cards. It is not a general palette.
+
+Package chips break the rule that packages are blue. A row of four identical
+blue chips reads as one block, and the rotation tells the packages apart at a
+glance, which is what a chip row is for. `hashColor(name)` picks the color, so
+one package has one color everywhere. Identicons use the same hash.
 
 ### Light mode
 
@@ -68,6 +74,31 @@ components in a directory with an `index.ts` barrel, as `Review/` and
 `Package/` do.
 
 Route-only components live next to their route, as `Sidebar.svelte` does.
+
+### User
+
+`User/` holds `Card` (the large card on `/users`), `Row` (the dense row for
+followers, following and mutuals), `List` (a list of rows), `Favorites` (the
+package chips) and `Name` (the nickname and username link).
+
+A card is not one click target. The avatar and the name are two links to the
+profile, each count links to its own page, and the chips and the follow button
+sit outside every link.
+
+### Follow button
+
+`FollowButton/Default` is the wide text button. `FollowButton/Compact` is a
+circle with an icon for places without room for text. A caller picks one. No
+breakpoint swaps them. Both render a link to `/login/github` for a visitor and
+nothing on the profile of the viewer.
+
+`Avatar` takes an optional `badge` snippet that sits in the bottom right
+corner, meant for the compact button on `lg` and `xl` sizes.
+
+### Avatar
+
+A user without a GitHub avatar gets an identicon from `minidenticons`, keyed
+on the username and painted with the `hashColor` of the username.
 
 ## Icons
 

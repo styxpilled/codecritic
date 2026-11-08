@@ -45,6 +45,12 @@ export const COLORS = [
 	'purple',
 ];
 
+/** A stable color from the rotation for a name. */
+export const hashColor = (value: string) =>
+	COLORS[
+		[...value].reduce((sum, c) => sum + c.charCodeAt(0), 0) % COLORS.length
+	];
+
 export const normalizeName = (input: string) => {
 	return (
 		input

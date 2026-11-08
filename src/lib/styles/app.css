@@ -19,7 +19,14 @@ body {
 	font-family: 'Inter Variable', sans-serif;
 	scrollbar-width: thin;
 	color: var(--color-text);
-	background-color: var(--color-bg);
+	background: #181a1b;
+	background: var(--color-bg, #181a1b);
+}
+
+@media (prefers-color-scheme: light) {
+	body {
+		background: hsl(0, 0%, 98%);
+	}
 }
 
 html {
@@ -178,6 +185,7 @@ textarea {
 	resize: none;
 	&::placeholder {
 		color: var(--color-text-dark);
+		font-style: italic;
 	}
 }
 

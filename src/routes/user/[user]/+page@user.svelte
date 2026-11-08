@@ -3,10 +3,11 @@
 	import { getProfile } from '$api/user.remote.js';
 	import { app } from '$lib/client/state.svelte.js';
 	import Avatar from '$ui/Avatar.svelte';
-	import FollowButton from '$ui/FollowButton.svelte';
+	import { Default as FollowButton } from '$ui/FollowButton';
 	import Icon from '$ui/Icon.svelte';
 	import List from '$ui/List.svelte';
 	import Reviews from '$ui/Reviews.svelte';
+	import { Favorites } from '$ui/User';
 
 	let { params } = $props();
 	// svelte-ignore state_referenced_locally
@@ -65,12 +66,11 @@
 						{/if}
 					</h1>
 					{#if app.user?.id === user.id}
-						<a href="/user" class="btn bg-light fg-dark hov-link hov-invert">
+						<a
+							href="/settings"
+							class="btn bg-light fg-dark hov-link hov-invert"
+						>
 							Edit profile
-						</a>
-					{:else if !app.user}
-						<a href="/login/github" class="fg-dark hov-link">
-							Sign in to follow
 						</a>
 					{:else}
 						<FollowButton bind:user />
@@ -93,8 +93,18 @@
 				<span class="mono">{user.reviews.toString().padStart(3, '0')}</span>
 				<span>REVIEWS</span>
 			</a>
+			<a href="/user/{user.username}/stacks" class="col hov-link">
+				<span class="mono">{user.stacks.toString().padStart(3, '0')}</span>
+				<span>STACKS</span>
+			</a>
 		</div>
 	</div>
+	{#if user.favorites.length > 0}
+		<div class="favorites">
+			<h3 class="upcase fg-dark">favorite packages</h3>
+			<Favorites packages={user.favorites} />
+		</div>
+	{/if}
 	<nav>
 		<ul class="row space">
 			<li>
@@ -110,17 +120,19 @@
 			<li><a class="hov-link" href="/user/{user.username}/stats">Stats</a></li>
 		</ul>
 	</nav>
-	<div class="recent-reviews">
-		<List columns={1}>
-			{#snippet head()}
-				<a href="/user/{params.user}/reviews">recent reviews</a>
-				<a href="/user/{params.user}/reviews">more</a>
-			{/snippet}
-			{#each reviews as review (review.id)}
-				<Reviews {review} {user} />
-			{/each}
-		</List>
-	</div>
+	{#if reviews.length > 0}
+		<div class="recent-reviews">
+			<List columns={1}>
+				{#snippet head()}
+					<a href="/user/{params.user}/reviews">recent reviews</a>
+					<a href="/user/{params.user}/reviews">more</a>
+				{/snippet}
+				{#each reviews as review (review.id)}
+					<Reviews {review} {user} />
+				{/each}
+			</List>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -163,6 +175,15 @@
 		letter-spacing: 0.075em;
 		.mono {
 			font-size: 1.125rem;
+		}
+	}
+
+	.favorites {
+		margin-top: 1rem;
+		h3 {
+			font-size: 0.75rem;
+			letter-spacing: 0.075em;
+			margin-bottom: 0.25rem;
 		}
 	}
 

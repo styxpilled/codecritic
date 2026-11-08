@@ -53,12 +53,13 @@ export const getNPMPackage = query(v.string(), async (name) => {
 		.insert($db.packages)
 		.values([{ ...pkg, expires: new Date() }])
 		.onConflictDoNothing();
-	if (npmPackage.keywords)
+	if (npmPackage.keywords?.length)
 		await db
 			.insert($db.packagesKeywords)
 			.values(
 				npmPackage.keywords.map((v) => ({ name: npmPackage.name, keyword: v }))
-			);
+			)
+			.onConflictDoNothing();
 
 	if (npmPackage.readme) {
 		await db

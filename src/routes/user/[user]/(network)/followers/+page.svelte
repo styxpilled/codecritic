@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { getFollowers } from '$api/user.remote';
-	import UserList from '$ui/UserList.svelte';
+	import { List as UserList } from '$ui/User';
 
 	const { params } = $props();
 	const followers = $derived(await getFollowers({ username: params.user }));

@@ -226,14 +226,9 @@ function insertPackages(packages) {
 			expires,
 			p.date ?? null
 		);
-		// Never duplicate a keyword that the app already cached.
-		for (const k of new Set(p.keywords ?? [])) {
+		for (const k of p.keywords ?? []) {
 			write(
-				`INSERT INTO packages_keywords (name, keyword)
-	SELECT ?, ? WHERE NOT EXISTS
-	(SELECT 1 FROM packages_keywords WHERE name = ? AND keyword = ?)`,
-				p.name,
-				k,
+				'INSERT OR IGNORE INTO packages_keywords (name, keyword) VALUES (?, ?)',
 				p.name,
 				k
 			);
@@ -324,6 +319,22 @@ function insertStacks(users, packages) {
 	return ids;
 }
 
+function insertFavorites(users, packages) {
+	for (const user of users) {
+		const picks = new Set();
+		const size = Math.min(1 + upTo(4), packages.length);
+		while (picks.size < size) picks.add(pick(packages).name);
+		[...picks].forEach((pkg, position) =>
+			write(
+				'INSERT INTO users_packages (user_id, package, position) VALUES (?, ?, ?)',
+				user.id,
+				pkg,
+				position
+			)
+		);
+	}
+}
+
 function insertStackLikes(users, stacks) {
 	let likes = 0;
 	for (const user of users) {
@@ -389,6 +400,7 @@ if (reset) {
 	insertPackages(packages);
 	const reviews = insertReviews(users, packages);
 	const stacks = insertStacks(users, packages);
+	insertFavorites(users, packages);
 	const { follows, likes } = insertFollowsAndLikes(users, reviews);
 	const stackLikes = insertStackLikes(users, stacks);
 	summary =

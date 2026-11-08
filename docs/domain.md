@@ -58,6 +58,18 @@ A stack is a named collection of package names that one user owns.
 - Tags live in `stacks_tags`, one row per tag, in the same shape as
   `packages_keywords`. Tags are not searchable.
 
+## Favorites
+
+`users_packages` holds up to four favorite packages per user, the way a
+Letterboxd member picks four favorite films.
+
+- `position` is the order the user chose, 0 to 3. It is not a ranking the site
+  computes. `(user_id, position)` is unique.
+- The package is stored as text, as in `stacks_packages`, so a user can pick a
+  package the cache has not seen.
+- `setFavoritePackages` replaces all slots in one call and enforces the limit of
+  four on the server.
+
 ## Follows
 
 `users_follows` holds one directed row per follow.

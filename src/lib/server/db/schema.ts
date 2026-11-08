@@ -6,6 +6,7 @@ import {
 	blob,
 	primaryKey,
 	unique,
+	index,
 } from 'drizzle-orm/sqlite-core';
 
 export type User = InferSelectModel<typeof users>;
@@ -31,12 +32,16 @@ export const guestbookMessages = sqliteTable('guestbook_messages', {
 		.default(sql`CURRENT_TIMESTAMP`),
 });
 
-export const users = sqliteTable('users', {
-	id: integer().primaryKey(),
-	username: text().notNull(),
-	nickname: text(),
-	githubID: integer('github_id').notNull().unique(),
-});
+export const users = sqliteTable(
+	'users',
+	{
+		id: integer().primaryKey(),
+		username: text().notNull(),
+		nickname: text(),
+		githubID: integer('github_id').notNull().unique(),
+	},
+	(t) => [index('users_username_idx').on(t.username)]
+);
 
 export const usersRelations = relations(users, ({ many, one }) => ({
 	profile: one(profiles),
@@ -75,7 +80,10 @@ export const usersFollows = sqliteTable(
 				onUpdate: 'cascade',
 			}),
 	},
-	(t) => [primaryKey({ columns: [t.userID, t.following] })]
+	(t) => [
+		primaryKey({ columns: [t.userID, t.following] }),
+		index('users_follows_following_idx').on(t.following),
+	]
 );
 
 export const usersFollowsRelations = relations(usersFollows, ({ one }) => ({
@@ -90,6 +98,22 @@ export const usersFollowsRelations = relations(usersFollows, ({ one }) => ({
 		references: [users.id],
 	}),
 }));
+
+/** The favorite packages of a user, up to four, in the order the user chose. */
+export const usersPackages = sqliteTable(
+	'users_packages',
+	{
+		userID: integer('user_id')
+			.notNull()
+			.references(() => users.id, {
+				onDelete: 'cascade',
+				onUpdate: 'cascade',
+			}),
+		package: text().notNull(),
+		position: integer().notNull(),
+	},
+	(t) => [unique().on(t.userID, t.position)]
+);
 
 export const sessions = sqliteTable('sessions', {
 	id: text().primaryKey().notNull(),
@@ -125,19 +149,23 @@ export const packages = sqliteTable('packages', {
 	// 	.default(sql`now() + INTERVAL '1 WEEK'`)
 });
 
-export const packagesKeywords = sqliteTable('packages_keywords', {
-	name: text()
-		.notNull()
-		.references(() => packages.name, {
-			onDelete: 'cascade',
-			onUpdate: 'cascade',
-		}),
-	keyword: text().notNull(),
-});
+export const packagesKeywords = sqliteTable(
+	'packages_keywords',
+	{
+		name: text()
+			.notNull()
+			.references(() => packages.name, {
+				onDelete: 'cascade',
+				onUpdate: 'cascade',
+			}),
+		keyword: text().notNull(),
+	},
+	(t) => [primaryKey({ columns: [t.name, t.keyword] })]
+);
 
 export const readmes = sqliteTable('readmes', {
 	name: text()
-		.notNull()
+		.primaryKey()
 		.references(() => packages.name, {
 			onDelete: 'cascade',
 			onUpdate: 'cascade',
@@ -148,26 +176,33 @@ export const readmes = sqliteTable('readmes', {
 	url: text(),
 });
 
-export const reviews = sqliteTable('reviews', {
-	id: integer().primaryKey(),
-	authorID: integer()
-		.notNull()
-		.references(() => users.id, {
-			onDelete: 'cascade',
-			onUpdate: 'cascade',
-		}),
-	packageID: text()
-		.notNull()
-		.references(() => packages.name, {
-			onDelete: 'cascade',
-			onUpdate: 'cascade',
-		}),
-	createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
-	version: text().notNull(),
-	content: text().notNull(),
-	rating: integer({ mode: 'number' }).notNull(),
-	index: integer().notNull(),
-});
+export const reviews = sqliteTable(
+	'reviews',
+	{
+		id: integer().primaryKey(),
+		authorID: integer()
+			.notNull()
+			.references(() => users.id, {
+				onDelete: 'cascade',
+				onUpdate: 'cascade',
+			}),
+		packageID: text()
+			.notNull()
+			.references(() => packages.name, {
+				onDelete: 'cascade',
+				onUpdate: 'cascade',
+			}),
+		createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+		version: text().notNull(),
+		content: text().notNull(),
+		rating: integer({ mode: 'number' }).notNull(),
+		index: integer().notNull(),
+	},
+	(t) => [
+		index('reviews_package_idx').on(t.packageID),
+		index('reviews_author_idx').on(t.authorID),
+	]
+);
 
 export const reviewsRelations = relations(reviews, ({ one, many }) => ({
 	reviewAuthor: one(users, {
@@ -191,44 +226,59 @@ export const likesReviews = sqliteTable(
 			onUpdate: 'cascade',
 		}),
 	},
-	(t) => [unique().on(t.userID, t.reviewID)]
+	(t) => [
+		unique().on(t.userID, t.reviewID),
+		index('likes_reviews_review_idx').on(t.reviewID),
+	]
 );
 
-export const stacks = sqliteTable('stacks', {
-	id: integer().primaryKey(),
-	author: integer().notNull(),
-	name: text().notNull(),
-	normalizedName: text().notNull(),
-	description: text().notNull(),
-	createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
-	updatedAt: integer('updated_at', { mode: 'timestamp' })
-		.notNull()
-		.$onUpdate(() => new Date()),
-	index: integer(),
-});
+export const stacks = sqliteTable(
+	'stacks',
+	{
+		id: integer().primaryKey(),
+		author: integer().notNull(),
+		name: text().notNull(),
+		normalizedName: text().notNull(),
+		description: text().notNull(),
+		createdAt: integer('created_at', { mode: 'timestamp' }).notNull(),
+		updatedAt: integer('updated_at', { mode: 'timestamp' })
+			.notNull()
+			.$onUpdate(() => new Date()),
+		index: integer(),
+	},
+	(t) => [index('stacks_author_idx').on(t.author)]
+);
 
-export const stacksPackages = sqliteTable('stacks_packages', {
-	stackID: integer('stack_id').references(() => stacks.id, {
-		onDelete: 'cascade',
-		onUpdate: 'cascade',
-	}),
-	package: text(),
-	position: integer().notNull().default(0),
-	// .references(() => packages.name, {
-	// 	onDelete: 'cascade',
-	// 	onUpdate: 'cascade',
-	// }),
-});
-
-export const stacksTags = sqliteTable('stacks_tags', {
-	stackID: integer('stack_id')
-		.notNull()
-		.references(() => stacks.id, {
+export const stacksPackages = sqliteTable(
+	'stacks_packages',
+	{
+		stackID: integer('stack_id').references(() => stacks.id, {
 			onDelete: 'cascade',
 			onUpdate: 'cascade',
 		}),
-	tag: text().notNull(),
-});
+		package: text(),
+		position: integer().notNull().default(0),
+		// .references(() => packages.name, {
+		// 	onDelete: 'cascade',
+		// 	onUpdate: 'cascade',
+		// }),
+	},
+	(t) => [index('stacks_packages_stack_idx').on(t.stackID, t.position)]
+);
+
+export const stacksTags = sqliteTable(
+	'stacks_tags',
+	{
+		stackID: integer('stack_id')
+			.notNull()
+			.references(() => stacks.id, {
+				onDelete: 'cascade',
+				onUpdate: 'cascade',
+			}),
+		tag: text().notNull(),
+	},
+	(t) => [index('stacks_tags_stack_idx').on(t.stackID, t.tag)]
+);
 
 export const stacksLikes = sqliteTable(
 	'stacks_likes',
@@ -244,7 +294,10 @@ export const stacksLikes = sqliteTable(
 			onUpdate: 'cascade',
 		}),
 	},
-	(t) => [unique().on(t.userID, t.stackID)]
+	(t) => [
+		unique().on(t.userID, t.stackID),
+		index('stacks_likes_stack_idx').on(t.stackID),
+	]
 );
 
 export const stacksRelations = relations(stacks, ({ many, one }) => ({

@@ -81,6 +81,11 @@ export const updateStackSchema = v.object({
 	id: v.pipe(v.union([v.string(), v.number()]), v.toNumber()),
 });
 
+/** Four slots. Empty slots arrive as empty strings from the form. */
+export const favoritesSchema = v.object({
+	packages: v.pipe(v.array(v.string()), v.maxLength(4)),
+});
+
 export const updateFollowSchema = v.object({
 	username: v.string(),
 });

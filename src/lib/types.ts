@@ -1,5 +1,22 @@
 export type Expand<T> = T extends infer O ? { [K in keyof O]: O[K] } : never;
 
+import type { User } from '$lib/server/db/schema';
+
+/** A user with their follow state relative to the viewer. */
+export type FollowUser = User & {
+	userFollows: boolean;
+	followsUser: boolean;
+	followers?: number;
+};
+
+/** What the user cards draw. `userCounts` in `user.remote.ts` fills it. */
+export type UserCard = FollowUser & {
+	reviews: number;
+	stacks: number;
+	likesGiven: number;
+	favorites: string[];
+};
+
 export type NPMDirectPackage = {
 	name: string;
 	scope?: string;

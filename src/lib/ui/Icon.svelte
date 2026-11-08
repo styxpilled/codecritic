@@ -16,6 +16,8 @@
 		'globe',
 		'corner-down-left',
 		'list-plus',
+		'check',
+		'minus',
 	]);
 </script>
 

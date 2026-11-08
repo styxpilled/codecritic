@@ -1,11 +1,53 @@
 import { error } from '@sveltejs/kit';
-import { and, eq, getTableColumns, gt, sql } from 'drizzle-orm';
+import { and, desc, eq, getTableColumns, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/sqlite-core';
 import * as v from 'valibot';
 import { query, getRequestEvent, form } from '$app/server';
 import { getDays } from '$lib/server/auth';
-import { $db } from '$lib/server/db';
-import { updateFollowSchema, updateProfileSchema } from './schemas';
+import { $db, toStringArr } from '$lib/server/db';
+import {
+	favoritesSchema,
+	updateFollowSchema,
+	updateProfileSchema,
+} from './schemas';
+
+/** The favorite packages of the selected user, in the order they chose. */
+const favoritesArr = sql`(
+	SELECT json_group_array(package)
+	FROM (
+		SELECT package FROM users_packages
+		WHERE user_id = users.id
+		ORDER BY position
+	)
+)`.mapWith(toStringArr);
+
+/**
+ * Scalar subqueries, so the counts never multiply the rows of a join. The outer
+ * column is written as text, because Drizzle drops the table name from a column
+ * in a query without joins, and the inner table would win.
+ */
+const userCounts = {
+	reviews:
+		sql`(SELECT COUNT(*) FROM reviews WHERE authorID = users.id)`.mapWith(
+			Number
+		),
+	stacks: sql`(SELECT COUNT(*) FROM stacks WHERE author = users.id)`.mapWith(
+		Number
+	),
+	/** Likes the user gave, over reviews and stacks. */
+	likesGiven: sql`(
+		(SELECT COUNT(*) FROM likes_reviews WHERE user_id = users.id)
+		+ (SELECT COUNT(*) FROM stacks_likes WHERE user_id = users.id)
+	)`.mapWith(Number),
+	favorites: favoritesArr,
+};
+
+/** Likes the reviews of the user received. */
+const likesReceived = sql`(
+	SELECT COUNT(*) FROM likes_reviews
+	INNER JOIN reviews ON reviews.id = likes_reviews.review_id
+	WHERE reviews.authorID = users.id
+)`.mapWith(Number);
 
 export const getUser = query(v.string(), async (username) => {
 	const { db } = getRequestEvent().locals;
@@ -29,6 +71,8 @@ export const getProfile = query(v.string(), async (username) => {
 			following: sql`COUNT(DISTINCT following.following)`.mapWith(Number),
 			followers: sql`COUNT(DISTINCT followers.user_id)`.mapWith(Number),
 			reviews: sql`COUNT(DISTINCT ${$db.reviews.id})`.mapWith(Number),
+			stacks: userCounts.stacks,
+			favorites: favoritesArr,
 			followsUser: sql`${user?.id || -1} = ${following.following}`.mapWith(
 				Boolean
 			),
@@ -72,6 +116,29 @@ export const updateProfile = form(
 	}
 );
 
+export const setFavoritePackages = form(
+	favoritesSchema,
+	async ({ packages }) => {
+		const { db, user } = getRequestEvent().locals;
+		if (!user) error(401);
+		const list = [
+			...new Set(packages.map((p) => p.trim()).filter(Boolean)),
+		].slice(0, 4);
+		await db
+			.delete($db.usersPackages)
+			.where(eq($db.usersPackages.userID, user.id));
+		if (list.length) {
+			await db.insert($db.usersPackages).values(
+				list.map((pkg, position) => ({
+					userID: user.id,
+					package: pkg,
+					position,
+				}))
+			);
+		}
+	}
+);
+
 /** Follow state of the selected user, relative to the signed in user. */
 const followFlags = (viewerID: number) => ({
 	followsUser:
@@ -95,6 +162,7 @@ export const getFollowing = query(
 		const res = await db
 			.select({
 				...getTableColumns($db.users),
+				...userCounts,
 				...followFlags(viewer?.id ?? -1),
 			})
 			.from($db.users)
@@ -116,6 +184,7 @@ export const getFollowers = query(
 		const res = await db
 			.select({
 				...getTableColumns($db.users),
+				...userCounts,
 				...followFlags(viewer?.id ?? -1),
 			})
 			.from($db.users)
@@ -139,6 +208,7 @@ export const getMutuals = query(
 		const res = await db
 			.select({
 				...getTableColumns($db.users),
+				...userCounts,
 				...followFlags(viewer?.id ?? -1),
 			})
 			.from($db.users)
@@ -201,33 +271,21 @@ export const getPopularUsers = query(
 	}),
 	async ({ limit = 6, page, recent }) => {
 		const { db, user } = getRequestEvent().locals;
-		const cond = recent
-			? gt($db.reviews.createdAt, new Date(new Date().getTime() - getDays(7)))
-			: undefined;
-		const following = alias($db.usersFollows, 'following');
-		const followers = alias($db.usersFollows, 'followers');
+		const since = recent
+			? sql` AND created_at > ${Math.floor((Date.now() - getDays(7)) / 1000)}`
+			: sql``;
+		// Only members with a review, or with a review this week.
+		const hasReviews = sql`EXISTS (SELECT 1 FROM reviews WHERE authorID = users.id${since})`;
 		const users = await db
 			.select({
 				...getTableColumns($db.users),
-				likes: sql`COUNT(DISTINCT ${$db.likesReviews.reviewID})`.mapWith(
-					Number
-				),
-				reviews: sql`COUNT(DISTINCT ${$db.reviews.id})`.mapWith(Number),
-				followsUser: sql`${user?.id || -1} = ${following.following}`.mapWith(
-					Boolean
-				),
-				userFollows: sql`${user?.id || -1} = ${followers.userID}`.mapWith(
-					Boolean
-				),
+				...userCounts,
+				likes: likesReceived,
+				...followFlags(user?.id ?? -1),
 			})
 			.from($db.users)
-			.innerJoin($db.reviews, eq($db.users.id, $db.reviews.authorID))
-			.leftJoin($db.likesReviews, eq($db.reviews.id, $db.likesReviews.reviewID))
-			.leftJoin(following, eq($db.users.id, following.userID))
-			.leftJoin(followers, eq($db.users.id, followers.following))
-			.where(cond)
-			.groupBy($db.users.id)
-			.orderBy(sql`COUNT(${$db.likesReviews.reviewID}) DESC`)
+			.where(hasReviews)
+			.orderBy(desc(likesReceived), desc(userCounts.reviews))
 			.limit(limit)
 			.offset(page * limit);
 		return users;

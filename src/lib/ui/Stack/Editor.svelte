@@ -2,7 +2,7 @@
 	import { searchNPM } from '$api/npm.remote';
 	import { createStackSchema, updateStackSchema } from '$api/schemas';
 	import { createStack, updateStack } from '$api/stacks.remote';
-	import { COLORS, optSubpath } from '$lib';
+	import { hashColor, optSubpath } from '$lib';
 	import Icon from '$ui/Icon.svelte';
 
 	type Stack = {
@@ -217,12 +217,7 @@
 	{#if id === '_packages'}
 		<div class="package-suggestions col btn fg-dark">
 			{#each suggestedPackages as pkg (pkg.name)}
-				{@const colorIndex =
-					pkg.name
-						.split('')
-						.map((c) => c.charCodeAt(0))
-						.reduce((a, b) => a + b) % COLORS.length}
-				{@const color = COLORS[colorIndex]}
+				{@const color = hashColor(pkg.name)}
 				<button
 					type="button"
 					class="btn bg-{color} fg-bright hov-invert row"
@@ -251,12 +246,7 @@
 	<ul class="row wrap">
 		{#each items as pkg, i (i)}
 			{#if pkg}
-				{@const colorIndex =
-					pkg
-						.split('')
-						.map((c) => c.charCodeAt(0))
-						.reduce((a, b) => a + b) % COLORS.length}
-				{@const color = COLORS[colorIndex]}
+				{@const color = hashColor(pkg)}
 				<div class="row nogap">
 					{#if reorder}
 						<button
