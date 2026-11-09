@@ -16,10 +16,10 @@ pub fn highlight(code: &str, lang: &str) -> Option<String> {
     let mut out = Out::with_capacity(b.len() * 2);
     match lang.as_str() {
         "javascript" | "js" | "jsx" | "mjs" | "cjs" => {
-            js::js(&cx, &mut out, b, false, 0, false, false);
+            js::js(&cx, &mut out, b, false, 0, false, js::Scope::Code);
         }
         "typescript" | "ts" | "tsx" | "mts" | "cts" => {
-            js::js(&cx, &mut out, b, true, 0, false, false);
+            js::js(&cx, &mut out, b, true, 0, false, js::Scope::Code);
         }
         "xml" | "html" | "xhtml" | "rss" | "atom" | "xjb" | "xsd" | "xsl" | "plist" | "wsf"
         | "svg" => {
@@ -28,8 +28,8 @@ pub fn highlight(code: &str, lang: &str) -> Option<String> {
         "svelte" | "vue" => {
             markup(&cx, &mut out, b, 0, false, Mode::Svelte);
         }
-        "css" => css::css(&mut out, b),
-        "json" | "jsonc" | "json5" => out = json::json(b),
+        "css" => css::css(&cx, &mut out, b),
+        "json" | "jsonc" | "json5" => out = json::json(&cx, b),
         _ => return None,
     }
     if cx.overflow.get() {

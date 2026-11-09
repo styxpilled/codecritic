@@ -134,7 +134,7 @@ fn attr_selector(out: &mut Out, s: &[u8]) {
     }
 }
 
-fn selector(out: &mut Out, b: &[u8], from: usize, to: usize) {
+fn selector(cx: &Ctx, out: &mut Out, b: &[u8], from: usize, to: usize) {
     let mut i = from;
     while i < to {
         if let Some(e) = common(out, b, i, to) {
@@ -164,14 +164,15 @@ fn selector(out: &mut Out, b: &[u8], from: usize, to: usize) {
             span(out, "selector-pseudo", &b[i..e]);
             i = e;
         } else if c == b'[' {
-            let e = match find(b, b"]", i) {
-                Some(e) if e <= to => e + 1,
-                _ => to,
-            };
+            let close = find(b, b"]", i).filter(|&e| e < to);
+            cx.bracket(out, b'[');
             push(out, "<span class=\"hljs-selector-attr\">");
-            attr_selector(out, &b[i..e]);
+            attr_selector(out, &b[i + 1..close.unwrap_or(to)]);
             push(out, "</span>");
-            i = e;
+            if close.is_some() {
+                cx.bracket(out, b']');
+            }
+            i = close.map_or(to, |e| e + 1);
         } else if let Some(e) = ident(b, i) {
             span(out, "selector-tag", &b[i..e]);
             i = e;
@@ -179,14 +180,18 @@ fn selector(out: &mut Out, b: &[u8], from: usize, to: usize) {
             span(out, "number", &b[i..e]);
             i = e;
         } else {
-            esc(out, &b[i..i + 1]);
+            if matches!(c, b'(' | b')') {
+                cx.bracket(out, c);
+            } else {
+                esc(out, &b[i..i + 1]);
+            }
             i += 1;
         }
     }
 }
 
 /// Values in declarations and at-rule preludes.
-fn value(out: &mut Out, b: &[u8], from: usize, to: usize, prelude: bool) {
+fn value(cx: &Ctx, out: &mut Out, b: &[u8], from: usize, to: usize, prelude: bool) {
     let mut i = from;
     let mut parens = 0i32;
     while i < to {
@@ -224,7 +229,11 @@ fn value(out: &mut Out, b: &[u8], from: usize, to: usize, prelude: bool) {
                 b')' => parens -= 1,
                 _ => {}
             }
-            esc(out, &b[i..i + 1]);
+            if matches!(c, b'(' | b')' | b'[' | b']') {
+                cx.bracket(out, c);
+            } else {
+                esc(out, &b[i..i + 1]);
+            }
             i += 1;
         }
     }
@@ -245,7 +254,7 @@ fn trim_end(s: &[u8]) -> &[u8] {
     }
 }
 
-pub fn css(out: &mut Out, b: &[u8]) {
+pub fn css(cx: &Ctx, out: &mut Out, b: &[u8]) {
     let n = b.len();
     let mut i = 0;
     while i < n {
@@ -254,7 +263,12 @@ pub fn css(out: &mut Out, b: &[u8]) {
             continue;
         }
         let c = b[i];
-        if matches!(c, b'}' | b';' | b'{') {
+        if matches!(c, b'}' | b'{') {
+            cx.bracket(out, c);
+            i += 1;
+            continue;
+        }
+        if c == b';' {
             out.push(c);
             i += 1;
             continue;
@@ -262,12 +276,12 @@ pub fn css(out: &mut Out, b: &[u8]) {
         let end = statement_end(b, i);
         if let Some(e) = at_rule(b, i) {
             span(out, "keyword", &b[i..e]);
-            value(out, b, e, end, true);
+            value(cx, out, b, e, end, true);
         } else if at(b, end) == b'{' {
-            selector(out, b, i, end);
+            selector(cx, out, b, i, end);
         } else {
             match find(b, b":", i).filter(|&colon| colon <= end) {
-                None => value(out, b, i, end, false),
+                None => value(cx, out, b, i, end, false),
                 Some(colon) => {
                     let name = trim_end(&b[i..colon]);
                     span(
@@ -280,12 +294,12 @@ pub fn css(out: &mut Out, b: &[u8]) {
                         name,
                     );
                     out.extend_from_slice(&b[i + name.len()..colon + 1]);
-                    value(out, b, colon + 1, end, false);
+                    value(cx, out, b, colon + 1, end, false);
                 }
             }
         }
         if at(b, end) == b'{' {
-            out.push(b'{');
+            cx.bracket(out, b'{');
             i = end + 1;
         } else {
             i = end;

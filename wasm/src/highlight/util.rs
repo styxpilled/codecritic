@@ -19,6 +19,7 @@ pub struct Ctx {
     /// Next index of a needle in a source.
     next: RefCell<HashMap<NeedleKey, Option<usize>>>,
     depth: Cell<u32>,
+    brackets: Cell<u32>,
     pub overflow: Cell<bool>,
 }
 
@@ -39,6 +40,22 @@ impl Ctx {
 
     pub fn leave(&self) {
         self.depth.set(self.depth.get() - 1);
+    }
+
+    /// Writes a bracket, colored by its nesting depth.
+    pub fn bracket(&self, out: &mut Out, c: u8) {
+        let mut d = self.brackets.get();
+        if matches!(c, b')' | b']' | b'}') {
+            d = d.saturating_sub(1);
+            self.brackets.set(d);
+        } else {
+            self.brackets.set(d + 1);
+        }
+        out.extend_from_slice(b"<span class=\"hljs-b");
+        out.push(b'1' + (d % 3) as u8);
+        out.extend_from_slice(b"\">");
+        out.push(c);
+        out.extend_from_slice(b"</span>");
     }
 
     /// Index of the `)` that closes the `(` at `i`.

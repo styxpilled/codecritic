@@ -36,7 +36,7 @@ fn key_ahead(b: &[u8], i: usize) -> bool {
 }
 
 /// JSON, also with comments and unquoted keys (jsonc, json5).
-pub fn json(b: &[u8]) -> Out {
+pub fn json(cx: &Ctx, b: &[u8]) -> Out {
     let mut out = Out::with_capacity(b.len() * 2);
     let mut i = 0;
     while i < b.len() {
@@ -74,7 +74,10 @@ pub fn json(b: &[u8]) -> Out {
             } else {
                 esc(&mut out, tok);
             }
-        } else if b"{}[],:".contains(&c) {
+        } else if b"{}[]".contains(&c) {
+            e = i + 1;
+            cx.bracket(&mut out, c);
+        } else if c == b',' || c == b':' {
             e = i + 1;
             span(&mut out, "punctuation", &b[i..e]);
         } else {

@@ -1,5 +1,5 @@
 use super::css::css;
-use super::js::js;
+use super::js::{Scope, js};
 use super::util::*;
 
 /// `Html`: plain markup. `Svelte`: `{…}` blocks hold JS. `Jsx`: JSX inside JS.
@@ -87,15 +87,15 @@ fn lang_ts(s: &[u8]) -> bool {
 
 /// `{` expression `}` from `i`, as JS.
 fn expression(cx: &Ctx, out: &mut Out, b: &[u8], i: usize, ts: bool, mode: Mode) -> usize {
-    out.push(b'{');
+    cx.bracket(out, b'{');
     let mut j = i + 1;
     if let Some(e) = (mode == Mode::Svelte).then(|| block(b, j)).flatten() {
         span(out, "keyword", &b[j..e]);
         j = e;
     }
-    let e = js(cx, out, b, ts, j, true, false);
+    let e = js(cx, out, b, ts, j, true, Scope::Code);
     if at(b, e) == b'}' {
-        out.push(b'}');
+        cx.bracket(out, b'}');
     }
     (e + 1).min(b.len())
 }
@@ -119,7 +119,12 @@ fn tag<'a>(cx: &Ctx, out: &mut Out, b: &'a [u8], i: usize, ts: bool, mode: Mode)
         out.push(b'/');
     }
     if !tag_name.is_empty() {
-        span(out, "name", tag_name);
+        let component = mode != Mode::Html && tag_name[0].is_ascii_uppercase();
+        span(
+            out,
+            if component { "title class_" } else { "name" },
+            tag_name,
+        );
     }
     let mut self_closing = false;
     let mut closed = false;
@@ -152,9 +157,9 @@ fn tag<'a>(cx: &Ctx, out: &mut Out, b: &'a [u8], i: usize, ts: bool, mode: Mode)
         } else if let Some(e) = attr(b, j) {
             if c == b'@' {
                 out.push(b'@');
-                span(out, "attr", &b[j + 1..e]);
+                span(out, "attr tag_", &b[j + 1..e]);
             } else {
-                span(out, "attr", &b[j..e]);
+                span(out, "attr tag_", &b[j..e]);
             }
             j = e;
         } else {
@@ -249,7 +254,7 @@ fn markup_inner(cx: &Ctx, out: &mut Out, b: &[u8], from: usize, ts: bool, mode: 
                 .unwrap_or(n);
             let body = &b[i..e];
             if raw == b"</style" {
-                css(out, body);
+                css(cx, out, body);
             } else {
                 // JS `src.slice(i - 40, i)`, where a negative start counts from the end.
                 let start = if i >= 40 {
@@ -258,7 +263,7 @@ fn markup_inner(cx: &Ctx, out: &mut Out, b: &[u8], from: usize, ts: bool, mode: 
                     (n + i).saturating_sub(40)
                 };
                 let ts = lang_ts(slice(b, start, i)) || ts;
-                js(cx, out, body, ts, 0, false, false);
+                js(cx, out, body, ts, 0, false, Scope::Code);
             }
             i = e;
         } else if c == b'{' && mode != Mode::Html {

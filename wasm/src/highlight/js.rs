@@ -309,6 +309,27 @@ fn arrow(b: &[u8], i: usize) -> Option<usize> {
     (at(b, j) == b'=' && at(b, j + 1) == b'>').then_some(j + 2)
 }
 
+/// End of the type arguments `<…>` that start at `i`, if they look like
+/// type arguments (no `&&`, `||`, calls or statements).
+fn type_args(b: &[u8], i: usize) -> Option<usize> {
+    let mut depth = 0;
+    for j in i..b.len().min(i + 200) {
+        match b[j] {
+            b'<' => depth += 1,
+            b'>' => {
+                depth -= 1;
+                if depth == 0 {
+                    return Some(j + 1);
+                }
+            }
+            c @ (b'&' | b'|') if at(b, j + 1) == c => return None,
+            c if is_id(c) || b" \t,.[]|&?'\"".contains(&c) => {}
+            _ => return None,
+        }
+    }
+    None
+}
+
 /// `\s*=\s*(?:async\s*)?(?:\([^()]*\)|[\w$]+)\s*=>`
 fn arrow_ahead(b: &[u8], i: usize) -> bool {
     let j = spaces(b, i);
@@ -483,21 +504,38 @@ fn comment(out: &mut Out, body: &[u8]) {
     push(out, "</span>");
 }
 
-/// `(<span class="hljs-params">…</span>)`. hljs marks types in TS parameters
-/// with `typed`, and only keywords, literals and built-ins otherwise.
+/// A parameter list. With `typed`, TS types in it are marked.
 fn params(cx: &Ctx, out: &mut Out, b: &[u8], ts: bool, open: usize, close: usize, typed: bool) {
-    if close <= open + 1 {
-        return push(out, "()");
-    }
-    push(out, "(<span class=\"hljs-params\">");
-    js(cx, out, &b[open + 1..close], ts, 0, false, !(ts && typed));
-    push(out, "</span>)");
+    cx.bracket(out, b'(');
+    let scope = if ts && typed {
+        Scope::TypedParams
+    } else {
+        Scope::Params
+    };
+    js(cx, out, &b[open + 1..close], ts, 0, false, scope);
+    cx.bracket(out, b')');
+}
+
+/// The spaces and `=>` of an arrow function.
+fn arrow_op(out: &mut Out, s: &[u8]) {
+    esc(out, &s[..s.len() - 2]);
+    span(out, "operator", b"=>");
+}
+
+#[derive(Clone, Copy, PartialEq)]
+pub enum Scope {
+    Code,
+    /// Parameters: only keywords, literals, built-ins and names are marked.
+    Params,
+    /// TS parameters: marked as code, but keys are parameter names.
+    TypedParams,
+    /// A template substitution: only keywords, literals and built-ins.
+    Subst,
 }
 
 /// Highlights JavaScript or TypeScript from `from` and returns the end. With
 /// `in_braces`, stops at the `}` that closes an enclosing `{` (a template or
-/// markup expression). `restricted` marks only keywords, literals and
-/// built-ins, as hljs does in parameters and template strings.
+/// markup expression).
 pub fn js(
     cx: &Ctx,
     out: &mut Out,
@@ -505,12 +543,12 @@ pub fn js(
     ts: bool,
     from: usize,
     in_braces: bool,
-    restricted: bool,
+    scope: Scope,
 ) -> usize {
     if !cx.enter() {
         return b.len();
     }
-    let end = scan(cx, out, b, ts, from, in_braces, !restricted);
+    let end = scan(cx, out, b, ts, from, in_braces, scope);
     cx.leave();
     end
 }
@@ -522,8 +560,12 @@ fn scan(
     ts: bool,
     from: usize,
     in_braces: bool,
-    full: bool,
+    scope: Scope,
 ) -> usize {
+    let full = matches!(scope, Scope::Code | Scope::TypedParams);
+    let in_params = matches!(scope, Scope::Params | Scope::TypedParams);
+    // A parameter name, unless it is a default value or a renamed key.
+    let param = |before: &[u8]| in_params && !matches!(before, b"=" | b":" | b".");
     let n = b.len();
     let mut i = from;
     let mut regex_ok = true;
@@ -531,6 +573,10 @@ fn scan(
     let mut line_start = true;
     let mut depth = 0i32;
     let mut decl_arrow = false;
+    // In the bindings of an `import` or `export` clause.
+    let mut in_import = false;
+    // Bracket depth in the destructuring pattern of a declaration.
+    let mut pattern = 0u32;
 
     while i < n {
         let c = b[i];
@@ -573,6 +619,7 @@ fn scan(
             i = e;
             regex_ok = false;
             prev = b"\"";
+            in_import = false;
             continue;
         }
         if c == b'`' {
@@ -585,7 +632,7 @@ fn scan(
                 } else if b[j] == b'$' && at(b, j + 1) == b'{' {
                     esc(out, &b[start..j]);
                     push(out, "<span class=\"hljs-subst\">${");
-                    let e = js(cx, out, b, ts, j + 2, true, true);
+                    let e = js(cx, out, b, ts, j + 2, true, Scope::Subst);
                     if at(b, e) == b'}' {
                         out.push(b'}');
                     }
@@ -649,17 +696,11 @@ fn scan(
         if full && c == b'(' {
             let close = cx.close_paren(b, i);
             let arrow_end = close
-                .filter(|_| regex_ok && prev != b"async")
+                .filter(|_| regex_ok)
                 .and_then(|close| arrow(b, close + 1));
             if let (Some(close), Some(e)) = (close, arrow_end) {
-                if !decl_arrow {
-                    push(out, "<span class=\"hljs-function\">");
-                }
                 params(cx, out, b, ts, i, close, decl_arrow);
-                esc(out, &b[close + 1..e]);
-                if !decl_arrow {
-                    push(out, "</span>");
-                }
+                arrow_op(out, &b[close + 1..e]);
                 decl_arrow = false;
                 i = e;
                 regex_ok = true;
@@ -694,22 +735,40 @@ fn scan(
                     span(out, "variable language_", id);
                 } else if is_built_in(id) || (ts && is_ts_type(id)) {
                     span(out, "built_in", id);
+                } else if param(before) {
+                    span(out, "params", id);
                 } else {
                     esc(out, id);
                 }
                 regex_ok = keyword;
                 continue;
             }
-            let call = at(b, spaces(b, i)) == b'(';
+            let next = spaces(b, i);
+            let call = at(b, next) == b'('
+                || (at(b, next) == b'<'
+                    && type_args(b, next).is_some_and(|e| at(b, spaces(b, e)) == b'('));
             let open = if call { find(b, b"(", i) } else { None };
             let close = open.and_then(|o| cx.close_paren(b, o));
             let method = close.is_some_and(|c| method_body(b, c + 1));
+            let arrow_call = close.is_some_and(|c| arrow(b, c + 1).is_some());
+            let mut fn_params = None;
             let arrow_end = if regex_ok { arrow(b, i) } else { None };
-            let class = if keyword || before == b"function" || (before == b"." && !call) {
-                None
-            } else {
-                class_ref(b, start)
-            };
+            if keyword && !in_import && matches!(id, b"import" | b"export") {
+                let next = at(b, spaces(b, i));
+                in_import = if id == b"import" {
+                    !matches!(next, b'(' | b'.')
+                } else {
+                    matches!(next, b'{' | b'*')
+                };
+            } else if id == b"from" {
+                in_import = false;
+            }
+            let class =
+                if keyword || in_import || before == b"function" || (before == b"." && !call) {
+                    None
+                } else {
+                    class_ref(b, start)
+                };
             if let Some(ce) = class {
                 span(out, "title class_", &b[start..ce]);
                 esc(out, &b[ce..i]);
@@ -718,13 +777,22 @@ fn scan(
             }
             let cls = if before == b"." {
                 if call { "title function_" } else { "property" }
-            } else if before != b"?"
+            } else if in_import && !keyword {
+                "variable"
+            } else if decl && !keyword && !arrow_ahead(b, i) {
+                "variable def_"
+            } else if !in_params
+                && before != b"?"
                 && before != b"case"
                 && (ts || before == b"{" || before == b"," || at_line_start)
                 && key_ahead(b, i, ts)
             {
                 "attr"
-            } else if keyword && !(is_contextual(id) && (method || (call && !decl_arrow))) {
+            } else if pattern > 0 && !keyword && before != b"=" {
+                "variable def_"
+            } else if keyword
+                && !(is_contextual(id) && (method || (call && !decl_arrow && !arrow_call)))
+            {
                 "keyword"
             } else if is_literal(id) {
                 "literal"
@@ -735,20 +803,11 @@ fn scan(
             } else if before == b"extends" || before == b"implements" {
                 "title class_ inherited__"
             } else if before == b"function" {
+                fn_params = close;
                 "title function_"
-            } else if let Some(ae) = arrow_end.filter(|_| before != b"async") {
-                if decl_arrow {
-                    esc(out, &b[start..ae]);
-                } else {
-                    push(
-                        out,
-                        "<span class=\"hljs-function\"><span class=\"hljs-params\">",
-                    );
-                    esc(out, id);
-                    push(out, "</span>");
-                    esc(out, &b[i..ae]);
-                    push(out, "</span>");
-                }
+            } else if let Some(ae) = arrow_end {
+                span(out, "params", id);
+                arrow_op(out, &b[i..ae]);
                 i = ae;
                 prev = b">";
                 decl_arrow = false;
@@ -758,23 +817,28 @@ fn scan(
                 decl_arrow = true;
                 "title function_"
             } else if call && !is_built_in_global(id) {
-                if let (true, Some(open), Some(close)) = (method, open, close) {
-                    span(out, "title function_", id);
-                    out.extend_from_slice(&b[i..open]);
-                    params(cx, out, b, ts, open, close, true);
-                    i = close + 1;
-                    regex_ok = false;
-                    prev = b")";
-                    continue;
+                if method {
+                    fn_params = close;
                 }
                 "title function_"
             } else if is_constant(id) {
                 "variable constant_"
             } else if (ts && is_ts_type(id)) || is_built_in(id) {
                 "built_in"
+            } else if in_params {
+                if param(before) { "params" } else { "" }
             } else {
-                ""
+                "variable"
             };
+            if let (Some(close), Some(open)) = (fn_params, open) {
+                span(out, cls, id);
+                esc(out, &b[i..open]);
+                params(cx, out, b, ts, open, close, true);
+                i = close + 1;
+                regex_ok = false;
+                prev = b")";
+                continue;
+            }
             if cls.is_empty() {
                 esc(out, id);
             } else {
@@ -792,7 +856,21 @@ fn scan(
             }
             depth -= 1;
         }
-        esc(out, &b[i..i + 1]);
+        match c {
+            b'{' | b'[' if pattern > 0 || matches!(prev, b"const" | b"let" | b"var") => {
+                pattern += 1;
+            }
+            b'}' | b']' if pattern > 0 => pattern -= 1,
+            _ => {}
+        }
+        match c {
+            b'(' | b')' | b'[' | b']' | b'{' | b'}' => cx.bracket(out, c),
+            b'*' if in_import => span(out, "operator", b"*"),
+            _ => esc(out, &b[i..i + 1]),
+        }
+        if matches!(c, b'}' | b';') {
+            in_import = false;
+        }
         regex_ok = !matches!(c, b')' | b']' | b'}');
         prev = &b[i..i + 1];
         i += 1;

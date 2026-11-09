@@ -15,8 +15,7 @@ code.hljs {
 	background: #282c34;
 }
 
-.hljs-keyword,
-.hljs-operator {
+.hljs-keyword {
 	color: #c678dd;
 	color: var(--color-purple);
 }
@@ -64,7 +63,8 @@ code.hljs {
 }
 
 .hljs-property,
-.hljs-function .hljs-params,
+.hljs-params,
+.hljs-variable,
 .hljs-attr,
 .hljs-section,
 .hljs-name,
@@ -75,9 +75,16 @@ code.hljs {
 	color: var(--color-red);
 }
 
-.hljs-literal {
+.hljs-literal,
+.hljs-operator {
 	color: #56b6c2;
 	color: var(--color-cyan);
+}
+
+.hljs-number,
+.hljs-attr.tag_ {
+	color: #d19a66;
+	color: var(--color-orange);
 }
 
 .hljs-string,
@@ -95,13 +102,14 @@ code.hljs {
 	color: var(--color-yellow);
 }
 
-.hljs-variable,
+.hljs-variable.language_,
+.hljs-variable.constant_,
+.hljs-variable.def_,
 .hljs-template-variable,
 .hljs-type,
 .hljs-selector-class,
 .hljs-selector-attr,
-.hljs-selector-pseudo,
-.hljs-number {
+.hljs-selector-pseudo {
 	color: #e6c07b;
 	color: var(--color-yellow);
 }
@@ -127,4 +135,20 @@ code.hljs {
 
 .hljs-link {
 	text-decoration: underline;
+}
+
+/* Brackets, by nesting depth. */
+.hljs-b1 {
+	color: #d19a66;
+	color: var(--color-orange);
+}
+
+.hljs-b2 {
+	color: #c678dd;
+	color: var(--color-purple);
+}
+
+.hljs-b3 {
+	color: #61afef;
+	color: var(--color-blue);
 }
