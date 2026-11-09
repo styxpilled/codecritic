@@ -43,7 +43,7 @@
 			},
 		},
 	},
-	"workers_dev": true,
+	"workers_dev": false,
 	"preview_urls": false,
 	"assets": {
 		"binding": "ASSETS",

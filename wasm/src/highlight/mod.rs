@@ -2,6 +2,7 @@ mod css;
 mod html;
 mod js;
 mod json;
+mod ts;
 mod util;
 
 use html::{Mode, markup};

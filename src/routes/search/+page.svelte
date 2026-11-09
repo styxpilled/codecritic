@@ -8,22 +8,25 @@
 	const results = $derived(query ? await searchNPM(query) : []);
 </script>
 
+<!-- Preloading a result would store the package in D1, so wait for a tap. -->
 <svelte:boundary>
 	{#if results && results.length > 0}
-		<List>
-			{#snippet head()}
-				<h3 class="fg-dark">Showing matches for "{query}":</h3>
-			{/snippet}
-			{#each results as pkg (pkg.name)}
-				<Package {pkg} />
-			{/each}
-			{#snippet foot()}
-				<span></span>
-				<a href="/search?{page.url.searchParams}" class="hov-link">
-					Load more results
-				</a>
-			{/snippet}
-		</List>
+		<div data-sveltekit-preload-data="tap" style="display: contents">
+			<List>
+				{#snippet head()}
+					<h3 class="fg-dark">Showing matches for "{query}":</h3>
+				{/snippet}
+				{#each results as pkg (pkg.name)}
+					<Package {pkg} />
+				{/each}
+				{#snippet foot()}
+					<span></span>
+					<a href="/search?{page.url.searchParams}" class="hov-link">
+						Load more results
+					</a>
+				{/snippet}
+			</List>
+		</div>
 	{:else}
 		<h3 class="fg-dark">Nothing here but chickens!</h3>
 	{/if}

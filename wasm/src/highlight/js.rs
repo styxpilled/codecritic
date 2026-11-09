@@ -1,7 +1,8 @@
 use super::html::jsx;
+use super::ts;
 use super::util::*;
 
-fn is_keyword(id: &[u8]) -> bool {
+pub(super) fn is_keyword(id: &[u8]) -> bool {
     matches!(
         id,
         b"as"
@@ -216,7 +217,7 @@ fn is_built_in(id: &[u8]) -> bool {
         )
 }
 
-fn is_id_start(c: u8) -> bool {
+pub(super) fn is_id_start(c: u8) -> bool {
     c.is_ascii_alphabetic() || c == b'_' || c == b'$' || c >= 0x80
 }
 
@@ -225,12 +226,12 @@ fn is_id(c: u8) -> bool {
 }
 
 /// `[A-Za-z_$ -￿][\w$ -￿]*`
-fn ident(b: &[u8], i: usize) -> Option<usize> {
+pub(super) fn ident(b: &[u8], i: usize) -> Option<usize> {
     is_id_start(at(b, i)).then(|| run(b, i + 1, is_id))
 }
 
 /// `(?:0[xX][\da-fA-F_]+|0[bB][01_]+|0[oO][0-7_]+|(?:\d[\d_]*(?:\.[\d_]*)?|\.\d[\d_]*)(?:[eE][+-]?\d+)?)n?`
-fn number(b: &[u8], i: usize) -> usize {
+pub(super) fn number(b: &[u8], i: usize) -> usize {
     let digits = |c: u8| c.is_ascii_digit() || c == b'_';
     let radix = |f: fn(u8) -> bool| {
         let j = run(b, i + 2, |c| f(c) || c == b'_');
@@ -351,10 +352,10 @@ fn arrow_ahead(b: &[u8], i: usize) -> bool {
         || rest(j).is_some()
 }
 
-/// `[ \t]*:(?!:)`, or `[ \t]*\??:(?!:)` in TS.
+/// `[ \t]*:(?!:)`, or `[ \t]*[?!]?:(?!:)` in TS.
 fn key_ahead(b: &[u8], i: usize, ts: bool) -> bool {
     let mut j = blanks(b, i);
-    if ts && at(b, j) == b'?' {
+    if ts && matches!(at(b, j), b'?' | b'!') {
         j += 1;
     }
     at(b, j) == b':' && at(b, j + 1) != b':'
@@ -493,7 +494,7 @@ fn doc(out: &mut Out, e: &[u8]) {
     }
 }
 
-fn comment(out: &mut Out, body: &[u8]) {
+pub(super) fn comment(out: &mut Out, body: &[u8]) {
     if !body.starts_with(b"/**") {
         return span(out, "comment", body);
     }
@@ -504,10 +505,10 @@ fn comment(out: &mut Out, body: &[u8]) {
     push(out, "</span>");
 }
 
-/// A parameter list. With `typed`, TS types in it are marked.
-fn params(cx: &Ctx, out: &mut Out, b: &[u8], ts: bool, open: usize, close: usize, typed: bool) {
+/// A parameter list.
+pub(super) fn params(cx: &Ctx, out: &mut Out, b: &[u8], ts: bool, open: usize, close: usize) {
     cx.bracket(out, b'(');
-    let scope = if ts && typed {
+    let scope = if ts {
         Scope::TypedParams
     } else {
         Scope::Params
@@ -531,6 +532,22 @@ pub enum Scope {
     TypedParams,
     /// A template substitution: only keywords, literals and built-ins.
     Subst,
+}
+
+/// Type parameters after a class name at `i`, or type arguments after a
+/// class reference. Returns the end.
+fn type_params(cx: &Ctx, out: &mut Out, b: &[u8], i: usize, before: &[u8]) -> usize {
+    if at(b, i) != b'<' {
+        return i;
+    }
+    if before == b"class" {
+        let limit = b.len();
+        return ts::generics_at(cx, out, b, i, limit).unwrap_or(i);
+    }
+    match type_args(b, i) {
+        Some(_) => ts::args_at(cx, out, b, i).unwrap_or(i),
+        None => i,
+    }
 }
 
 /// Highlights JavaScript or TypeScript from `from` and returns the end. With
@@ -577,6 +594,13 @@ fn scan(
     let mut in_import = false;
     // Bracket depth in the destructuring pattern of a declaration.
     let mut pattern = 0u32;
+    // Bracket depth, and if a `=` default came after the last `,`, for
+    // annotations in parameters.
+    let mut nest = 0i32;
+    let mut after_eq = false;
+    // Brace depths (bits) that hold a class body.
+    let mut class_body = 0u64;
+    let mut class_head = false;
 
     while i < n {
         let c = b[i];
@@ -694,13 +718,28 @@ fn scan(
             continue;
         }
         if full && c == b'(' {
-            let close = cx.close_paren(b, i);
-            let arrow_end = close
-                .filter(|_| regex_ok)
-                .and_then(|close| arrow(b, close + 1));
+            let close = cx.close(b, i);
+            // `(…): Type =>` in TS, with the type written to `typed`.
+            let mut typed = Out::new();
+            let mut ret_end = 0;
+            let arrow_end = close.filter(|_| regex_ok).and_then(|close| {
+                arrow(b, close + 1).or_else(|| {
+                    if !ts {
+                        return None;
+                    }
+                    ret_end = ts::ret(cx, &mut typed, b, close + 1);
+                    (ret_end > close + 1).then(|| arrow(b, ret_end)).flatten()
+                })
+            });
             if let (Some(close), Some(e)) = (close, arrow_end) {
-                params(cx, out, b, ts, i, close, decl_arrow);
-                arrow_op(out, &b[close + 1..e]);
+                params(cx, out, b, ts, i, close);
+                let from = if ret_end > 0 {
+                    out.extend_from_slice(&typed);
+                    ret_end
+                } else {
+                    close + 1
+                };
+                arrow_op(out, &b[from..e]);
                 decl_arrow = false;
                 i = e;
                 regex_ok = true;
@@ -708,12 +747,22 @@ fn scan(
                 continue;
             }
             if let Some(close) = close.filter(|_| prev == b"function") {
-                params(cx, out, b, ts, i, close, false);
-                i = close + 1;
+                params(cx, out, b, ts, i, close);
+                i = if ts {
+                    ts::ret(cx, out, b, close + 1)
+                } else {
+                    close + 1
+                };
                 regex_ok = false;
                 prev = b")";
                 continue;
             }
+        }
+        if c == b':' && scope == Scope::TypedParams && nest == 0 && !after_eq {
+            i = ts::annot(cx, out, b, i);
+            regex_ok = false;
+            prev = b"T";
+            continue;
         }
 
         if let Some(e) = ident(b, i) {
@@ -733,7 +782,9 @@ fn scan(
                     span(out, "literal", id);
                 } else if is_language_var(id) {
                     span(out, "variable language_", id);
-                } else if is_built_in(id) || (ts && is_ts_type(id)) {
+                } else if ts && is_ts_type(id) {
+                    span(out, "type", id);
+                } else if is_built_in(id) {
                     span(out, "built_in", id);
                 } else if param(before) {
                     span(out, "params", id);
@@ -744,12 +795,26 @@ fn scan(
                 continue;
             }
             let next = spaces(b, i);
-            let call = at(b, next) == b'('
-                || (at(b, next) == b'<'
-                    && type_args(b, next).is_some_and(|e| at(b, spaces(b, e)) == b'('));
+            let generic = at(b, next) == b'<'
+                && if ts && before == b"function" {
+                    ts::angle_close(cx, b, next).map(|e| e + 1)
+                } else {
+                    type_args(b, next)
+                }
+                .is_some_and(|e| at(b, spaces(b, e)) == b'(');
+            let call = at(b, next) == b'(' || generic;
             let open = if call { find(b, b"(", i) } else { None };
-            let close = open.and_then(|o| cx.close_paren(b, o));
-            let method = close.is_some_and(|c| method_body(b, c + 1));
+            let close = open.and_then(|o| cx.close(b, o));
+            let class_member = ts
+                && class_body >> (depth & 63) & 1 == 1
+                && (at_line_start
+                    || is_ts_keyword(before)
+                    || matches!(
+                        before,
+                        b";" | b"{" | b"}" | b"static" | b"async" | b"get" | b"set"
+                    ));
+            let method =
+                close.is_some_and(|c| method_body(b, c + 1)) || (class_member && close.is_some());
             let arrow_call = close.is_some_and(|c| arrow(b, c + 1).is_some());
             let mut fn_params = None;
             let arrow_end = if regex_ok { arrow(b, i) } else { None };
@@ -763,6 +828,22 @@ fn scan(
             } else if id == b"from" {
                 in_import = false;
             }
+            if ts
+                && keyword
+                && !in_import
+                && matches!(id, b"type" | b"interface")
+                && !matches!(before, b"." | b"import")
+                && ident(b, blanks(b, i)).is_some()
+            {
+                i = if id == b"type" {
+                    ts::alias(cx, out, b, start)
+                } else {
+                    ts::interface(cx, out, b, start)
+                };
+                regex_ok = false;
+                prev = b"T";
+                continue;
+            }
             let class =
                 if keyword || in_import || before == b"function" || (before == b"." && !call) {
                     None
@@ -772,6 +853,9 @@ fn scan(
             if let Some(ce) = class {
                 span(out, "title class_", &b[start..ce]);
                 esc(out, &b[ce..i]);
+                if ts {
+                    i = type_params(cx, out, b, i, before);
+                }
                 regex_ok = false;
                 continue;
             }
@@ -823,7 +907,9 @@ fn scan(
                 "title function_"
             } else if is_constant(id) {
                 "variable constant_"
-            } else if (ts && is_ts_type(id)) || is_built_in(id) {
+            } else if ts && is_ts_type(id) {
+                "type"
+            } else if is_built_in(id) {
                 "built_in"
             } else if in_params {
                 if param(before) { "params" } else { "" }
@@ -832,9 +918,23 @@ fn scan(
             };
             if let (Some(close), Some(open)) = (fn_params, open) {
                 span(out, cls, id);
-                esc(out, &b[i..open]);
-                params(cx, out, b, ts, open, close, true);
-                i = close + 1;
+                let g = spaces(b, i);
+                let mut generics = Out::new();
+                let from = match ts.then(|| ts::generics_at(cx, &mut generics, b, g, open)) {
+                    Some(Some(e)) => {
+                        esc(out, &b[i..g]);
+                        out.extend_from_slice(&generics);
+                        e
+                    }
+                    _ => i,
+                };
+                esc(out, &b[from..open]);
+                params(cx, out, b, ts, open, close);
+                i = if ts {
+                    ts::ret(cx, out, b, close + 1)
+                } else {
+                    close + 1
+                };
                 regex_ok = false;
                 prev = b")";
                 continue;
@@ -845,16 +945,57 @@ fn scan(
                 span(out, cls, id);
             }
             regex_ok = cls == "keyword";
+            if ts && cls.starts_with("title class_") {
+                i = type_params(cx, out, b, i, before);
+            }
+            if cls == "keyword" && id == b"class" {
+                class_head = true;
+            }
+            if !ts {
+                continue;
+            }
+            if cls == "keyword" && !in_import && matches!(id, b"as" | b"satisfies") {
+                let k = ts::skip(out, b, i);
+                i = ts::ty(cx, out, b, k).unwrap_or(k);
+                regex_ok = false;
+                prev = b"T";
+                continue;
+            }
+            // `name: Type` of a declaration or class field.
+            if (decl && cls == "variable def_") || (cls == "attr" && class_member) {
+                let mut j = blanks(b, i);
+                if matches!(at(b, j), b'?' | b'!') {
+                    j += 1;
+                }
+                if at(b, j) == b':' && at(b, j + 1) != b':' {
+                    esc(out, &b[i..j]);
+                    i = ts::annot(cx, out, b, j);
+                    regex_ok = false;
+                    prev = b"T";
+                }
+            }
             continue;
         }
 
         if c == b'{' {
             depth += 1;
+            if class_head {
+                class_body |= 1 << (depth & 63);
+                class_head = false;
+            }
         } else if c == b'}' {
             if depth == 0 && in_braces {
                 return i;
             }
+            class_body &= !(1 << (depth & 63));
             depth -= 1;
+        }
+        match c {
+            b'(' | b'[' | b'{' => nest += 1,
+            b')' | b']' | b'}' => nest -= 1,
+            b'=' if nest == 0 => after_eq = true,
+            b',' if nest == 0 => after_eq = false,
+            _ => {}
         }
         match c {
             b'{' | b'[' if pattern > 0 || matches!(prev, b"const" | b"let" | b"var") => {

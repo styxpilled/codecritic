@@ -58,8 +58,8 @@ impl Ctx {
         out.extend_from_slice(b"</span>");
     }
 
-    /// Index of the `)` that closes the `(` at `i`.
-    pub fn close_paren(&self, s: &[u8], i: usize) -> Option<usize> {
+    /// Index of the bracket that closes the `(`, `[` or `{` at `i`.
+    pub fn close(&self, s: &[u8], i: usize) -> Option<usize> {
         let m = self.parens.borrow().get(&key(s)).cloned();
         let m = m.unwrap_or_else(|| {
             let m = paren_matches(s);
@@ -83,6 +83,14 @@ impl Ctx {
     }
 }
 
+fn pair(c: u8) -> u8 {
+    match c {
+        b')' => b'(',
+        b']' => b'[',
+        _ => b'{',
+    }
+}
+
 fn paren_matches(b: &[u8]) -> Rc<[i32]> {
     let mut matches = vec![-1i32; b.len()];
     let mut stack = Vec::new();
@@ -93,8 +101,7 @@ fn paren_matches(b: &[u8]) -> Rc<[i32]> {
             b'(' | b'[' | b'{' => stack.push(j),
             c @ (b')' | b']' | b'}') => {
                 if let Some(open) = stack.pop()
-                    && c == b')'
-                    && b[open] == b'('
+                    && b[open] == pair(c)
                 {
                     matches[open] = j as i32;
                 }
