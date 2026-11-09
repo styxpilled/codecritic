@@ -25,7 +25,7 @@
 	/** @type {{ id: typeof LUCIDE_ICON_IDS[number], size?: number|string, color?: string, [x: string]: any }} */
 	let { id, size = 24, color = 'currentColor', ...rest } = $props();
 
-	const sprite_href = $derived(`${import.meta.env.BASE_URL}lucide.svg#${id}`);
+	const sprite_href = $derived(`/lucide.svg#${id}`);
 </script>
 
 <svg
