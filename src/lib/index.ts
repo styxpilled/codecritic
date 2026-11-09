@@ -35,6 +35,18 @@ export const stripGit = (url: string | null) => {
 	return url.substring(plusGit ? 4 : 0, dotGit ? url.length - 4 : url.length);
 };
 
+const GITHUB_REPO =
+	/^(?:git\+)?(?:(?:https?|git|ssh):\/\/)?(?:[^@/]+@)?(?:www\.)?github\.com[/:]([\w.-]+)\/([\w.-]+?)(?:\.git)?(?:[/#?]|$)/i;
+const GITHUB_SHORTHAND = /^github:([\w.-]+)\/([\w.-]+?)(?:\.git)?$/i;
+
+/** Returns `owner/repo` for GitHub repository URLs, else null. */
+export const githubRepo = (url: string | null) => {
+	if (!url) return null;
+	const m = url.match(GITHUB_REPO) ?? url.match(GITHUB_SHORTHAND);
+	if (!m || [m[1], m[2]].some((s) => /^\.+$/.test(s))) return null;
+	return `${m[1]}/${m[2]}`;
+};
+
 export const COLORS = [
 	'red',
 	'orange',

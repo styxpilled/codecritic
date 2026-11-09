@@ -34,12 +34,12 @@ export function hljsDefineSvelte(hljs: HLJSApi) {
 				subLanguage: 'javascript',
 				contains: [
 					{
-						begin: /[\{]/,
-						end: /[\}]/,
+						begin: /[{]/,
+						end: /[}]/,
 						skip: true,
 					},
 					{
-						begin: /([#:\/@])(if|else|each|await|then|catch|debug|html)/gm,
+						begin: /([#:/@])(if|else|each|await|then|catch|debug|html)/gm,
 						className: 'keyword',
 						relevance: 10,
 					},

@@ -1,68 +1,71 @@
-import { error } from '@sveltejs/kit';
+import { env } from 'cloudflare:workers';
 import { eq } from 'drizzle-orm';
 import * as v from 'valibot';
-import { $fetch, stripGit } from '#lib';
+import { githubRepo } from '#lib';
 import { $db } from '#lib/server/db/index.ts';
 import { renderReadme } from '#lib/server/readme.ts';
 import { getRequestEvent, query } from '$app/server';
 import { getNPMPackage } from './npm.remote';
 
+const MISSING_TTL = 1000 * 60 * 60 * 24;
+
+const githubHeaders = (): HeadersInit => {
+	const { GITHUB_CLIENT_ID: id, GITHUB_CLIENT_SECRET: secret } = env;
+	return {
+		'User-Agent': 'codecritic',
+		Accept: 'application/vnd.github+json',
+		...(id && secret && { Authorization: `Basic ${btoa(`${id}:${secret}`)}` }),
+	};
+};
+
 export const getReadme = query(v.string(), async (name) => {
 	const { db } = getRequestEvent().locals;
-	const [possibleReadme] = await db
+	const [cached] = await db
 		.select()
 		.from($db.readmes)
 		.where(eq($db.readmes.name, name));
-	if (possibleReadme) {
-		if (possibleReadme.html !== null) return possibleReadme;
-		const html = await renderReadme(
-			possibleReadme.value ?? '',
-			possibleReadme.url
-		);
+	if (cached?.value) {
+		if (cached.html !== null) return cached;
+		const html = await renderReadme(cached.value, cached.url);
 		await db
 			.update($db.readmes)
 			.set({ html })
 			.where(eq($db.readmes.name, name));
-		return { ...possibleReadme, html };
+		return { ...cached, html };
 	}
+	if (cached?.expires && cached.expires > new Date()) return cached;
+
 	const pkg = await getNPMPackage(name);
-	if (!pkg.repository) error(404);
-	const repo = stripGit(pkg.repository);
-	const readme = {
-		name: name,
+	const empty = {
+		name: pkg.name,
+		url: pkg.repository,
 		value: '',
 		html: '',
-		url: repo,
-		expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
+		expires: null as Date | null,
 	};
+	const repo = githubRepo(pkg.repository);
+	if (!repo) return empty;
 
-	const readmeData = await $fetch<{ content: string }>(
-		`https://api.github.com/repos/${repo.substring(repo.indexOf('github.com') + 11)}/readme`,
-		null,
-		fetch,
-		{
-			headers: {
-				'User-Agent': 'codecritic',
-			},
-		}
-	);
-	if (readmeData === null) error(404);
-	if (readmeData !== undefined && readmeData.content) {
-		const buff = Buffer.from(readmeData.content, 'base64');
-		readme.value = buff.toString();
-		readme.html = await renderReadme(readme.value, readme.url);
-		await db
-			.insert($db.readmes)
-			.values([
-				{
-					name: pkg.name,
-					url: pkg.repository,
-					value: readme.value,
-					html: readme.html,
-				},
-			])
-			.onConflictDoNothing();
+	const res = await fetch(`https://api.github.com/repos/${repo}/readme`, {
+		headers: githubHeaders(),
+	});
+	if (!res.ok && res.status !== 404) {
+		console.error(res.status, res.statusText, await res.text());
+		return empty;
 	}
-
+	const content = res.ok
+		? (await res.json<{ content?: string }>()).content
+		: '';
+	const value = content ? Buffer.from(content, 'base64').toString() : '';
+	const readme = {
+		...empty,
+		value,
+		html: await renderReadme(value, pkg.repository),
+		expires: value ? null : new Date(Date.now() + MISSING_TTL),
+	};
+	await db
+		.insert($db.readmes)
+		.values(readme)
+		.onConflictDoUpdate({ target: $db.readmes.name, set: readme });
 	return readme;
 });

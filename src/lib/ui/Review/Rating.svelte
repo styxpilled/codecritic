@@ -7,7 +7,7 @@
 </script>
 
 <span class="fg-blue">
-	{#each { length: Math.floor(rating / 2) } as _, i (i)}
+	{#each { length: Math.floor(rating / 2) }, i (i)}
 		★
 	{/each}{#if rating % 2 === 1}
 		½
