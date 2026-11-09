@@ -8,6 +8,9 @@ Because this is not a durable project, migrations are not included in the repo.
 
 ### setup
 
+README rendering is a Rust crate compiled to wasm (`wasm/`). It needs Rust
+with the `wasm32-unknown-unknown` target and `wasm-pack`.
+
 ```bash
 pnpm install
 pnpm prepare

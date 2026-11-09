@@ -7,6 +7,8 @@
 - Drizzle ORM on Cloudflare D1 (SQLite).
 - Cloudflare Workers through `@sveltejs/adapter-cloudflare`.
 - Valibot for input validation.
+- README rendering in Rust, compiled to wasm (`wasm/`). See
+  [README rendering](#readme-rendering).
 
 ## Environments
 
@@ -35,6 +37,35 @@ All data access uses SvelteKit remote functions. They live in
 - Get the request context with `getRequestEvent().locals`, which holds `db`,
   `user` and `session`. `hooks.server.ts` sets all three.
 - Return `error(401)` from a mutation when `locals.user` is null.
+
+## README rendering
+
+`renderReadme` (`src/lib/server/readme.ts`) calls one wasm function,
+`render(markdown, repo)`. The crate is in `wasm/`:
+
+- pulldown-cmark for markdown (GFM tables, task lists, strikethrough,
+  footnotes).
+- ammonia for sanitizing, with an allowlist and relative links rewritten to
+  the GitHub repo.
+- `wasm/src/highlight/`: a hljs-compatible highlighter for JS, TS, JSX, HTML,
+  Svelte, Vue, CSS and JSON. It uses hand-written scanners instead of the
+  regex crate, which adds about 5 ms of cold CPU time.
+
+Highlighted code skips the sanitizer. Code blocks render as a random
+placeholder, which is replaced after sanitizing.
+
+The reason for wasm is the Workers CPU limit. On a cold isolate the wasm
+render costs about half of marked + sanitize-html + the JS highlighter. Most
+of the remaining cold cost is V8 compiling the wasm on first use.
+
+`pnpm wasm` builds `wasm/pkg`. `pnpm dev` and `pnpm build` run it first. The
+`wasm-module` plugin in `vite.config.ts` keeps the `.wasm?module` import in
+builds, so that wrangler compiles the module. The import in `readme.ts` is
+dynamic, because the SvelteKit build analysis loads server modules in Node.
+`vite preview` also runs the build in Node. The `preview-in-node` plugin adds
+Node module hooks for `.wasm` and `cloudflare:workers`.
+
+`cargo test` (in `wasm/`) runs the sanitizer tests.
 
 ## No-JS support
 

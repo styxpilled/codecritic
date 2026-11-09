@@ -1,0 +1,801 @@
+use super::html::jsx;
+use super::util::*;
+
+fn is_keyword(id: &[u8]) -> bool {
+    matches!(
+        id,
+        b"as"
+            | b"in"
+            | b"of"
+            | b"if"
+            | b"for"
+            | b"while"
+            | b"finally"
+            | b"var"
+            | b"new"
+            | b"function"
+            | b"do"
+            | b"return"
+            | b"void"
+            | b"else"
+            | b"break"
+            | b"catch"
+            | b"instanceof"
+            | b"with"
+            | b"throw"
+            | b"case"
+            | b"default"
+            | b"try"
+            | b"switch"
+            | b"continue"
+            | b"typeof"
+            | b"delete"
+            | b"let"
+            | b"yield"
+            | b"const"
+            | b"class"
+            | b"debugger"
+            | b"async"
+            | b"await"
+            | b"static"
+            | b"import"
+            | b"from"
+            | b"export"
+            | b"extends"
+            | b"get"
+            | b"set"
+    )
+}
+
+fn is_ts_keyword(id: &[u8]) -> bool {
+    matches!(
+        id,
+        b"type"
+            | b"interface"
+            | b"enum"
+            | b"implements"
+            | b"declare"
+            | b"namespace"
+            | b"abstract"
+            | b"readonly"
+            | b"keyof"
+            | b"infer"
+            | b"is"
+            | b"satisfies"
+            | b"private"
+            | b"protected"
+            | b"public"
+            | b"module"
+            | b"asserts"
+            | b"unique"
+            | b"override"
+            | b"accessor"
+    )
+}
+
+/// Keywords that name a method when a call follows, e.g. `map.get(`.
+fn is_contextual(id: &[u8]) -> bool {
+    matches!(
+        id,
+        b"get"
+            | b"set"
+            | b"type"
+            | b"from"
+            | b"of"
+            | b"as"
+            | b"is"
+            | b"module"
+            | b"namespace"
+            | b"declare"
+            | b"readonly"
+            | b"abstract"
+            | b"asserts"
+            | b"unique"
+            | b"satisfies"
+            | b"infer"
+            | b"keyof"
+            | b"async"
+            | b"static"
+    )
+}
+
+fn is_literal(id: &[u8]) -> bool {
+    matches!(
+        id,
+        b"true" | b"false" | b"null" | b"undefined" | b"NaN" | b"Infinity"
+    )
+}
+
+fn is_ts_type(id: &[u8]) -> bool {
+    matches!(
+        id,
+        b"any"
+            | b"void"
+            | b"number"
+            | b"boolean"
+            | b"string"
+            | b"object"
+            | b"never"
+            | b"symbol"
+            | b"bigint"
+            | b"unknown"
+    )
+}
+
+fn is_language_var(id: &[u8]) -> bool {
+    matches!(
+        id,
+        b"this"
+            | b"super"
+            | b"window"
+            | b"document"
+            | b"localStorage"
+            | b"sessionStorage"
+            | b"module"
+            | b"global"
+            | b"console"
+            | b"arguments"
+    )
+}
+
+/// Globals that keep `built_in` even when called.
+fn is_built_in_global(id: &[u8]) -> bool {
+    matches!(
+        id,
+        b"setInterval"
+            | b"setTimeout"
+            | b"clearInterval"
+            | b"clearTimeout"
+            | b"require"
+            | b"exports"
+            | b"eval"
+            | b"isFinite"
+            | b"isNaN"
+            | b"parseFloat"
+            | b"parseInt"
+            | b"decodeURI"
+            | b"decodeURIComponent"
+            | b"encodeURI"
+            | b"encodeURIComponent"
+            | b"escape"
+            | b"unescape"
+    )
+}
+
+fn is_built_in(id: &[u8]) -> bool {
+    is_built_in_global(id)
+        || matches!(
+            id,
+            b"Object"
+                | b"Function"
+                | b"Boolean"
+                | b"Symbol"
+                | b"Math"
+                | b"Date"
+                | b"Number"
+                | b"BigInt"
+                | b"String"
+                | b"RegExp"
+                | b"Array"
+                | b"Float32Array"
+                | b"Float64Array"
+                | b"Int8Array"
+                | b"Uint8Array"
+                | b"Uint8ClampedArray"
+                | b"Int16Array"
+                | b"Int32Array"
+                | b"Uint16Array"
+                | b"Uint32Array"
+                | b"BigInt64Array"
+                | b"BigUint64Array"
+                | b"Set"
+                | b"Map"
+                | b"WeakSet"
+                | b"WeakMap"
+                | b"ArrayBuffer"
+                | b"SharedArrayBuffer"
+                | b"Atomics"
+                | b"DataView"
+                | b"JSON"
+                | b"Promise"
+                | b"Generator"
+                | b"GeneratorFunction"
+                | b"AsyncFunction"
+                | b"Reflect"
+                | b"Proxy"
+                | b"Intl"
+                | b"WebAssembly"
+                | b"Error"
+                | b"EvalError"
+                | b"InternalError"
+                | b"RangeError"
+                | b"ReferenceError"
+                | b"SyntaxError"
+                | b"TypeError"
+                | b"URIError"
+        )
+}
+
+fn is_id_start(c: u8) -> bool {
+    c.is_ascii_alphabetic() || c == b'_' || c == b'$' || c >= 0x80
+}
+
+fn is_id(c: u8) -> bool {
+    is_word(c) || c == b'$' || c >= 0x80
+}
+
+/// `[A-Za-z_$ -￿][\w$ -￿]*`
+fn ident(b: &[u8], i: usize) -> Option<usize> {
+    is_id_start(at(b, i)).then(|| run(b, i + 1, is_id))
+}
+
+/// `(?:0[xX][\da-fA-F_]+|0[bB][01_]+|0[oO][0-7_]+|(?:\d[\d_]*(?:\.[\d_]*)?|\.\d[\d_]*)(?:[eE][+-]?\d+)?)n?`
+fn number(b: &[u8], i: usize) -> usize {
+    let digits = |c: u8| c.is_ascii_digit() || c == b'_';
+    let radix = |f: fn(u8) -> bool| {
+        let j = run(b, i + 2, |c| f(c) || c == b'_');
+        (j > i + 2).then_some(j)
+    };
+    let prefixed = match (at(b, i), at(b, i + 1)) {
+        (b'0', b'x' | b'X') => radix(|c| c.is_ascii_hexdigit()),
+        (b'0', b'b' | b'B') => radix(|c| matches!(c, b'0' | b'1')),
+        (b'0', b'o' | b'O') => radix(|c| matches!(c, b'0'..=b'7')),
+        _ => None,
+    };
+    let mut j = prefixed.unwrap_or_else(|| {
+        let mut j = run(b, i + 1, digits);
+        if at(b, i) != b'.' && at(b, j) == b'.' {
+            j = run(b, j + 1, digits);
+        }
+        if matches!(at(b, j), b'e' | b'E') {
+            let k = if matches!(at(b, j + 1), b'+' | b'-') {
+                j + 2
+            } else {
+                j + 1
+            };
+            if at(b, k).is_ascii_digit() {
+                j = run(b, k, |c| c.is_ascii_digit());
+            }
+        }
+        j
+    });
+    if at(b, j) == b'n' {
+        j += 1;
+    }
+    j
+}
+
+/// `\/(?![*/])(?:\\.|\[(?:\\.|[^\]\\\n])*\]|[^/\\\n[])+\/[dgimsuyv]*`
+fn regex(b: &[u8], i: usize) -> Option<usize> {
+    if matches!(at(b, i + 1), b'*' | b'/') {
+        return None;
+    }
+    // `\\.`: `.` is any character but a line terminator.
+    let escape = |j: usize| {
+        (at(b, j) == b'\\' && j + 1 < b.len() && !is_line_end(b, j + 1))
+            .then(|| j + 1 + char_len(b[j + 1]))
+    };
+    let mut j = i + 1;
+    loop {
+        if let Some(e) = escape(j) {
+            j = e;
+        } else if at(b, j) == b'[' {
+            let mut k = j + 1;
+            loop {
+                if let Some(e) = escape(k) {
+                    k = e;
+                } else if k < b.len() && !matches!(b[k], b']' | b'\\' | b'\n') {
+                    k += 1;
+                } else {
+                    break;
+                }
+            }
+            if at(b, k) != b']' {
+                break;
+            }
+            j = k + 1;
+        } else if j < b.len() && !matches!(b[j], b'/' | b'\\' | b'\n' | b'[') {
+            j += 1;
+        } else {
+            break;
+        }
+    }
+    (j > i + 1 && at(b, j) == b'/').then(|| run(b, j + 1, |c| b"dgimsuyv".contains(&c)))
+}
+
+/// `\s*=>`
+fn arrow(b: &[u8], i: usize) -> Option<usize> {
+    let j = spaces(b, i);
+    (at(b, j) == b'=' && at(b, j + 1) == b'>').then_some(j + 2)
+}
+
+/// `\s*=\s*(?:async\s*)?(?:\([^()]*\)|[\w$]+)\s*=>`
+fn arrow_ahead(b: &[u8], i: usize) -> bool {
+    let j = spaces(b, i);
+    if at(b, j) != b'=' {
+        return false;
+    }
+    let j = spaces(b, j + 1);
+    let rest = |j: usize| {
+        let e = if at(b, j) == b'(' {
+            let close = (j + 1..b.len()).find(|&k| matches!(b[k], b'(' | b')'))?;
+            (b[close] == b')').then_some(close + 1)?
+        } else {
+            let e = run(b, j, |c| is_word(c) || c == b'$');
+            (e > j).then_some(e)?
+        };
+        arrow(b, e)
+    };
+    (b[j.min(b.len())..].starts_with(b"async") && rest(spaces(b, j + 5)).is_some())
+        || rest(j).is_some()
+}
+
+/// `[ \t]*:(?!:)`, or `[ \t]*\??:(?!:)` in TS.
+fn key_ahead(b: &[u8], i: usize, ts: bool) -> bool {
+    let mut j = blanks(b, i);
+    if ts && at(b, j) == b'?' {
+        j += 1;
+    }
+    at(b, j) == b':' && at(b, j + 1) != b':'
+}
+
+/// `\s*(?::[^;{}=()]*)?\{`
+fn method_body(b: &[u8], i: usize) -> bool {
+    let mut j = spaces(b, i);
+    if at(b, j) == b':' {
+        j = run(b, j + 1, |c| !b";{}=()".contains(&c));
+    }
+    at(b, j) == b'{'
+}
+
+/// hljs CLASS_REFERENCE. It can match only a prefix of the name:
+/// `JSON|[A-Z][a-z]+(?:[A-Z][a-z]*|\d)*|[A-Z]{2,}(?:[A-Z][a-z]+|\d)+(?:[A-Z][a-z]*)*|[A-Z]{2,}[a-z]+(?:[A-Z][a-z]+|\d)*(?:[A-Z][a-z]*)*`
+fn class_ref(b: &[u8], i: usize) -> Option<usize> {
+    let up = |j: usize| at(b, j).is_ascii_uppercase();
+    let low = |j: usize| at(b, j).is_ascii_lowercase();
+    let lows = |j: usize| run(b, j, |c| c.is_ascii_lowercase());
+    // `(?:[A-Z][a-z]+|\d)*(?:[A-Z][a-z]*)*`
+    let words = |mut j: usize| {
+        loop {
+            if up(j) && low(j + 1) {
+                j = lows(j + 1);
+            } else if at(b, j).is_ascii_digit() {
+                j += 1;
+            } else {
+                break;
+            }
+        }
+        while up(j) {
+            j = lows(j + 1);
+        }
+        j
+    };
+    if b[i..].starts_with(b"JSON") {
+        return Some(i + 4);
+    }
+    if up(i) && low(i + 1) {
+        let mut j = lows(i + 1);
+        loop {
+            if up(j) {
+                j = lows(j + 1);
+            } else if at(b, j).is_ascii_digit() {
+                j += 1;
+            } else {
+                return Some(j);
+            }
+        }
+    }
+    let caps = run(b, i, |c| c.is_ascii_uppercase());
+    match caps - i {
+        // `[A-Z]{2,}` then a digit.
+        2.. if at(b, caps).is_ascii_digit() => Some(words(caps)),
+        // `[A-Z]{2,}` backs off by one so that `[A-Z][a-z]+` follows.
+        3.. if low(caps) => Some(words(caps - 1)),
+        // `[A-Z]{2,}[a-z]+`
+        2 if low(caps) => Some(words(lows(caps))),
+        _ => None,
+    }
+}
+
+/// `@[A-Za-z_$][\w$]*`
+fn decorator(b: &[u8], i: usize) -> Option<usize> {
+    let c = at(b, i + 1);
+    (c.is_ascii_alphabetic() || c == b'_' || c == b'$')
+        .then(|| run(b, i + 2, |c| is_word(c) || c == b'$'))
+}
+
+fn is_constant(id: &[u8]) -> bool {
+    id.len() >= 2
+        && id[0].is_ascii_uppercase()
+        && id[1..]
+            .iter()
+            .all(|&c| c.is_ascii_uppercase() || c.is_ascii_digit() || c == b'_')
+}
+
+fn is_use_strict(s: &[u8]) -> bool {
+    s.len() == 12
+        && matches!(s[0], b'"' | b'\'')
+        && matches!(s[11], b'"' | b'\'')
+        && &s[1..11] == b"use strict"
+}
+
+/// Marks JSDoc tags, types and names in an escaped comment:
+/// `(@[A-Za-z]+)(?:([ \t]*)\{((?:[^{}\n]|\{[^{}\n]*\})*)\}(?:([ \t]+)([\w$.]+)(?=[ \t]*-|[ \t]*$))?)?`
+fn doc(out: &mut Out, e: &[u8]) {
+    let mut i = 0;
+    while i < e.len() {
+        let tag_end = run(e, i + 1, |c| c.is_ascii_alphabetic());
+        if e[i] != b'@' || tag_end == i + 1 {
+            out.push(e[i]);
+            i += 1;
+            continue;
+        }
+        push(out, "<span class=\"hljs-doctag\">");
+        out.extend_from_slice(&e[i..tag_end]);
+        push(out, "</span>");
+        i = tag_end;
+        let open = blanks(e, i);
+        if at(e, open) != b'{' {
+            continue;
+        }
+        let mut k = open + 1;
+        loop {
+            match at(e, k) {
+                b'{' => match (k + 1..e.len()).find(|&m| matches!(e[m], b'{' | b'}' | b'\n')) {
+                    Some(m) if e[m] == b'}' => k = m + 1,
+                    _ => break,
+                },
+                b'}' | b'\n' => break,
+                _ if k < e.len() => k += 1,
+                _ => break,
+            }
+        }
+        if at(e, k) != b'}' {
+            continue;
+        }
+        out.extend_from_slice(&e[i..open]);
+        push(out, "{<span class=\"hljs-type\">");
+        out.extend_from_slice(&e[open + 1..k]);
+        push(out, "</span>}");
+        i = k + 1;
+        let name = blanks(e, i);
+        let name_end = run(e, name, |c| is_word(c) || c == b'$' || c == b'.');
+        let after = blanks(e, name_end);
+        if name > i
+            && name_end > name
+            && (at(e, after) == b'-' || after == e.len() || is_line_end(e, after))
+        {
+            out.extend_from_slice(&e[i..name]);
+            span(out, "variable", &e[name..name_end]);
+            i = name_end;
+        }
+    }
+}
+
+fn comment(out: &mut Out, body: &[u8]) {
+    if !body.starts_with(b"/**") {
+        return span(out, "comment", body);
+    }
+    let mut e = Out::new();
+    esc(&mut e, body);
+    push(out, "<span class=\"hljs-comment\">");
+    doc(out, &e);
+    push(out, "</span>");
+}
+
+/// `(<span class="hljs-params">…</span>)`. hljs marks types in TS parameters
+/// with `typed`, and only keywords, literals and built-ins otherwise.
+fn params(cx: &Ctx, out: &mut Out, b: &[u8], ts: bool, open: usize, close: usize, typed: bool) {
+    if close <= open + 1 {
+        return push(out, "()");
+    }
+    push(out, "(<span class=\"hljs-params\">");
+    js(cx, out, &b[open + 1..close], ts, 0, false, !(ts && typed));
+    push(out, "</span>)");
+}
+
+/// Highlights JavaScript or TypeScript from `from` and returns the end. With
+/// `in_braces`, stops at the `}` that closes an enclosing `{` (a template or
+/// markup expression). `restricted` marks only keywords, literals and
+/// built-ins, as hljs does in parameters and template strings.
+pub fn js(
+    cx: &Ctx,
+    out: &mut Out,
+    b: &[u8],
+    ts: bool,
+    from: usize,
+    in_braces: bool,
+    restricted: bool,
+) -> usize {
+    if !cx.enter() {
+        return b.len();
+    }
+    let end = scan(cx, out, b, ts, from, in_braces, !restricted);
+    cx.leave();
+    end
+}
+
+fn scan(
+    cx: &Ctx,
+    out: &mut Out,
+    b: &[u8],
+    ts: bool,
+    from: usize,
+    in_braces: bool,
+    full: bool,
+) -> usize {
+    let n = b.len();
+    let mut i = from;
+    let mut regex_ok = true;
+    let mut prev: &[u8] = b"";
+    let mut line_start = true;
+    let mut depth = 0i32;
+    let mut decl_arrow = false;
+
+    while i < n {
+        let c = b[i];
+
+        if is_space(c) {
+            let e = spaces(b, i);
+            out.extend_from_slice(&b[i..e]);
+            if b[i..e].contains(&b'\n') {
+                line_start = true;
+            }
+            i = e;
+            continue;
+        }
+        let at_line_start = line_start;
+        line_start = false;
+
+        if c == b'/' && matches!(at(b, i + 1), b'/' | b'*') {
+            let e = if at(b, i + 1) == b'/' {
+                find(b, b"\n", i).unwrap_or(n)
+            } else {
+                find(b, b"*/", i + 2).map_or(n, |e| e + 2)
+            };
+            comment(out, &b[i..e]);
+            i = e;
+            line_start = at_line_start;
+            continue;
+        }
+        if c == b'"' || c == b'\'' {
+            let e = quoted(b, i);
+            let s = &b[i..e];
+            span(
+                out,
+                if at_line_start && is_use_strict(s) {
+                    "meta"
+                } else {
+                    "string"
+                },
+                s,
+            );
+            i = e;
+            regex_ok = false;
+            prev = b"\"";
+            continue;
+        }
+        if c == b'`' {
+            push(out, "<span class=\"hljs-string\">`");
+            let mut j = i + 1;
+            let mut start = j;
+            while j < n && b[j] != b'`' {
+                if b[j] == b'\\' {
+                    j += 2;
+                } else if b[j] == b'$' && at(b, j + 1) == b'{' {
+                    esc(out, &b[start..j]);
+                    push(out, "<span class=\"hljs-subst\">${");
+                    let e = js(cx, out, b, ts, j + 2, true, true);
+                    if at(b, e) == b'}' {
+                        out.push(b'}');
+                    }
+                    push(out, "</span>");
+                    j = e + 1;
+                    start = j;
+                } else {
+                    j += 1;
+                }
+            }
+            j = (j + 1).min(n);
+            esc(out, slice(b, start, j));
+            push(out, "</span>");
+            i = j;
+            regex_ok = false;
+            prev = b"`";
+            continue;
+        }
+        if c.is_ascii_digit() || (c == b'.' && at(b, i + 1).is_ascii_digit()) {
+            let e = number(b, i);
+            span(out, "number", &b[i..e]);
+            i = e;
+            regex_ok = false;
+            prev = b"0";
+            continue;
+        }
+        if c == b'/'
+            && regex_ok
+            && let Some(e) = regex(b, i)
+        {
+            span(out, "regexp", &b[i..e]);
+            i = e;
+            regex_ok = false;
+            continue;
+        }
+        if b[i..].starts_with(b"...") {
+            push(out, "...");
+            i += 3;
+            regex_ok = true;
+            prev = b"...";
+            continue;
+        }
+        if full
+            && c == b'<'
+            && regex_ok
+            && let Some(e) = jsx(cx, out, b, i, ts)
+        {
+            i = e;
+            regex_ok = false;
+            prev = b">";
+            continue;
+        }
+        if full
+            && c == b'@'
+            && let Some(e) = decorator(b, i)
+        {
+            span(out, "meta", &b[i..e]);
+            i = e;
+            continue;
+        }
+        if full && c == b'(' {
+            let close = cx.close_paren(b, i);
+            let arrow_end = close
+                .filter(|_| regex_ok && prev != b"async")
+                .and_then(|close| arrow(b, close + 1));
+            if let (Some(close), Some(e)) = (close, arrow_end) {
+                if !decl_arrow {
+                    push(out, "<span class=\"hljs-function\">");
+                }
+                params(cx, out, b, ts, i, close, decl_arrow);
+                esc(out, &b[close + 1..e]);
+                if !decl_arrow {
+                    push(out, "</span>");
+                }
+                decl_arrow = false;
+                i = e;
+                regex_ok = true;
+                prev = b">";
+                continue;
+            }
+            if let Some(close) = close.filter(|_| prev == b"function") {
+                params(cx, out, b, ts, i, close, false);
+                i = close + 1;
+                regex_ok = false;
+                prev = b")";
+                continue;
+            }
+        }
+
+        if let Some(e) = ident(b, i) {
+            let id = &b[i..e];
+            let before = prev;
+            let start = i;
+            i = e;
+            prev = id;
+            let decl = matches!(before, b"const" | b"let" | b"var");
+            let keyword = (is_keyword(id) || (ts && is_ts_keyword(id)))
+                && !(ts && is_ts_type(id))
+                && !(is_contextual(id) && decl);
+            if !full {
+                if keyword {
+                    span(out, "keyword", id);
+                } else if is_literal(id) {
+                    span(out, "literal", id);
+                } else if is_language_var(id) {
+                    span(out, "variable language_", id);
+                } else if is_built_in(id) || (ts && is_ts_type(id)) {
+                    span(out, "built_in", id);
+                } else {
+                    esc(out, id);
+                }
+                regex_ok = keyword;
+                continue;
+            }
+            let call = at(b, spaces(b, i)) == b'(';
+            let open = if call { find(b, b"(", i) } else { None };
+            let close = open.and_then(|o| cx.close_paren(b, o));
+            let method = close.is_some_and(|c| method_body(b, c + 1));
+            let arrow_end = if regex_ok { arrow(b, i) } else { None };
+            let class = if keyword || before == b"function" || (before == b"." && !call) {
+                None
+            } else {
+                class_ref(b, start)
+            };
+            if let Some(ce) = class {
+                span(out, "title class_", &b[start..ce]);
+                esc(out, &b[ce..i]);
+                regex_ok = false;
+                continue;
+            }
+            let cls = if before == b"." {
+                if call { "title function_" } else { "property" }
+            } else if before != b"?"
+                && before != b"case"
+                && (ts || before == b"{" || before == b"," || at_line_start)
+                && key_ahead(b, i, ts)
+            {
+                "attr"
+            } else if keyword && !(is_contextual(id) && (method || (call && !decl_arrow))) {
+                "keyword"
+            } else if is_literal(id) {
+                "literal"
+            } else if is_language_var(id) {
+                "variable language_"
+            } else if before == b"class" || before == b"interface" {
+                "title class_"
+            } else if before == b"extends" || before == b"implements" {
+                "title class_ inherited__"
+            } else if before == b"function" {
+                "title function_"
+            } else if let Some(ae) = arrow_end.filter(|_| before != b"async") {
+                if decl_arrow {
+                    esc(out, &b[start..ae]);
+                } else {
+                    push(
+                        out,
+                        "<span class=\"hljs-function\"><span class=\"hljs-params\">",
+                    );
+                    esc(out, id);
+                    push(out, "</span>");
+                    esc(out, &b[i..ae]);
+                    push(out, "</span>");
+                }
+                i = ae;
+                prev = b">";
+                decl_arrow = false;
+                regex_ok = true;
+                continue;
+            } else if decl && arrow_ahead(b, i) {
+                decl_arrow = true;
+                "title function_"
+            } else if call && !is_built_in_global(id) {
+                if let (true, Some(open), Some(close)) = (method, open, close) {
+                    span(out, "title function_", id);
+                    out.extend_from_slice(&b[i..open]);
+                    params(cx, out, b, ts, open, close, true);
+                    i = close + 1;
+                    regex_ok = false;
+                    prev = b")";
+                    continue;
+                }
+                "title function_"
+            } else if is_constant(id) {
+                "variable constant_"
+            } else if (ts && is_ts_type(id)) || is_built_in(id) {
+                "built_in"
+            } else {
+                ""
+            };
+            if cls.is_empty() {
+                esc(out, id);
+            } else {
+                span(out, cls, id);
+            }
+            regex_ok = cls == "keyword";
+            continue;
+        }
+
+        if c == b'{' {
+            depth += 1;
+        } else if c == b'}' {
+            if depth == 0 && in_braces {
+                return i;
+            }
+            depth -= 1;
+        }
+        esc(out, &b[i..i + 1]);
+        regex_ok = !matches!(c, b')' | b']' | b'}');
+        prev = &b[i..i + 1];
+        i += 1;
+    }
+    i
+}
