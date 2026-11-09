@@ -18,3 +18,12 @@ export const toStringArr = {
 		return JSON.parse(mappedValue);
 	},
 };
+
+/** Splits rows so that each insert stays below the D1 limit of 100 bound parameters. */
+export const chunkRows = <T extends object>(rows: T[]): T[][] => {
+	if (!rows.length) return [];
+	const size = Math.floor(100 / Object.keys(rows[0]).length);
+	return Array.from({ length: Math.ceil(rows.length / size) }, (_, i) =>
+		rows.slice(i * size, (i + 1) * size)
+	);
+};

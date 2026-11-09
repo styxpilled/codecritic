@@ -2,7 +2,7 @@ import { error } from '@sveltejs/kit';
 import { eq, getTableColumns, sql } from 'drizzle-orm';
 import * as v from 'valibot';
 import { $fetch } from '#lib';
-import { $db, toStringArr } from '#lib/server/db/index.ts';
+import { $db, chunkRows, toStringArr } from '#lib/server/db/index.ts';
 import { npmToDB } from '#lib/server/helpers.ts';
 import type { NPMDirectPackage, NPMSearchResult } from '#lib/types.ts';
 import { query, getRequestEvent } from '$app/server';
@@ -53,13 +53,12 @@ export const getNPMPackage = query(v.string(), async (name) => {
 		.insert($db.packages)
 		.values([{ ...pkg, expires: new Date() }])
 		.onConflictDoNothing();
-	if (npmPackage.keywords?.length)
-		await db
-			.insert($db.packagesKeywords)
-			.values(
-				npmPackage.keywords.map((v) => ({ name: npmPackage.name, keyword: v }))
-			)
-			.onConflictDoNothing();
+	const [first, ...rest] = chunkRows(
+		pkg.keywords.map((keyword) => ({ name: pkg.name, keyword }))
+	).map((rows) =>
+		db.insert($db.packagesKeywords).values(rows).onConflictDoNothing()
+	);
+	if (first) await db.batch([first, ...rest]);
 
 	if (npmPackage.readme) {
 		await db

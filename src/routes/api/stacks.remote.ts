@@ -3,7 +3,7 @@ import { and, count, desc, eq, getTableColumns, gt, sql } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/sqlite-core';
 import * as v from 'valibot';
 import { normalizeName, optSubpath } from '#lib';
-import { $db, toStringArr } from '#lib/server/db/index.ts';
+import { $db, chunkRows, toStringArr } from '#lib/server/db/index.ts';
 import { query, getRequestEvent, form } from '$app/server';
 import {
 	createStackSchema,
@@ -182,18 +182,16 @@ const writeChildren = async (
 		.delete($db.stacksPackages)
 		.where(eq($db.stacksPackages.stackID, stackID));
 	await db.delete($db.stacksTags).where(eq($db.stacksTags.stackID, stackID));
-	if (packages.length) {
-		await db
-			.insert($db.stacksPackages)
-			.values(
-				packages.map((pkg, position) => ({ package: pkg, stackID, position }))
-			);
-	}
-	if (tags.length) {
-		await db
-			.insert($db.stacksTags)
-			.values(tags.map((tag) => ({ tag, stackID })));
-	}
+	const inserts = [
+		...chunkRows(
+			packages.map((pkg, position) => ({ package: pkg, stackID, position }))
+		).map((rows) => db.insert($db.stacksPackages).values(rows)),
+		...chunkRows(tags.map((tag) => ({ tag, stackID }))).map((rows) =>
+			db.insert($db.stacksTags).values(rows)
+		),
+	];
+	const [first, ...rest] = inserts;
+	if (first) await db.batch([first, ...rest]);
 };
 
 /** How many stacks the author already has under the same slug. */

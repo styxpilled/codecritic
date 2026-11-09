@@ -14,18 +14,12 @@ importers:
       arctic:
         specifier: ^3.7.0
         version: 3.7.0
-      highlight.js:
-        specifier: ^11.12.0
-        version: 11.12.0
       marked:
         specifier: ^18.1.3
         version: 18.1.3
       marked-base-url:
         specifier: ^1.1.10
         version: 1.1.10(marked@18.1.3)
-      marked-highlight:
-        specifier: ^2.2.4
-        version: 2.2.4(marked@18.1.3)
       minidenticons:
         specifier: ^4.2.1
         version: 4.2.1
@@ -1733,10 +1727,6 @@ packages:
     resolution: {integrity: sha512-iZyKG96/JwPz1N55vj2Ie2vXbhu440zfUfJvSwEqEbeLluk7NnapfGqa7LH0mOsnDxTF85Mx8/dyR6HfqcbmbQ==}
     engines: {node: '>=20'}
 
-  highlight.js@11.12.0:
-    resolution: {integrity: sha512-nbfWpyRMcMrPMmDwJB+dhX/eiaPKtc2RB+0QZskqJ3WjRA/FDS0e9hZrx8EC/lbEv8gXy98FcDbNa/dspAaJMg==}
-    engines: {node: '>=12.0.0'}
-
   hookified@1.15.1:
     resolution: {integrity: sha512-MvG/clsADq1GPM2KGo2nyfaWVyn9naPiXrqIe4jYjXNZQt238kWyOGrsyc/DmRAQ+Re6yeo6yX/yoNCG5KAEVg==}
 
@@ -1943,11 +1933,6 @@ packages:
     resolution: {integrity: sha512-Szoa+MAjZg1eiDiYrzK3JwJrgRPG7gvVyf858eOonKJKJB2JGP+Z6V83gvH85labGN1VHPgANq3Jk4V47u9xAA==}
     peerDependencies:
       marked: '>= 4 < 19'
-
-  marked-highlight@2.2.4:
-    resolution: {integrity: sha512-PZxisNMJDduSjc0q6uvjsnqqHCXc9s0eyzxDO9sB1eNGJnd/H1/Fu+z6g/liC1dfJdFW4SftMwMlLvsBhUPrqQ==}
-    peerDependencies:
-      marked: '>=4 <19'
 
   marked@18.1.3:
     resolution: {integrity: sha512-9ChMH8EVVgjgID49nsL6IWxWk5c6GtAsq/xw7U1ggkjkU5AGuv68oLTVlFRtvcUYZtpbNyjyvGo3YDu0fGapiw==}
@@ -3833,8 +3818,6 @@ snapshots:
     dependencies:
       hookified: 1.15.1
 
-  highlight.js@11.12.0: {}
-
   hookified@1.15.1: {}
 
   hookified@2.2.0: {}
@@ -4001,10 +3984,6 @@ snapshots:
       '@jridgewell/sourcemap-codec': 1.6.0
 
   marked-base-url@1.1.10(marked@18.1.3):
-    dependencies:
-      marked: 18.1.3
-
-  marked-highlight@2.2.4(marked@18.1.3):
     dependencies:
       marked: 18.1.3
 

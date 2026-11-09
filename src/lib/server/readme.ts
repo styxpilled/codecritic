@@ -1,35 +1,37 @@
-import hljs from 'highlight.js/lib/core';
-import css from 'highlight.js/lib/languages/css';
-import js from 'highlight.js/lib/languages/javascript';
-import json from 'highlight.js/lib/languages/json';
-import ts from 'highlight.js/lib/languages/typescript';
-import xml from 'highlight.js/lib/languages/xml';
 import { Marked } from 'marked';
-import { markedHighlight } from 'marked-highlight';
 import sanitizeHtml from 'sanitize-html';
 import { githubRepo } from '#lib';
-import { hljsDefineSvelte } from '#lib/client/highlight.ts';
+import { highlight } from './highlight/index.ts';
+import { esc } from './highlight/util.ts';
 
-hljs.registerLanguage('javascript', js);
-hljs.registerLanguage('typescript', ts);
-hljs.registerLanguage('xml', xml);
-hljs.registerLanguage('css', css);
-hljs.registerLanguage('json', json);
-hljs.registerLanguage('svelte', hljsDefineSvelte);
-hljs.registerLanguage('vue', hljsDefineSvelte);
+/** Matches the only markup the highlighter may produce. */
+const HIGHLIGHT_TAGS = /<span class="hljs-[\w -]+">|<\/span>/g;
 
-const marked = new Marked(
-	markedHighlight({
-		langPrefix: 'hljs language-',
-		highlight(code, lang) {
-			if (hljs.getLanguage(lang)) {
-				return hljs.highlight(code, { language: lang }).value;
-			}
-			return code;
+/**
+ * Highlighted code skips the sanitizer: it is escaped text in hljs spans.
+ * Code blocks render as placeholders, which are replaced after sanitizing.
+ */
+let highlighted: string[] = [];
+let placeholder = '';
+
+const codeBlock = (cls: string, body: string) =>
+	`<pre><code${cls ? ` class="${cls}"` : ''}>${body}</code></pre>\n`;
+
+const marked = new Marked({
+	gfm: true,
+	renderer: {
+		code({ text, lang }) {
+			const name = lang?.match(/^\S+/)?.[0];
+			if (!name) return codeBlock('', esc(text));
+			const cls = `hljs language-${esc(name)}`;
+			const html = highlight(text, name);
+			if (html === null || /[<>]/.test(html.replace(HIGHLIGHT_TAGS, '')))
+				return codeBlock(cls, esc(text));
+			highlighted.push(html);
+			return codeBlock(cls, `${placeholder}${highlighted.length - 1};`);
 		},
-	}),
-	{ gfm: true }
-);
+	},
+});
 
 const isRelative = (url: string) => !/^([a-z][a-z\d+.-]*:|\/\/|#)/i.test(url);
 
@@ -67,7 +69,7 @@ const BASE_OPTIONS: sanitizeHtml.IOptions = {
 		td: ['colspan', 'rowspan'],
 		th: ['colspan', 'rowspan'],
 	},
-	allowedClasses: { code: ['hljs', 'language-*'], span: ['hljs-*'] },
+	allowedClasses: { code: ['hljs', 'language-*'] },
 	allowedSchemes: ['http', 'https', 'mailto'],
 	allowProtocolRelative: false,
 };
@@ -87,7 +89,9 @@ export async function renderReadme(value: string, url: string | null) {
 		return { tagName, attribs };
 	};
 
-	return sanitizeHtml(await marked.parse(value), {
+	highlighted = [];
+	placeholder = `x${crypto.randomUUID().replaceAll('-', '')}:`;
+	const html = sanitizeHtml(marked.parse(value, { async: false }), {
 		...BASE_OPTIONS,
 		transformTags: {
 			a: (tagName, { href, ...attribs }) => {
@@ -113,4 +117,8 @@ export async function renderReadme(value: string, url: string | null) {
 			}),
 		},
 	});
+	return html.replace(
+		new RegExp(`${placeholder}(\\d+);`, 'g'),
+		(_, i: string) => highlighted[Number(i)]
+	);
 }
