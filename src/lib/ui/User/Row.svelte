@@ -17,15 +17,15 @@
 			<Name {user} />
 			<div class="counts gap-lg fg-dark">
 				<a href="{base}/reviews" class="hov-link">
-					{user.reviews}
+					{user.reviews.toString().padStart(2, '0')}
 					reviews
 				</a>
 				<a href="{base}/stacks" class="hov-link">
-					{user.stacks}
+					{user.stacks.toString().padStart(2, '0')}
 					stacks
 				</a>
 				<a href="{base}/likes" class="hov-link">
-					{user.likesGiven}
+					{user.likesGiven.toString().padStart(2, '0')}
 					likes
 				</a>
 			</div>
@@ -43,11 +43,17 @@
 	.text {
 		min-width: 0;
 		margin-top: -6px;
+		& a {
+			font-family: monospace;
+		}
 	}
 
 	.counts {
 		font-size: 0.875rem;
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr;
+		@media (width <= 950px) {
+			font-size: 0.75rem;
+		}
 	}
 </style>

@@ -4,10 +4,11 @@
 	import type { FollowUser } from '#lib/types.ts';
 
 	let { user = $bindable() }: { user: FollowUser } = $props();
-	const form = $derived(
-		user.userFollows ? unfollow.for(user.id) : follow.for(user.id)
-	);
-	let _user = $derived(user);
+	// One form instance can attach to one <form> only, so key it per component.
+	const uid = $props.id();
+	// Local, so the toggle shows even when `user` is not reactive.
+	let following = $derived(user.userFollows);
+	const form = $derived((following ? unfollow : follow).for(uid));
 </script>
 
 {#if !app.user}
@@ -17,9 +18,9 @@
 {:else if app.user.id !== user.id}
 	<form
 		{...form.enhance(async ({ submit }) => {
-			_user.userFollows = !_user.userFollows;
+			following = !following;
 			if (user?.followers) {
-				if (_user.userFollows) {
+				if (following) {
 					user.followers += 1;
 				} else {
 					user.followers -= 1;
@@ -35,12 +36,12 @@
 		/>
 		<button
 			class="follow-btn semibold upcase"
-			class:following={_user.userFollows}
-			class:not-following={!_user.userFollows}
+			class:following
+			class:not-following={!following}
 			type="submit"
 		>
 			<span class="not-following btn bg-light fg-dark">
-				{#if _user.followsUser}
+				{#if user.followsUser}
 					Follows you
 				{:else}
 					Not following
@@ -48,7 +49,7 @@
 			</span>
 			<span class="follow btn bg-blue">Follow</span>
 			<span class="following btn bg-green">
-				{#if _user.followsUser}
+				{#if user.followsUser}
 					Mutuals
 				{:else}
 					Following

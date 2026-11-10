@@ -27,7 +27,7 @@
 	</h3>
 </div>
 
-<List columns={1} groupID="recent-stacks">
+<List columns={1}>
 	{#snippet head()}
 		<span>recent stacks</span>
 	{/snippet}
@@ -38,7 +38,7 @@
 	</Masonry>
 </List>
 
-<List columns={1} groupID="popular-stacks">
+<List columns={1}>
 	{#snippet head()}
 		<span>popular stacks</span>
 	{/snippet}

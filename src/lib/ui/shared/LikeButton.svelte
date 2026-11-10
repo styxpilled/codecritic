@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { getContext } from 'svelte';
 	import { app } from '#lib/client/state.svelte.ts';
 	import type { RemoteForm, RemoteQueryUpdate } from '$app/server';
 
@@ -35,8 +34,8 @@
 	let likes = $derived(obj.likes ?? 0);
 	let liked = $derived(obj.liked ?? false);
 
-	const groupID = getContext<number | undefined>('group-id');
-	const key = groupID ? `${groupID}:${obj.id}` : obj.id;
+	// One form instance can attach to one <form> only, so key it per component.
+	const uid = $props.id();
 </script>
 
 <div class="row gap-sm">
@@ -46,7 +45,7 @@
 			Like
 		</a>
 	{:else if app.user.id !== authorID}
-		{@const form = (obj.liked ? unlike : like).for(key)}
+		{@const form = (obj.liked ? unlike : like).for(uid)}
 		<form
 			{...form.enhance(({ submit }) => {
 				liked = !liked;

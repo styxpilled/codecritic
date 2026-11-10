@@ -17,7 +17,7 @@
 	<title>{params.user}'s stacks · Codecritic</title>
 </svelte:head>
 
-<List columns={1} groupID="user-stacks">
+<List columns={1}>
 	{#snippet head()}
 		<span>stacks by {params.user}</span>
 		{#if owner}

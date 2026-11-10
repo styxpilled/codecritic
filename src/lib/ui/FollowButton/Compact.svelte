@@ -5,10 +5,11 @@
 	import Icon from '#ui/Icon.svelte';
 
 	let { user = $bindable() }: { user: FollowUser } = $props();
-	const form = $derived(
-		user.userFollows ? unfollow.for(user.id) : follow.for(user.id)
-	);
-	let _user = $derived(user);
+	// One form instance can attach to one <form> only, so key it per component.
+	const uid = $props.id();
+	// Local, so the toggle shows even when `user` is not reactive.
+	let following = $derived(user.userFollows);
+	const form = $derived((following ? unfollow : follow).for(uid));
 </script>
 
 {#if !app.user}
@@ -22,9 +23,9 @@
 {:else if app.user.id !== user.id}
 	<form
 		{...form.enhance(async ({ submit }) => {
-			_user.userFollows = !_user.userFollows;
+			following = !following;
 			if (user?.followers) {
-				user.followers += _user.userFollows ? 1 : -1;
+				user.followers += following ? 1 : -1;
 			}
 			await submit().updates(getProfile(user.username));
 		})}
@@ -34,7 +35,7 @@
 			value={user.username}
 			class="hidden"
 		/>
-		{#if _user.userFollows}
+		{#if following}
 			<button
 				class="compact bg-green"
 				type="submit"

@@ -25,12 +25,12 @@
 			<Name {user} />
 			<div class="counts row fg-dark">
 				<a href="{base}/reviews" class="hov-link">
-					<span class="">{user.reviews}</span>
-					reviews
+					<span class="">{user.reviews.toString().padStart(2, '0')}</span>
+					<span>reviews</span>
 				</a>
 				<a href="{base}/stacks" class="hov-link">
-					<span class="">{user.stacks}</span>
-					stacks
+					<span class="">{user.stacks.toString().padStart(2, '0')}</span>
+					<span>stacks</span>
 				</a>
 			</div>
 		</div>
@@ -54,5 +54,9 @@
 
 	.counts {
 		font-size: 0.875rem;
+		font-family: monospace;
+		& > * {
+			white-space: pre;
+		}
 	}
 </style>

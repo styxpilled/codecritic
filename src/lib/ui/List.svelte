@@ -1,25 +1,19 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
-	import { setContext } from 'svelte';
 
 	let {
 		children,
 		head,
 		foot,
 		columns,
-		groupID,
 		...rest
 	}: {
 		children: Snippet;
 		head?: Snippet;
 		foot?: Snippet;
 		columns?: number;
-		groupID?: string;
 		style?: string;
 	} = $props();
-
-	// svelte-ignore state_referenced_locally
-	if (groupID) setContext('group-id', groupID);
 </script>
 
 <div class="list col" style:--columns={columns} {...rest}>

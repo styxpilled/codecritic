@@ -101,7 +101,7 @@
 		<Package {pkg} />
 	{/each}
 </List>
-<List columns={1} groupID="popular-stacks">
+<List columns={1}>
 	{#snippet head()}
 		<span>popular stacks</span>
 	{/snippet}

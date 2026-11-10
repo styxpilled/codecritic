@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { getProfile } from '#api/user.remote.ts';
+	import FollowButton from '#lib/ui/FollowButton/index.ts';
 	import Avatar from '#ui/Avatar.svelte';
 	import { page } from '$app/state';
 
@@ -30,6 +31,7 @@
 				{user.username}
 			{/if}
 		</a>
+		<FollowButton.Compact {user} />
 	</div>
 	<ul class="row desktop" style="gap: 2rem">
 		{@render link('reviews')}

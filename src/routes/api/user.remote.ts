@@ -4,7 +4,7 @@ import { alias } from 'drizzle-orm/sqlite-core';
 import * as v from 'valibot';
 import { getDays } from '#lib/server/auth.ts';
 import { $db, toStringArr } from '#lib/server/db/index.ts';
-import { query, getRequestEvent, form } from '$app/server';
+import { query, getRequestEvent, form, requested } from '$app/server';
 import {
 	favoritesSchema,
 	updateFollowSchema,
@@ -58,34 +58,40 @@ export const getUser = query(v.string(), async (username) => {
 	return user;
 });
 
+/** Follow state of the selected user, relative to the signed in user. */
+const followFlags = (viewerID: number) => ({
+	followsUser:
+		sql`EXISTS (SELECT 1 FROM users_follows WHERE user_id = ${$db.users.id} AND following = ${viewerID})`.mapWith(
+			Boolean
+		),
+	userFollows:
+		sql`EXISTS (SELECT 1 FROM users_follows WHERE user_id = ${viewerID} AND following = ${$db.users.id})`.mapWith(
+			Boolean
+		),
+});
+
 export const getProfile = query(v.string(), async (username) => {
 	const { db, user } = getRequestEvent().locals;
-	const following = alias($db.usersFollows, 'following');
-	const followers = alias($db.usersFollows, 'followers');
-	const req = await db
+	const [profile] = await db
 		.select({
 			...getTableColumns($db.users),
 			profile: $db.profiles,
-			following: sql`COUNT(DISTINCT following.following)`.mapWith(Number),
-			followers: sql`COUNT(DISTINCT followers.user_id)`.mapWith(Number),
-			reviews: sql`COUNT(DISTINCT ${$db.reviews.id})`.mapWith(Number),
+			following:
+				sql`(SELECT COUNT(*) FROM users_follows WHERE user_id = users.id)`.mapWith(
+					Number
+				),
+			followers:
+				sql`(SELECT COUNT(*) FROM users_follows WHERE following = users.id)`.mapWith(
+					Number
+				),
+			reviews: userCounts.reviews,
 			stacks: userCounts.stacks,
 			favorites: favoritesArr,
-			followsUser: sql`${user?.id || -1} = ${following.following}`.mapWith(
-				Boolean
-			),
-			userFollows: sql`${user?.id || -1} = ${followers.userID}`.mapWith(
-				Boolean
-			),
+			...followFlags(user?.id ?? -1),
 		})
 		.from($db.users)
 		.leftJoin($db.profiles, eq($db.users.id, $db.profiles.id))
-		.leftJoin(following, eq($db.users.id, following.userID))
-		.leftJoin(followers, eq($db.users.id, followers.following))
-		.leftJoin($db.reviews, eq($db.users.id, $db.reviews.authorID))
-		.where(eq($db.users.username, username))
-		.groupBy($db.users.id);
-	const [profile] = req;
+		.where(eq($db.users.username, username));
 	if (!profile) error(404);
 	return profile;
 });
@@ -136,18 +142,6 @@ export const setFavoritePackages = form(
 		}
 	}
 );
-
-/** Follow state of the selected user, relative to the signed in user. */
-const followFlags = (viewerID: number) => ({
-	followsUser:
-		sql`EXISTS (SELECT 1 FROM users_follows WHERE user_id = ${$db.users.id} AND following = ${viewerID})`.mapWith(
-			Boolean
-		),
-	userFollows:
-		sql`EXISTS (SELECT 1 FROM users_follows WHERE user_id = ${viewerID} AND following = ${$db.users.id})`.mapWith(
-			Boolean
-		),
-});
 
 export const getFollowing = query(
 	v.object({
@@ -239,7 +233,7 @@ export const follow = form(updateFollowSchema, async ({ username }) => {
 			following: req.id,
 		})
 		.onConflictDoNothing();
-	return;
+	await requested(getProfile, 1).refreshAll();
 });
 
 export const unfollow = form(updateFollowSchema, async ({ username }) => {
@@ -258,7 +252,7 @@ export const unfollow = form(updateFollowSchema, async ({ username }) => {
 				eq($db.usersFollows.following, req.id)
 			)
 		);
-	return;
+	await requested(getProfile, 1).refreshAll();
 });
 
 export const getPopularUsers = query(
