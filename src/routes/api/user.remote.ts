@@ -44,9 +44,7 @@ const userCounts = {
 
 /** Likes the reviews of the user received. */
 const likesReceived = sql`(
-	SELECT COUNT(*) FROM likes_reviews
-	INNER JOIN reviews ON reviews.id = likes_reviews.review_id
-	WHERE reviews.authorID = users.id
+	SELECT COALESCE(SUM(likes), 0) FROM reviews WHERE authorID = users.id
 )`.mapWith(Number);
 
 export const getUser = query(v.string(), async (username) => {

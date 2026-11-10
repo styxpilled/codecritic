@@ -1,3 +1,4 @@
+import { sql } from 'drizzle-orm';
 import { drizzle } from 'drizzle-orm/d1';
 import * as schema from './schema';
 
@@ -27,3 +28,9 @@ export const chunkRows = <T extends object>(rows: T[]): T[][] => {
 		rows.slice(i * size, (i + 1) * size)
 	);
 };
+
+/** Whether the signed in user likes the selected review. */
+export const reviewLikedFlag = (viewerID: number) =>
+	sql`EXISTS (SELECT 1 FROM likes_reviews WHERE review_id = ${schema.reviews.id} AND user_id = ${viewerID})`.mapWith(
+		Boolean
+	);

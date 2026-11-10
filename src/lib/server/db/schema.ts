@@ -197,10 +197,13 @@ export const reviews = sqliteTable(
 		content: text().notNull(),
 		rating: integer({ mode: 'number' }).notNull(),
 		index: integer().notNull(),
+		/** Kept in sync by the triggers in `triggers.sql`. */
+		likes: integer().notNull().default(0),
 	},
 	(t) => [
 		index('reviews_package_idx').on(t.packageID),
 		index('reviews_author_idx').on(t.authorID),
+		index('reviews_popular_idx').on(t.likes, t.createdAt),
 	]
 );
 
@@ -245,8 +248,13 @@ export const stacks = sqliteTable(
 			.notNull()
 			.$onUpdate(() => new Date()),
 		index: integer(),
+		/** Kept in sync by the triggers in `triggers.sql`. */
+		likes: integer().notNull().default(0),
 	},
-	(t) => [index('stacks_author_idx').on(t.author)]
+	(t) => [
+		index('stacks_author_idx').on(t.author),
+		index('stacks_popular_idx').on(t.likes, t.createdAt),
+	]
 );
 
 export const stacksPackages = sqliteTable(

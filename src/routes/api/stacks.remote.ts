@@ -30,11 +30,6 @@ const tagsArr = sql`(
 	FROM (SELECT tag FROM stacks_tags WHERE stack_id = ${$db.stacks.id} ORDER BY tag)
 )`.mapWith(toStringArr);
 
-const likeCount =
-	sql`(SELECT COUNT(*) FROM stacks_likes WHERE stack_id = ${$db.stacks.id})`.mapWith(
-		Number
-	);
-
 /** Whether the signed in user likes the selected stack. */
 const likedFlag = (viewerID: number) =>
 	sql`EXISTS (SELECT 1 FROM stacks_likes WHERE stack_id = ${$db.stacks.id} AND user_id = ${viewerID})`.mapWith(
@@ -46,7 +41,6 @@ const stackColumns = (viewerID: number) => ({
 	author: getTableColumns($db.users),
 	packages: packagesArr,
 	tags: tagsArr,
-	likes: likeCount,
 	liked: likedFlag(viewerID),
 });
 
@@ -86,7 +80,7 @@ export const getPopularStacks = query(genericSchema, async ({ limit = 10 }) => {
 		.select(stackColumns(user?.id ?? -1))
 		.from($db.stacks)
 		.innerJoin($db.users, eq($db.stacks.author, $db.users.id))
-		.orderBy(desc(likeCount), desc($db.stacks.createdAt))
+		.orderBy(desc($db.stacks.likes), desc($db.stacks.createdAt))
 		.limit(limit);
 	return stacks;
 });

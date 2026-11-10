@@ -11,7 +11,7 @@ import {
 } from 'drizzle-orm';
 import { alias } from 'drizzle-orm/sqlite-core';
 import * as v from 'valibot';
-import { $db } from '#lib/server/db/index.ts';
+import { $db, reviewLikedFlag as likedFlag } from '#lib/server/db/index.ts';
 import { form, getRequestEvent, query } from '$app/server';
 import {
 	createReviewSchema,
@@ -19,12 +19,6 @@ import {
 	getReviewSchema,
 	reviewSortSchema,
 } from './schemas';
-
-/** Whether the signed in user likes the selected review. */
-const likedFlag = (viewerID: number) =>
-	sql`EXISTS (SELECT 1 FROM likes_reviews WHERE review_id = ${$db.reviews.id} AND user_id = ${viewerID})`.mapWith(
-		Boolean
-	);
 
 export const getUserReviews = query(
 	v.object({
@@ -38,16 +32,14 @@ export const getUserReviews = query(
 		const { db, user } = getRequestEvent().locals;
 		const order = {
 			recent: desc($db.reviews.createdAt),
-			popular: sql`COUNT(likes_reviews.user_id) DESC`,
+			popular: desc($db.reviews.likes),
 		}[sort];
 		const g = await db
 			.select({
 				...getTableColumns($db.reviews),
 				liked: likedFlag(user?.id ?? -1),
-				likes: sql`COUNT(likes_reviews.user_id)`.mapWith(Number),
 			})
 			.from($db.reviews)
-			.leftJoin($db.likesReviews, eq($db.reviews.id, $db.likesReviews.reviewID))
 			.innerJoin($db.users, eq($db.users.id, $db.reviews.authorID))
 			.where(
 				and(
@@ -55,8 +47,7 @@ export const getUserReviews = query(
 					pkg ? eq($db.reviews.packageID, pkg) : undefined
 				)
 			)
-			.orderBy(order)
-			.groupBy($db.reviews.id)
+			.orderBy(order, desc($db.reviews.createdAt))
 			.limit(limit)
 			.offset(page * limit);
 		return g;
@@ -79,10 +70,8 @@ export const getReview = query(getReviewSchema, async (obj) => {
 		.select({
 			...getTableColumns($db.reviews),
 			liked: likedFlag(user?.id ?? -1),
-			likes: sql`COUNT(${$db.likesReviews.reviewID})`.mapWith(Number),
 		})
 		.from($db.reviews)
-		.leftJoin($db.likesReviews, eq($db.reviews.id, $db.likesReviews.reviewID))
 		.leftJoin($db.users, eq($db.reviews.authorID, $db.users.id))
 		.where(cond)
 		.orderBy(asc($db.reviews.createdAt));
@@ -128,15 +117,12 @@ export const getPopularReviews = query(
 			.select({
 				...getTableColumns($db.reviews),
 				liked: likedFlag(user?.id ?? -1),
-				likes: sql`COUNT(${$db.likesReviews.reviewID})`.mapWith(Number),
 				author: $db.users,
 			})
 			.from($db.reviews)
-			.leftJoin($db.likesReviews, eq($db.reviews.id, $db.likesReviews.reviewID))
 			.innerJoin($db.users, eq($db.reviews.authorID, $db.users.id))
 			.where(eq($db.reviews.packageID, packageID))
-			.groupBy($db.reviews.id)
-			.orderBy(sql`COUNT(${$db.likesReviews.reviewID}) DESC`);
+			.orderBy(desc($db.reviews.likes), desc($db.reviews.createdAt));
 		return reviews;
 	}
 );
@@ -149,14 +135,11 @@ export const getGlobalPopularReviews = query(
 			.select({
 				...getTableColumns($db.reviews),
 				liked: likedFlag(user?.id ?? -1),
-				likes: sql`COUNT(${$db.likesReviews.reviewID})`.mapWith(Number),
 				author: $db.users,
 			})
 			.from($db.reviews)
-			.leftJoin($db.likesReviews, eq($db.reviews.id, $db.likesReviews.reviewID))
 			.innerJoin($db.users, eq($db.reviews.authorID, $db.users.id))
-			.groupBy($db.reviews.id)
-			.orderBy(sql`COUNT(${$db.likesReviews.reviewID}) DESC`)
+			.orderBy(desc($db.reviews.likes), desc($db.reviews.createdAt))
 			.limit(limit)
 			.offset(page * limit);
 		return reviews;
@@ -170,16 +153,14 @@ export const getLikedReviews = query(v.string(), async (username) => {
 		.select({
 			...getTableColumns($db.reviews),
 			liked: likedFlag(user?.id ?? -1),
-			likes: sql`COUNT(${$db.likesReviews.reviewID})`.mapWith(Number),
 			author: author,
 		})
 		.from($db.reviews)
-		.leftJoin($db.likesReviews, eq($db.reviews.id, $db.likesReviews.reviewID))
+		.innerJoin($db.likesReviews, eq($db.reviews.id, $db.likesReviews.reviewID))
 		.innerJoin(author, eq(author.id, $db.reviews.authorID))
 		.innerJoin($db.users, eq($db.likesReviews.userID, $db.users.id))
 		.where(eq($db.users.username, username))
-		.groupBy($db.reviews.id)
-		.orderBy(sql`${$db.reviews.createdAt} DESC`);
+		.orderBy(desc($db.reviews.createdAt));
 	return reviews;
 });
 

@@ -15,7 +15,7 @@
 		"format": "prettier --write .",
 		"db:seed": "node scripts/seed.js",
 		"db:seed:sql": "node scripts/seed.js --sql",
-		"db:generate": "drizzle-kit generate",
+		"db:generate": "drizzle-kit generate && node scripts/append-triggers.js",
 		"db:migrate": "drizzle-kit migrate",
 		"db:studio": "drizzle-kit studio",
 		"cf:preview": "pnpm run build && wrangler dev --env staging",
