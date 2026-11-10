@@ -66,7 +66,15 @@
 	</p>
 	<div class="links col start gap-sm">
 		<p class="semibold fg-dark">Repository</p>
-		<p class="btn lg fg-dark bg-light hov-link">{stripGit(pkg.repository)}</p>
+		<p class="btn lg fg-dark bg-light hov-link">
+			<a
+				class="hov-link"
+				style="word-break:break-all;"
+				href={stripGit(pkg.repository)}
+			>
+				{stripGit(pkg.repository)}
+			</a>
+		</p>
 		<p class="semibold fg-dark">Homepage</p>
 		<p class="btn lg fg-dark bg-light">
 			<a class="hov-link" style="word-break:break-all;" href={pkg.homepage}>

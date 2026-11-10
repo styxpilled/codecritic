@@ -27,10 +27,14 @@ export const getReadme = query(v.string(), async (name) => {
 	if (cached?.value) {
 		if (cached.html !== null) return cached;
 		const html = await renderReadme(cached.value, cached.url);
-		await db
-			.update($db.readmes)
-			.set({ html })
-			.where(eq($db.readmes.name, name));
+		try {
+			await db
+				.update($db.readmes)
+				.set({ html })
+				.where(eq($db.readmes.name, name));
+		} catch (e) {
+			console.error(e);
+		}
 		return { ...cached, html };
 	}
 	if (cached?.expires && cached.expires > new Date()) return cached;

@@ -1,4 +1,6 @@
 .readme {
+	max-width: 900px;
+
 	@media (width <= 950px) {
 		max-height: 300rem;
 		max-height: calc-size(max-content, size);
@@ -59,7 +61,6 @@
 		border-radius: 0.25rem;
 		/* color: #abb2bf; */
 		/* white-space: pre-wrap; */
-		overflow: scroll;
 	}
 
 	& code[class^='language-'] {
@@ -67,7 +68,36 @@
 		padding: 0.25rem 0.5rem 0;
 		background-color: var(--color-bg-brighter);
 		border-radius: 0.25rem;
-		overflow: scroll;
+		overflow-x: auto;
+	}
+
+	& pre {
+		position: relative;
+	}
+
+	& .copy-code {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.5rem;
+		display: flex;
+		padding: 0.25rem;
+		border-radius: 0.25rem;
+		background-color: var(--color-bg-brighter);
+		color: var(--color-text-dark);
+		cursor: pointer;
+		opacity: 0;
+		transition: opacity 150ms;
+	}
+
+	& pre:hover > .copy-code,
+	& .copy-code:focus-visible {
+		opacity: 1;
+	}
+
+	@media (hover: none) {
+		& .copy-code {
+			opacity: 1;
+		}
 	}
 
 	& ul {

@@ -51,7 +51,13 @@
 		Welcome to codecritic!
 	{/if}
 </h1>
-<p class="fg-dark">Here's what your friends have been using:</p>
+<p class="fg-dark">
+	{#if friendReviews.length}
+		Here's what your friends have been using:
+	{:else}
+		Here's what everyone's been using:
+	{/if}
+</p>
 {#if friendReviews.length}
 	<List columns={2}>
 		{#snippet head()}

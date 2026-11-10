@@ -17,10 +17,12 @@ pub fn highlight(code: &str, lang: &str) -> Option<String> {
     let mut out = Out::with_capacity(b.len() * 2);
     match lang.as_str() {
         "javascript" | "js" | "jsx" | "mjs" | "cjs" => {
-            js::js(&cx, &mut out, b, false, 0, false, js::Scope::Code);
+            let from = js::shebang(&mut out, b);
+            js::js(&cx, &mut out, b, false, from, false, js::Scope::Code);
         }
         "typescript" | "ts" | "tsx" | "mts" | "cts" => {
-            js::js(&cx, &mut out, b, true, 0, false, js::Scope::Code);
+            let from = js::shebang(&mut out, b);
+            js::js(&cx, &mut out, b, true, from, false, js::Scope::Code);
         }
         "xml" | "html" | "xhtml" | "rss" | "atom" | "xjb" | "xsd" | "xsl" | "plist" | "wsf"
         | "svg" => {

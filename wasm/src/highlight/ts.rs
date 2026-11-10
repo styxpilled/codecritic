@@ -124,7 +124,11 @@ fn conditional(cx: &Ctx, out: &mut Out, b: &[u8], i: usize) -> Option<usize> {
             return Some(e);
         }
         gap(out, b, e, j);
-        out.push(sep);
+        if sep == b'?' {
+            span(out, "operator", b"?");
+        } else {
+            out.push(sep);
+        }
         let k = skip(out, b, j + 1);
         e = ty(cx, out, b, k).unwrap_or(k);
     }
@@ -135,7 +139,7 @@ fn conditional(cx: &Ctx, out: &mut Out, b: &[u8], i: usize) -> Option<usize> {
 fn union(cx: &Ctx, out: &mut Out, b: &[u8], from: usize) -> Option<usize> {
     let mut i = from;
     if matches!(at(b, i), b'|' | b'&') {
-        out.push(b[i]);
+        span(out, "operator", &b[i..i + 1]);
         i = skip(out, b, i + 1);
     }
     loop {
@@ -148,7 +152,7 @@ fn union(cx: &Ctx, out: &mut Out, b: &[u8], from: usize) -> Option<usize> {
             return Some(e);
         }
         gap(out, b, e, j);
-        esc(out, &[c]);
+        span(out, "operator", &[c]);
         i = skip(out, b, j + 1);
     }
 }
@@ -555,7 +559,7 @@ pub fn alias(cx: &Ctx, out: &mut Out, b: &[u8], i: usize) -> usize {
         return e;
     }
     gap(out, b, e, j);
-    out.push(b'=');
+    span(out, "operator", b"=");
     let k = skip(out, b, j + 1);
     ty(cx, out, b, k).unwrap_or(k)
 }

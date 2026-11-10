@@ -5,9 +5,12 @@
 <footer>
 	<section class="fg-dark">
 		<p>
-			Made with <a href="https://svelte.dev/" class="svelte hov-line">Svelte</a>
-			/
-			<a href="https://kit.svelte.dev/" class="svelte hov-line">Kit</a>
+			Made with
+			<span class="hide-spaces">
+				<a href="https://svelte.dev/" class="svelte hov-line">Svelte</a>
+				<span>/</span>
+				<a href="https://kit.svelte.dev/" class="svelte hov-line">Kit</a>
+			</span>
 		</p>
 		<p>
 			A <a href="https://styx.gay/" class="fg-blue hov-line">@styx</a>

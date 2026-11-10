@@ -304,6 +304,26 @@ fn regex(b: &[u8], i: usize) -> Option<usize> {
     (j > i + 1 && at(b, j) == b'/').then(|| run(b, j + 1, |c| b"dgimsuyv".contains(&c)))
 }
 
+/// Length of the operator at `i`, or 0. `?` before `:` is a TS optional
+/// marker, and `?.` before a digit is `?` and a number.
+fn operator(b: &[u8], i: usize) -> usize {
+    const OPS: [&[u8]; 46] = [
+        b">>>=", b"===", b"!==", b"**=", b"<<=", b">>=", b">>>", b"&&=", b"||=", b"??=", b"=>",
+        b"==", b"!=", b"<=", b">=", b"&&", b"||", b"??", b"?.", b"++", b"--", b"+=", b"-=", b"*=",
+        b"/=", b"%=", b"&=", b"|=", b"^=", b"**", b"<<", b">>", b"=", b"<", b">", b"+", b"-", b"*",
+        b"/", b"%", b"&", b"|", b"^", b"!", b"~", b"?",
+    ];
+    if !b"=!<>&|?+-*/%^~".contains(&at(b, i)) {
+        return 0;
+    }
+    let s = &b[i..];
+    match (at(b, i), at(b, i + 1), at(b, i + 2)) {
+        (b'?', b':', _) => 0,
+        (b'?', b'.', d) if d.is_ascii_digit() => 1,
+        _ => OPS.iter().find(|o| s.starts_with(o)).map_or(0, |o| o.len()),
+    }
+}
+
 /// `\s*=>`
 fn arrow(b: &[u8], i: usize) -> Option<usize> {
     let j = spaces(b, i);
@@ -503,6 +523,16 @@ pub(super) fn comment(out: &mut Out, body: &[u8]) {
     push(out, "<span class=\"hljs-comment\">");
     doc(out, &e);
     push(out, "</span>");
+}
+
+/// Writes a `#!` line at the start as a comment. Returns its end.
+pub fn shebang(out: &mut Out, b: &[u8]) -> usize {
+    if !b.starts_with(b"#!") {
+        return 0;
+    }
+    let e = find(b, b"\n", 0).unwrap_or(b.len());
+    span(out, "comment", &b[..e]);
+    e
 }
 
 /// A parameter list.
@@ -866,7 +896,7 @@ fn scan(
             } else if decl && !keyword && !arrow_ahead(b, i) {
                 "variable def_"
             } else if !in_params
-                && before != b"?"
+                && operator(before, 0) == 0
                 && before != b"case"
                 && (ts || before == b"{" || before == b"," || at_line_start)
                 && key_ahead(b, i, ts)
@@ -947,6 +977,12 @@ fn scan(
             regex_ok = cls == "keyword";
             if ts && cls.starts_with("title class_") {
                 i = type_params(cx, out, b, i, before);
+            } else if ts
+                && generic
+                && next == i
+                && let Some(e) = ts::args_at(cx, out, b, i)
+            {
+                i = e;
             }
             if cls == "keyword" && id == b"class" {
                 class_head = true;
@@ -977,6 +1013,30 @@ fn scan(
             continue;
         }
 
+        // Generics of an arrow or anonymous function: `<T,>(…)`.
+        if ts
+            && c == b'<'
+            && (regex_ok || matches!(prev, b"async" | b"function"))
+            && let Some(close) = ts::angle_close(cx, b, i)
+            && at(b, ts::gap_end(b, close + 1)) == b'('
+        {
+            ts::generics(cx, out, b, i, close);
+            i = close + 1;
+            regex_ok = true;
+            continue;
+        }
+        let op = operator(b, i);
+        if op > 0 {
+            let tok = &b[i..i + op];
+            span(out, "operator", tok);
+            if tok == b"=" && nest == 0 {
+                after_eq = true;
+            }
+            regex_ok = !matches!(tok, b"++" | b"--");
+            prev = if tok == b"?." { b"." } else { tok };
+            i += op;
+            continue;
+        }
         if c == b'{' {
             depth += 1;
             if class_head {
@@ -1006,7 +1066,6 @@ fn scan(
         }
         match c {
             b'(' | b')' | b'[' | b']' | b'{' | b'}' => cx.bracket(out, c),
-            b'*' if in_import => span(out, "operator", b"*"),
             _ => esc(out, &b[i..i + 1]),
         }
         if matches!(c, b'}' | b';') {
