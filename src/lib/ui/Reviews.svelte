@@ -56,7 +56,7 @@
 			{/if}
 			{#if !small}
 				{#if full}
-					<a href="/packages/{review.packageID}" class="hov-line">
+					<a href="/packages/{review.packageID}" class="rev-link hov-line">
 						{review.packageID}
 					</a>
 				{:else if user}
@@ -64,7 +64,7 @@
 						href="/user/{user.username}/package/{review.packageID}/{optSubpath(
 							review.index
 						)}"
-						class="hov-line"
+						class="rev-link hov-line"
 						style="max-height: 1lh; white-space: nowrap;"
 					>
 						{review.packageID}
@@ -133,6 +133,11 @@
 				font-size: 1.25rem;
 			}
 		}
+		&:has(.content > a:focus-visible),
+		&:has(.rev-link:focus-visible) {
+			outline: 2px solid var(--color-blue);
+			outline-offset: 2px;
+		}
 	}
 
 	h4 {
@@ -159,6 +164,10 @@
 		& .edit-btn {
 			visibility: visible;
 		}
+	}
+
+	.content a:focus {
+		outline: none;
 	}
 
 	.truncate .content {

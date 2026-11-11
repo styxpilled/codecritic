@@ -82,6 +82,8 @@ function previewInNode(): Plugin {
 }
 
 export default defineConfig({
+	// Per worktree: `node_modules` is shared between worktrees.
+	cacheDir: '.vite',
 	plugins: [
 		wasmModule(),
 		previewInNode(),

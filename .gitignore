@@ -40,3 +40,6 @@ scripts/seed.sql
 .scratch
 CLAUDE.md
 .claude
+
+# Vite deps cache (per worktree)
+/.vite

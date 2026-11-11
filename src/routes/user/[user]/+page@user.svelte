@@ -117,7 +117,6 @@
 				<a class="hov-link" href="/user/{user.username}/following">Network</a>
 			</li>
 			<li><a class="hov-link" href="/user/{user.username}/likes">Likes</a></li>
-			<li><a class="hov-link" href="/user/{user.username}/stats">Stats</a></li>
 		</ul>
 	</nav>
 	{#if reviews.length > 0}

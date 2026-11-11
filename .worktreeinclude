@@ -1,0 +1,6 @@
+.env
+.dev.vars
+.dev.vars.*
+src/worker-configuration.d.ts
+wasm/pkg/
+.wrangler/state/

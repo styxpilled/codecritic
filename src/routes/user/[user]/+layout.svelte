@@ -42,7 +42,6 @@
 			'mutuals',
 		])}
 		{@render link('likes')}
-		{@render link('stats')}
 	</ul>
 	<div></div>
 </div>

@@ -61,7 +61,6 @@
 <form {...setFavoritePackages} class="col start bg-light round">
 	<div class="col nogap start">
 		<span class="fg-dark">favorite packages</span>
-		<small class="fg-dark">Up to four, in the order you choose.</small>
 	</div>
 	{#each [0, 1, 2, 3] as i (i)}
 		<input
